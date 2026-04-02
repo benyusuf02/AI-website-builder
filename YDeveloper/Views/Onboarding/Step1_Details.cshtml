@@ -1,0 +1,545 @@
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Marka Sihirbazı";
+    Layout = "_Layout";
+}
+
+<style>
+    /* Wizard Container */
+    .wizard-container {
+        max-width: 700px;
+        margin: 50px auto;
+        position: relative;
+        perspective: 1000px;
+        min-height: 500px;
+    }
+
+    /* Card Styling */
+    .wizard-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.6s;
+        opacity: 0;
+        transform: translateX(100px) scale(0.9);
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .wizard-card.active {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        pointer-events: all;
+        z-index: 2;
+    }
+
+    .wizard-card.prev {
+        opacity: 0;
+        transform: translateX(-100px) scale(0.9);
+        z-index: 1;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+        width: 100%;
+        height: 8px;
+        background: #eee;
+        border-radius: 4px;
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    .progress-bar-custom {
+        height: 100%;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        width: 0%;
+        transition: width 0.4s ease;
+    }
+
+    /* Typography */
+    .question-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+        background: -webkit-linear-gradient(#333, #555);
+        -webkit-background-clip: text;
+    }
+
+    .question-subtitle {
+        font-size: 1rem;
+        color: #777;
+        margin-bottom: 25px;
+    }
+
+    /* Inputs */
+    .form-control-custom {
+        border: 2px solid #eee;
+        border-radius: 12px;
+        padding: 15px;
+        font-size: 1.1rem;
+        width: 100%;
+        transition: border-color 0.3s;
+    }
+
+    .form-control-custom:focus {
+        border-color: #4facfe;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
+    }
+
+    /* Options / Radio Cards */
+    .options-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .option-card {
+        border: 2px solid #eee;
+        border-radius: 12px;
+        padding: 15px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .option-card:hover {
+        border-color: #4facfe;
+        background: #f0f9ff;
+    }
+
+    .option-card.selected {
+        border-color: #4facfe;
+        background: #4facfe;
+        color: white;
+    }
+
+    .option-card input {
+        display: none;
+    }
+
+    /* Buttons */
+    .nav-buttons {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: #f1f1f1;
+        color: #555;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-circle:hover {
+        background: #e1e1e1;
+    }
+
+    .btn-next {
+        background: #333;
+        color: white;
+        width: auto;
+        padding: 0 30px;
+        border-radius: 25px;
+    }
+
+    .btn-next:hover {
+        background: #000;
+        transform: translateY(-2px);
+    }
+
+    /* Fun Elements */
+    .emoji-float {
+        font-size: 3rem;
+        position: absolute;
+        top: -40px;
+        right: 20px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+</style>
+
+<div class="row">
+    <div class="col-12 text-center mt-4">
+        <h4 class="text-primary fw-bold">🚀 Marka Detaylarını Oluşturuyoruz</h4>
+    </div>
+</div>
+
+<form asp-action="Step1_Details" method="post" id="wizardForm">
+    <div class="wizard-container">
+
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-bar-custom" id="progressBar"></div>
+        </div>
+
+        <!-- 1. Slogan -->
+        <div class="wizard-card active" data-step="1">
+            <div class="emoji-float">✨</div>
+            <h2 class="question-title">Sloganın var mı?</h2>
+            <p class="question-subtitle">Müşterilerin seni tek cümleyle nasıl hatırlasın?</p>
+            <input type="text" name="Q1_Slogan" class="form-control-custom" placeholder="Örn: Lezzetin adresi..."
+                autofocus />
+        </div>
+
+        <!-- 2. Summary -->
+        <div class="wizard-card" data-step="2">
+            <div class="emoji-float">👋</div>
+            <h2 class="question-title">Kısaca ne yapıyorsunuz?</h2>
+            <p class="question-subtitle">Bir asansör konuşması yapacak olsan, işletmeni nasıl anlatırsın?</p>
+            <textarea name="Q2_Summary" class="form-control-custom" rows="4" placeholder="Biz 20 yıldır..."></textarea>
+        </div>
+
+        <!-- 3. Products -->
+        <div class="wizard-card" data-step="3">
+            <div class="emoji-float">🛍️</div>
+            <h2 class="question-title">En çok satan 3 ürün/hizmet?</h2>
+            <p class="question-subtitle">Vitrinde ne olsun?</p>
+            <input type="text" name="Q3_Products" class="form-control-custom" placeholder="1. ..." />
+        </div>
+
+        <!-- 4. USP -->
+        <div class="wizard-card" data-step="4">
+            <div class="emoji-float">🦄</div>
+            <h2 class="question-title">Seni farklı kılan ne?</h2>
+            <p class="question-subtitle">Neden rakiplerin değil de sen?</p>
+            <textarea name="Q4_USP" class="form-control-custom" rows="3" placeholder="Çünkü biz..."></textarea>
+        </div>
+
+        <!-- 5. Audience -->
+        <div class="wizard-card" data-step="5">
+            <div class="emoji-float">👥</div>
+            <h2 class="question-title">Müşterilerin kimler?</h2>
+            <p class="question-subtitle">Yaş, meslek, yaşam tarzı...</p>
+            <input type="text" name="Q5_Audience" class="form-control-custom"
+                placeholder="Gençler, aileler, kurumsal firmalar..." />
+        </div>
+
+        <!-- 6. Problem -->
+        <div class="wizard-card" data-step="6">
+            <div class="emoji-float">🧩</div>
+            <h2 class="question-title">Hangi sorunu çözüyorsun?</h2>
+            <p class="question-subtitle">Müşterinin derdi ne, sen nasıl derman oluyorsun?</p>
+            <textarea name="Q6_Problem" class="form-control-custom" rows="3"></textarea>
+        </div>
+
+        <!-- 7. Phone -->
+        <div class="wizard-card" data-step="7">
+            <div class="emoji-float">📞</div>
+            <h2 class="question-title">Telefon Numaran?</h2>
+            <p class="question-subtitle">Sitedeki 'Hemen Ara' butonu bu numarayı arayacak.</p>
+            <input type="tel" name="Q7_Phone" class="form-control-custom" placeholder="05XX XXX XX XX" />
+        </div>
+
+        <!-- 8. WhatsApp -->
+        <div class="wizard-card" data-step="8">
+            <div class="emoji-float">💬</div>
+            <h2 class="question-title">WhatsApp Sipariş Hattı?</h2>
+            <p class="question-subtitle">Müşteriler tek tıkla sana WhatsApp'tan yazsın.</p>
+            <input type="tel" name="Q8_WhatsApp" class="form-control-custom" placeholder="905XX XXX XX XX" />
+        </div>
+
+        <!-- 9. Email -->
+        <div class="wizard-card" data-step="9">
+            <div class="emoji-float">📧</div>
+            <h2 class="question-title">E-Posta Adresi</h2>
+            <p class="question-subtitle">Resmi iletişim için.</p>
+            <input type="email" name="Q9_Email" class="form-control-custom" />
+        </div>
+
+        <!-- 10. Address -->
+        <div class="wizard-card" data-step="10">
+            <div class="emoji-float">📍</div>
+            <h2 class="question-title">Açık Adres</h2>
+            <p class="question-subtitle">Harita konumlandırması için önemli.</p>
+            <textarea name="Q10_Address" class="form-control-custom" rows="3"></textarea>
+        </div>
+
+        <!-- 11. Hours -->
+        <div class="wizard-card" data-step="11">
+            <div class="emoji-float">🕒</div>
+            <h2 class="question-title">Çalışma Saatleri</h2>
+            <p class="question-subtitle">Hafta içi / Hafta sonu</p>
+            <input type="text" name="Q11_Hours" class="form-control-custom" placeholder="Hafta içi 09:00 - 18:00" />
+        </div>
+
+        <!-- 12. Social -->
+        <div class="wizard-card" data-step="12">
+            <div class="emoji-float">📸</div>
+            <h2 class="question-title">Instagram / Sosyal Medya</h2>
+            <p class="question-subtitle">Kullanıcı adın veya link.</p>
+            <input type="text" name="Q12_Social" class="form-control-custom" />
+        </div>
+
+        <!-- 13. Tone -->
+        <div class="wizard-card" data-step="13">
+            <div class="emoji-float">🗣️</div>
+            <h2 class="question-title">Marka Dili</h2>
+            <p class="question-subtitle">Siten ziyaretçiye nasıl seslensin?</p>
+            <div class="options-grid">
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q13_Tone" value="Kurumsal" />
+                    <strong>👔 Kurumsal</strong><br><small>Resmi ve Ciddi</small>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q13_Tone" value="Samimi" />
+                    <strong>😊 Samimi</strong><br><small>Sıcak ve İçten</small>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q13_Tone" value="Heyecanlı" />
+                    <strong>🔥 Heyecanlı</strong><br><small>Enerjik ve Hızlı</small>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q13_Tone" value="Minimal" />
+                    <strong>🧘 Minimal</strong><br><small>Az ve Öz</small>
+                </label>
+            </div>
+        </div>
+
+        <!-- 14. Style -->
+        <div class="wizard-card" data-step="14">
+            <div class="emoji-float">🎨</div>
+            <h2 class="question-title">Tasarım Tarzı</h2>
+            <div class="options-grid">
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q14_Style" value="Modern" />
+                    <strong>Modern</strong>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q14_Style" value="Klasik" />
+                    <strong>Klasik</strong>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q14_Style" value="Renkli" />
+                    <strong>Canlı & Renkli</strong>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q14_Style" value="Karanlık" />
+                    <strong>Dark Mode</strong>
+                </label>
+            </div>
+        </div>
+
+        <!-- 15. Colors -->
+        <div class="wizard-card" data-step="15">
+            <div class="emoji-float">🌈</div>
+            <h2 class="question-title">Renk Tercihi</h2>
+            <div class="options-grid">
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q15_Color" value="Mavi" />
+                    <span style="color:#2196F3">●</span> Mavi Tonlar
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q15_Color" value="Yeşil" />
+                    <span style="color:#4CAF50">●</span> Yeşil / Doğa
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q15_Color" value="Kırmızı" />
+                    <span style="color:#F44336">●</span> Kırmızı / Enerji
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q15_Color" value="SiyahBeyaz" />
+                    <span style="color:#000">●</span> Siyah & Beyaz
+                </label>
+            </div>
+        </div>
+
+        <!-- 16. Logo -->
+        <div class="wizard-card" data-step="16">
+            <div class="emoji-float">🖼️</div>
+            <h2 class="question-title">Logo Durumu?</h2>
+            <p class="question-subtitle">Henüz yükleme yapmıyoruz, sadece bilgi alalım.</p>
+            <div class="options-grid">
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q16_Logo" value="Var" />
+                    <strong>Var</strong>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q16_Logo" value="Yok" />
+                    <strong>Yok, isim yazsın</strong>
+                </label>
+            </div>
+        </div>
+
+        <!-- 17. Vibe -->
+        <div class="wizard-card" data-step="17">
+            <div class="emoji-float">✨</div>
+            <h2 class="question-title">Site Hissiyatı</h2>
+            <p class="question-subtitle">Ziyaretçi siteye girince ne hissetmeli?</p>
+            <input type="text" name="Q17_Vibe" class="form-control-custom" placeholder="Güven, Lüks, Eğlence..." />
+        </div>
+
+        <!-- 18. Goal -->
+        <div class="wizard-card" data-step="18">
+            <div class="emoji-float">🎯</div>
+            <h2 class="question-title">Ana Hedef</h2>
+            <div class="options-grid">
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q18_Goal" value="Satış" />
+                    <strong>Ürün Satmak</strong>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q18_Goal" value="Randevu" />
+                    <strong>Randevu Almak</strong>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q18_Goal" value="Telefon" />
+                    <strong>Telefon Çaldırmak</strong>
+                </label>
+                <label class="option-card" onclick="selectOption(this)">
+                    <input type="radio" name="Q18_Goal" value="Bilgi" />
+                    <strong>Bilgi Vermek</strong>
+                </label>
+            </div>
+        </div>
+
+        <!-- 19. History -->
+        <div class="wizard-card" data-step="19">
+            <div class="emoji-float">🏛️</div>
+            <h2 class="question-title">Kuruluş Hikayesi</h2>
+            <p class="question-subtitle">Kaç yılında, nasıl başladınız?</p>
+            <input type="text" name="Q19_History" class="form-control-custom"
+                placeholder="2010 yılında küçük bir atölyede..." />
+        </div>
+
+        <!-- 20. Message -->
+        <div class="wizard-card" data-step="20">
+            <div class="emoji-float">💌</div>
+            <h2 class="question-title">Son Mesaj</h2>
+            <p class="question-subtitle">Müşteriye iletmek istediğin özel bir not?</p>
+            <textarea name="Q20_Message" class="form-control-custom" rows="3"></textarea>
+        </div>
+
+        <!-- Controls -->
+        <div class="nav-buttons" style="position: absolute; bottom: 40px; width: 88%; left: 6%;">
+            <button type="button" class="btn-circle" id="prevBtn" onclick="changeStep(-1)">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <button type="button" class="btn-circle btn-next" id="nextBtn" onclick="changeStep(1)">
+                İleri &rarr;
+            </button>
+        </div>
+
+    </div>
+</form>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 20;
+
+    function updateProgress() {
+        const percent = (currentStep / totalSteps) * 100;
+        document.getElementById('progressBar').style.width = percent + '%';
+    }
+
+    function changeStep(n) {
+        const cards = document.querySelectorAll('.wizard-card');
+
+        // Hide current
+        cards[currentStep - 1].classList.remove('active');
+        if (n === 1) cards[currentStep - 1].classList.add('prev');
+
+        // Update Step
+        currentStep += n;
+
+        // Check boundaries
+        if (currentStep > totalSteps) {
+            submitWizardForm();
+            return;
+        }
+        if (currentStep < 1) currentStep = 1;
+
+        // Show new
+        cards[currentStep - 1].classList.remove('prev');
+        cards[currentStep - 1].classList.add('active');
+
+        // Update Buttons
+        const nextBtn = document.getElementById('nextBtn');
+        if (currentStep === totalSteps) {
+            nextBtn.innerHTML = "Tamamla! 🎉";
+            nextBtn.style.background = "#28a745";
+        } else {
+            nextBtn.innerHTML = "İleri &rarr;";
+            nextBtn.style.background = "#333";
+        }
+
+        // Focus input
+        const input = cards[currentStep - 1].querySelector('input, textarea');
+        if (input) input.focus();
+
+        updateProgress();
+    }
+
+    function submitWizardForm() {
+        // UI Loading
+        Swal.fire({
+            title: 'Harika! 🚀',
+            html: 'Verilerin işleniyor ve yapay zeka siteni oluşturmaya başlıyor...<br>Bu işlem birkaç saniye sürebilir.',
+            timerProgressBar: true,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+            allowOutsideClick: false
+        });
+
+        // Submit Delay (optional, allows UI to paint)
+        setTimeout(() => {
+            document.getElementById('wizardForm').submit();
+        }, 800);
+    }
+
+    // Helper for Radio Cards
+    function selectOption(element) {
+        const container = element.parentElement;
+        const siblings = container.querySelectorAll('.option-card');
+        siblings.forEach(el => el.classList.remove('selected'));
+
+        element.classList.add('selected');
+        const radio = element.querySelector('input[type="radio"]');
+        radio.checked = true;
+
+        setTimeout(() => changeStep(1), 400);
+    }
+
+    // Enter Key Support
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            changeStep(1);
+        }
+    });
+
+    updateProgress();
+</script>

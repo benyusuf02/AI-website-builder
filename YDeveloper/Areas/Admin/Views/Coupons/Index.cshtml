@@ -1,0 +1,142 @@
+@model List<YDeveloper.Models.Coupon>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "İndirim Kuponları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h4 fw-bold mb-0">İndirim Kuponları</h2>
+        <p class="text-muted small mb-0">Kampanya ve indirim kodlarını yönetin.</p>
+    </div>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        <i class="bi bi-plus-lg"></i> Yeni Kupon
+    </button>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="admin-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>Kod</th>
+                    <th>İndirim</th>
+                    <th>Kullanım</th>
+                    <th>Son Tarih</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-primary">@item.Code</td>
+                        <td>%@item.DiscountPercentage</td>
+                        <td>
+                            @item.CurrentUses / @item.MaxUses
+                            <div class="progress" style="height: 4px; width: 60px;">
+                                <div class="progress-bar" style="width: @((double)item.CurrentUses/item.MaxUses*100)%">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @item.ExpiryDate.ToString("dd.MM.yyyy")
+                            @if (item.ExpiryDate < DateTime.UtcNow)
+                            {
+                                <span class="badge bg-danger rounded-pill ms-1">Süresi Doldu</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="badge bg-success rounded-pill">Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary rounded-pill">Pasif</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <form asp-action="ToggleStatus" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button class="btn btn-sm btn-light border" title="Durumu Değiştir">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                </form>
+                                <form asp-action="Delete" method="post" style="display:inline;"
+                                    onsubmit="return confirm('Bu kuponu silmek istediğinize emin misiniz?');">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button class="btn btn-sm btn-danger text-white" title="Sil">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Henüz kupon oluşturulmamış.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Kupon Oluştur</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="Create" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Kupon Kodu</label>
+                        <input type="text" name="code" class="form-control" required placeholder="Örn: YAZ2025"
+                            style="text-transform: uppercase;">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">İndirim Oranı (%)</label>
+                            <input type="number" name="discount" class="form-control" required min="1" max="100"
+                                value="10">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Maks. Kullanım</label>
+                            <input type="number" name="limit" class="form-control" required value="100">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Son Kullanma Tarihi</label>
+                        <input type="date" name="expiry" class="form-control" required
+                            value="@DateTime.Now.AddMonths(1).ToString("yyyy-MM-dd")">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama</label>
+                        <textarea name="description" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Oluştur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+@model YDeveloper.Models.ViewModels.LegalDocumentViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light py-3 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold mb-0">@Model.Title</h3>
+                            <small class="text-muted">Sürüm: @Model.ContractId</small>
+                        </div>
+                        <div class="text-end text-muted small">
+                            <div>@Model.GeneratedDate.ToString("dd MMMM yyyy HH:mm")</div>
+                            <div>IP: @Model.IpAddress</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+
+                    <p class="lead text-muted">
+                        Bu Gizlilik Politikası, @Model.CompanyName ile @Model.FullName arasındaki veri işleme şartlarını
+                        belirler.
+                    </p>
+
+                    <h5>1. Toplanan Veriler</h5>
+                    <p>
+                        Sistemlerimiz, size hizmet sunabilmek amacıyla aşağıdaki verileri işlemektedir:
+                    </p>
+                    <ul>
+                        <li>Ad Soyad: @Model.FullName</li>
+                        <li>E-posta: @Model.Email</li>
+                        <li>IP Adresi: @Model.IpAddress</li>
+                        <li>Adres Bilgileri: @Model.Address</li>
+                    </ul>
+
+                    <h5>2. Verilerin Kullanımı</h5>
+                    <p>
+                        Verileriniz, yalnızca yasal yükümlülükler ve hizmetin ifası amacıyla kullanılmaktadır.
+                        Üçüncü taraflarla paylaşılmamaktadır.
+                    </p>
+
+                    <div class="mt-5 text-center">
+                        <button onclick="window.print()" class="btn btn-outline-primary">
+                            <i class="bi bi-printer me-2"></i> Yazdır / PDF İndir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

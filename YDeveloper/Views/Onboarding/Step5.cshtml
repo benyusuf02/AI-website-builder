@@ -1,0 +1,149 @@
+@model YDeveloper.Models.Onboarding.OnboardingViewModel
+@{
+    ViewData["Title"] = "Ödeme";
+    Layout = "_Layout";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .onboarding-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .progress-step {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .progress-step.active {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .onboarding-card {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .summary-card {
+        background: #f8f9fa;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-pay {
+        background: linear-gradient(135deg, #48c774 0%, #3498db 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 3rem;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 2rem;
+        font-size: 1.25rem;
+    }
+</style>
+
+<div class="onboarding-container">
+    <div class="progress-steps">
+        <div class="progress-step">1</div>
+        <div class="progress-step">2</div>
+        <div class="progress-step">3</div>
+        <div class="progress-step">4</div>
+        <div class="progress-step active">5</div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="onboarding-card">
+                <h1
+                    style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    💳 Ödeme Bilgileri
+                </h1>
+
+                <form asp-action="Step5" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="paymentToken" value="simulated" />
+
+                    <div class="alert alert-info" style="border-radius: 12px;">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Demo amaçlı ödeme simülasyonu aktif. Gerçek ödeme entegrasyonu yapılacak.
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Kart Üzerindeki İsim</label>
+                        <input type="text" class="form-control" style="border-radius: 12px;" placeholder="Ad Soyad" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Kart Numarası</label>
+                        <input type="text" class="form-control" style="border-radius: 12px;"
+                            placeholder="1234 5678 9012 3456" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-semibold">Son Kullanma</label>
+                            <input type="text" class="form-control" style="border-radius: 12px;" placeholder="MM/YY" />
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-semibold">CVV</label>
+                            <input type="text" class="form-control" style="border-radius: 12px;" placeholder="123"
+                                maxlength="3" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-pay">
+                        <i class="bi bi-lock-fill me-2"></i>Güvenli Ödeme Yap
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="onboarding-card">
+                <h5 class="fw-bold mb-3">Sipariş Özeti</h5>
+                <div class="summary-card">
+                    <div class="mb-2"><strong>Site:</strong> @Model.SiteName</div>
+                    <div class="mb-2"><strong>Domain:</strong> @(Model.Subdomain).ydeveloper.com</div>
+                    <div class="mb-2"><strong>Paket:</strong> @Model.PackageType.ToUpper()</div>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <strong>Toplam:</strong>
+                        <strong class="text-primary">
+                            @(Model.PackageType == "starter" ? "₺299" : Model.PackageType == "pro" ? "₺599" :
+                                "₺1,499")/ay
+                        </strong>
+                    </div>
+                </div>
+                <small class="text-muted">
+                    <i class="bi bi-shield-check me-1"></i>256-bit SSL şifrelemeli güvenli ödeme
+                </small>
+            </div>
+        </div>
+    </div>
+</div>

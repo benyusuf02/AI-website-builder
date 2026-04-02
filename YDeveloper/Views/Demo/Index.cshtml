@@ -1,0 +1,30 @@
+﻿@model YDeveloper.ViewModels.LandingPageViewModel
+@{
+    // In a real scenario, this comes from the hostname resolution (Middleware).
+    // For this DEMO, we pick a simulated Tenant ID.
+    // Tenant-1 = Fancy Dark Mode
+    // Tenant-2 = Playful Light Mode
+    var simulatedTenantId = Context.Request.Query["tenantId"].ToString();
+    if (string.IsNullOrEmpty(simulatedTenantId))
+    {
+        simulatedTenantId = "tenant-1"; // Default
+    }
+
+    ViewData["Title"] = "Tenant Demo Store";
+}
+
+<!-- DYNAMIC THEME ENGINE RENDERER -->
+<!-- 1. Hero Section -->
+@await Component.InvokeAsync("HeroSection", new { tenantId = simulatedTenantId })
+
+<!-- 2. Product Grid -->
+@await Component.InvokeAsync("ProductGrid", new { tenantId = simulatedTenantId })
+
+<div class="container py-5 text-center">
+    <hr />
+    <p class="text-muted small"> TIYAKAP Theme Engine Demo </p>
+    <div class="d-flex justify-content-center gap-3">
+        <a href="/?tenantId=tenant-1" class="btn btn-dark">View as Tenant 1 (Dark/Premium)</a>
+        <a href="/?tenantId=tenant-2" class="btn btn-outline-primary">View as Tenant 2 (Colorful)</a>
+    </div>
+</div>

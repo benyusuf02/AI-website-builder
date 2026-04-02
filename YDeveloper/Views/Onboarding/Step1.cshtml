@@ -1,0 +1,157 @@
+@model YDeveloper.Models.Onboarding.Step1ViewModel
+@{
+    ViewData["Title"] = "Sitenizicreate - Başlayalım";
+    Layout = "_Layout";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    .onboarding-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+    .progress-step {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        position: relative;
+    }
+    .progress-step.active {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .onboarding-card {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .onboarding-card h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    .form-control, .form-select {
+        border-radius: 12px;
+        padding: 0.875rem 1.25rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    .btn-continue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 3rem;
+        font-weight: 600;
+        font-size: 1.125rem;
+        transition: all 0.3s;
+        width: 100%;
+        margin-top: 2rem;
+    }
+    .btn-continue:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+</style>
+
+<div class="onboarding-container">
+    <!-- Progress Indicator -->
+    <div class="progress-steps">
+        <div class="progress-step active">1</div>
+        <div class="progress-step">2</div>
+        <div class="progress-step">3</div>
+        <div class="progress-step">4</div>
+        <div class="progress-step">5</div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="onboarding-card">
+        <h1>🚀 Harika! Başlayalım</h1>
+        <p class="text-muted mb-4">Öncelikle siteniz hakkında birkaç temel bilgi alalım.</p>
+
+        <form asp-action="Step1" method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- Site Adı -->
+            <div class="mb-4">
+                <label asp-for="SiteName" class="form-label">Site Adınız</label>
+                <input asp-for="SiteName" class="form-control" placeholder="Örn: Kahve Dünyası" required />
+                <small class="text-muted">Markanızın veya işinizin adı</small>
+                <span asp-validation-for="SiteName" class="text-danger small"></span>
+            </div>
+
+            <!-- Site Açıklaması -->
+            <div class="mb-4">
+                <label asp-for="SiteDescription" class="form-label">Site Açıklaması</label>
+                <textarea asp-for="SiteDescription" class="form-control" rows="3" 
+                          placeholder="Örn: Türkiye'nin en kaliteli kahve çekirdeklerini sunan modern bir platform" 
+                          required></textarea>
+                <small class="text-muted">1-2 cümleyle sitenizin ne hakkında olduğunu açıklayın</small>
+                <span asp-validation-for="SiteDescription" class="text-danger small"></span>
+            </div>
+
+            <!-- Sektör Seçimi -->
+            <div class="mb-4">
+                <label asp-for="Industry" class="form-label">Sektör</label>
+                <select asp-for="Industry" class="form-select" required>
+                    <option value="">Bir sektör seçin...</option>
+                    <option value="e-ticaret">E-Ticaret</option>
+                    <option value="hizmet">Hizmet</option>
+                    <option value="blog">Blog / İçerik</option>
+                    <option value="kurumsal">Kurumsal</option>
+                    <option value="portfoy">Portföy</option>
+                    <option value="restoran">Restoran / Cafe</option>
+                    <option value="egitim">Eğitim</option>
+                    <option value="saglik">Sağlık</option>
+                    <option value="diger">Diğer</option>
+                </select>
+                <span asp-validation-for="Industry" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-continue">
+                Devam Et <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Back Link -->
+    <div class="text-center mt-4">
+        <a href="/Dashboard" class="text-white text-decoration-none">
+            <i class="bi bi-arrow-left me-1"></i> Ana Sayfaya Dön
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

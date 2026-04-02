@@ -1,0 +1,176 @@
+@model YDeveloper.Models.Onboarding.Step2ViewModel
+@{
+    ViewData["Title"] = "Tasarım Tercihi";
+    Layout = "_Layout";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .onboarding-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .progress-step {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .progress-step.active {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .onboarding-card {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .color-palette-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .color-card {
+        border: 3px solid transparent;
+        border-radius: 16px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+    }
+
+    .color-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .color-card.selected {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .color-preview {
+        width: 100%;
+        height: 80px;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+
+    .btn-continue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 3rem;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="onboarding-container">
+    <div class="progress-steps">
+        <div class="progress-step">1</div>
+        <div class="progress-step active">2</div>
+        <div class="progress-step">3</div>
+        <div class="progress-step">4</div>
+        <div class="progress-step">5</div>
+    </div>
+
+    <div class="onboarding-card">
+        <h1
+            style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            🎨 Tasarım Seçimi
+        </h1>
+        <p class="text-muted mb-4">Sitenizin renklerini ve stilini seçin</p>
+
+        <form asp-action="Step2" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ColorPalette" id="colorPaletteInput" />
+            <input type="hidden" asp-for="DesignStyle" id="designStyleInput" />
+
+            <h5 class="mb-3">Renk Paleti</h5>
+            <div class="color-palette-grid">
+                <div class="color-card" data-color="blue" onclick="selectColor('blue')">
+                    <div class="color-preview" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    </div>
+                    <strong>Mavi/Mor</strong>
+                </div>
+                <div class="color-card" data-color="green" onclick="selectColor('green')">
+                    <div class="color-preview" style="background: linear-gradient(135deg, #48c774 0%, #3498db 100%);">
+                    </div>
+                    <strong>Yeşil/Mavi</strong>
+                </div>
+                <div class="color-card" data-color="orange" onclick="selectColor('orange')">
+                    <div class="color-preview" style="background: linear-gradient(135deg, #ff9500 0%, #ff5e62 100%);">
+                    </div>
+                    <strong>Turuncu/Kırmızı</strong>
+                </div>
+                <div class="color-card" data-color="purple" onclick="selectColor('purple')">
+                    <div class="color-preview" style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);">
+                    </div>
+                    <strong>Mor/Pembe</strong>
+                </div>
+            </div>
+
+            <h5 class="mb-3 mt-4">Tasarım Stili</h5>
+            <div class="color-palette-grid">
+                <div class="color-card" data-style="modern" onclick="selectStyle('modern')">
+                    <div style="font-size: 3rem;">✨</div>
+                    <strong>Modern</strong>
+                </div>
+                <div class="color-card" data-style="minimal" onclick="selectStyle('minimal')">
+                    <div style="font-size: 3rem;">⚪</div>
+                    <strong>Minimal</strong>
+                </div>
+                <div class="color-card" data-style="classic" onclick="selectStyle('classic')">
+                    <div style="font-size: 3rem;">📜</div>
+                    <strong>Klasik</strong>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-continue">Devam Et <i class="bi bi-arrow-right ms-2"></i></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function selectColor(color) {
+        document.querySelectorAll('[data-color]').forEach(el => el.classList.remove('selected'));
+        document.querySelector(`[data-color="${color}"]`).classList.add('selected');
+        document.getElementById('colorPaletteInput').value = color;
+    }
+    function selectStyle(style) {
+        document.querySelectorAll('[data-style]').forEach(el => el.classList.remove('selected'));
+        document.querySelector(`[data-style="${style}"]`).classList.add('selected');
+        document.getElementById('designStyleInput').value = style;
+    }
+    // Set initial values
+    selectColor('@Model.ColorPalette');
+    selectStyle('@Model.DesignStyle');
+</script>

@@ -1,0 +1,49 @@
+@inject YDeveloper.Services.ISystemSettingService SettingsService
+
+@{
+    var rawTitle = ViewData["Title"]?.ToString();
+    var siteTitle = await SettingsService.GetSiteTitleAsync();
+    var fullTitle = string.IsNullOrEmpty(rawTitle) ? siteTitle : $"{rawTitle} | {siteTitle}";
+
+    var description = ViewData["Description"]?.ToString() ?? "YDeveloper ile hayalinizdeki websitesini dakikalar içinde oluşturun. Yapay zeka destekli web sitesi oluşturucu.";
+    var keywords = ViewData["Keywords"]?.ToString() ?? "yapay zeka, website yapıcı, site kur, ydeveloper, kolay website, e-ticaret";
+    var canonicalUrl = ViewData["CanonicalUrl"]?.ToString() ?? $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
+    
+    var ogImage = ViewData["OgImage"]?.ToString();
+    if (string.IsNullOrEmpty(ogImage))
+    {
+        // Default OG Image (Logo or specific banner)
+        ogImage = $"{Context.Request.Scheme}://{Context.Request.Host}/images/social-share.png"; 
+    }
+    else if (ogImage.StartsWith("/"))
+    {
+        // Convert virtual path to absolute
+        ogImage = $"{Context.Request.Scheme}://{Context.Request.Host}{ogImage}";
+    }
+
+    var ogType = ViewData["OgType"]?.ToString() ?? "website";
+}
+
+<!-- Standard SEO -->
+<title>@fullTitle</title>
+<meta name="description" content="@description">
+<meta name="keywords" content="@keywords">
+<link rel="canonical" href="@canonicalUrl">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="@ogType">
+<meta property="og:url" content="@canonicalUrl">
+<meta property="og:title" content="@fullTitle">
+<meta property="og:description" content="@description">
+<meta property="og:image" content="@ogImage">
+<meta property="og:site_name" content="@siteTitle">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="@canonicalUrl">
+<meta property="twitter:title" content="@fullTitle">
+<meta property="twitter:description" content="@description">
+<meta property="twitter:image" content="@ogImage">
+
+<!-- Dynamic Favicon (from Settings) -->
+<link rel="icon" type="image/x-icon" href="@await SettingsService.GetFaviconUrlAsync()">

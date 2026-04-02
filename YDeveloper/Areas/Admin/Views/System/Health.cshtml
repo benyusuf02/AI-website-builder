@@ -1,0 +1,111 @@
+@model Microsoft.Extensions.Diagnostics.HealthChecks.HealthReport
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Sistem Sağlık Durumu";
+}
+
+<div class="mb-4">
+    <h2 class="h4 fw-bold mb-0">Sistem Sağlık Durumu</h2>
+    <p class="text-muted small">Sunucu ve servislerin güncel durumu.</p>
+</div>
+
+<div class="row g-4">
+    <!-- Overall Status -->
+    <div class="col-md-4">
+        <div class="admin-card p-4 h-100 text-center">
+            <h6 class="text-muted text-uppercase fw-bold small mb-3">Genel Durum</h6>
+
+            @if (Model.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy)
+            {
+                <div class="display-1 text-success mb-3"><i class="bi bi-check-circle-fill"></i></div>
+                <h3 class="text-success fw-bold">Sağlıklı</h3>
+                <p class="text-muted">Tüm sistemler normal çalışıyor.</p>
+            }
+            else if (Model.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded)
+            {
+                <div class="display-1 text-warning mb-3"><i class="bi bi-exclamation-circle-fill"></i></div>
+                <h3 class="text-warning fw-bold">Riskli</h3>
+                <p class="text-muted">Bazı servislerde yavaşlama veya sorun var.</p>
+            }
+            else
+            {
+                <div class="display-1 text-danger mb-3"><i class="bi bi-x-circle-fill"></i></div>
+                <h3 class="text-danger fw-bold">Arızalı</h3>
+                <p class="text-muted">Kritik bir hata tespit edildi.</p>
+            }
+
+            <hr>
+            <div class="small text-muted">
+                Son Kontrol: @DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") UTC
+                <br>
+                Süre: @Model.TotalDuration.TotalMilliseconds ms
+            </div>
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="col-md-8">
+        <div class="admin-card p-4 h-100">
+            <h5 class="fw-bold mb-4">Servis Detayları</h5>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Servis</th>
+                            <th>Durum</th>
+                            <th>Açıklama</th>
+                            <th>Süre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in Model.Entries)
+                        {
+                            <tr>
+                                <td class="fw-bold">@entry.Key</td>
+                                <td>
+                                    @if (entry.Value.Status ==
+                                   Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy)
+                                    {
+                                        <span class="badge bg-success rounded-pill">Aktif</span>
+                                    }
+                                    else if (entry.Value.Status ==
+                                    Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded)
+                                    {
+                                        <span class="badge bg-warning rounded-pill">Yavaş</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger rounded-pill">Hata</span>
+                                    }
+                                </td>
+                                <td class="small text-muted">@(entry.Value.Description ?? "-")
+                                    @entry.Value.Exception?.Message</td>
+                                <td class="small">@entry.Value.Duration.TotalMilliseconds ms</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <hr class="my-4">
+
+            <h5 class="fw-bold mb-3">Sunucu Bilgileri</h5>
+            <div class="row small">
+                <div class="col-6 mb-2">
+                    <span class="text-muted">Ortam:</span> <strong>@ViewBag.Environment</strong>
+                </div>
+                <div class="col-6 mb-2">
+                    <span class="text-muted">OS:</span> <strong>@ViewBag.OSVersion</strong>
+                </div>
+                <div class="col-6 mb-2">
+                    <span class="text-muted">Makine Adı:</span> <strong>@ViewBag.MachineName</strong>
+                </div>
+                <div class="col-6 mb-2">
+                    <span class="text-muted">Uptime:</span>
+                    <strong>@(((TimeSpan)ViewBag.ProcessUptime).ToString(@"dd\.hh\:mm\:ss"))</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

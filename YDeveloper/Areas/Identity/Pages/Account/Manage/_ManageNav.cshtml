@@ -1,0 +1,45 @@
+﻿@using YDeveloper.Areas.Identity.Pages.Account.Manage
+@inject SignInManager<YDeveloper.Models.ApplicationUser> SignInManager
+@{
+        var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+<div class="list-group list-group-flush rounded-3 border overflow-hidden">
+        <a class="list-group-item list-group-item-action p-3 @ManageNavPages.IndexNavClass(ViewContext)" id="profile"
+                asp-page="./Index">
+                <i class="bi bi-person-circle me-2 text-primary"></i> Profil Bilgileri
+        </a>
+        <a class="list-group-item list-group-item-action p-3 @ManageNavPages.EmailNavClass(ViewContext)" id="email"
+                asp-page="./Email">
+                <i class="bi bi-envelope me-2 text-success"></i> E-Posta İşlemleri
+        </a>
+        <a class="list-group-item list-group-item-action p-3 @ManageNavPages.SessionsNavClass(ViewContext)" id="sessions"
+                asp-page="./Sessions">
+                <i class="bi bi-pc-display me-2 text-primary"></i> Oturumlar
+        </a>
+        <a class="list-group-item list-group-item-action p-3 @ManageNavPages.ChangePasswordNavClass(ViewContext)"
+                id="change-password" asp-page="./ChangePassword">
+                <i class="bi bi-shield-lock me-2 text-warning"></i> Şifre Değiştir
+        </a>
+        @if (hasExternalLogins)
+        {
+                        <a id="external-login"
+                                class="list-group-item list-group-item-action p-3 @ManageNavPages.ExternalLoginsNavClass(ViewContext)"
+                                asp-page="./ExternalLogins">
+                                <i class="bi bi-google me-2 text-danger"></i> Sosyal Oturumlar
+                        </a>
+        }
+        <a class="list-group-item list-group-item-action p-3 @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)"
+                id="two-factor" asp-page="./TwoFactorAuthentication">
+                <i class="bi bi-phone me-2 text-info"></i> İki Faktörlü Doğrulama
+        </a>
+        <a class="list-group-item list-group-item-action p-3 @ManageNavPages.PersonalDataNavClass(ViewContext)"
+                id="personal-data" asp-page="./PersonalData">
+                <i class="bi bi-archive me-2 text-secondary"></i> Kişisel Veriler
+        </a>
+
+        <!-- Custom Billing Link -->
+        <a class="list-group-item list-group-item-action p-3 @((ViewData["ActivePage"] as string) == "Billing" ? "active" : "")"
+                asp-page="./Billing">
+                <i class="bi bi-receipt me-2 text-dark"></i> Ödeme Geçmişi
+        </a>
+</div>

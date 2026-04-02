@@ -1,0 +1,82 @@
+@model YDeveloper.Models.ViewModels.LegalDocumentViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light py-3 border-0">
+                     <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold mb-0">@Model.Title</h3>
+                            <small class="text-muted">Sürüm: @Model.ContractId</small>
+                        </div>
+                        <div class="text-end text-muted small">
+                            <div>@Model.GeneratedDate.ToString("dd MMMM yyyy HH:mm")</div>
+                            <div>IP: @Model.IpAddress</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+
+                     <!-- User Context -->
+                    <div class="alert alert-secondary mb-4">
+                        <h6 class="alert-heading fw-bold"><i class="bi bi-shop me-2"></i> Sözleşme Tarafları</h6>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6 border-end">
+                                <strong class="d-block text-uppercase text-muted small">SATICI</strong>
+                                <p class="mb-0 fw-bold">@Model.CompanyName</p>
+                                <small>@Model.CompanyAddress</small><br>
+                                <small>Email: @Model.CompanyContact</small>
+                            </div>
+                            <div class="col-md-6 ps-md-4">
+                                <strong class="d-block text-uppercase text-muted small">ALICI (Müşteri)</strong>
+                                <p class="mb-0 fw-bold">@Model.FullName</p>
+                                <small>@Model.BusinessName</small><br>
+                                <small>Email: @Model.Email</small><br>
+                                <small>Adres: @Model.Address</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contract-text">
+                        <h5>MADDE 1 - KONU</h5>
+                        <p>
+                            İşbu sözleşmenin konusu, ALICI'nın SATICI'ya ait internet sitesinden elektronik ortamda siparişini yaptığı 
+                            aşağıda nitelikleri ve satış fiyatı belirtilen ürünün/hizmetin satışı ve teslimi ile ilgili olarak 
+                            6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince 
+                            tarafların hak ve yükümlülüklerinin saptanmasıdır.
+                        </p>
+
+                        <h5>MADDE 2 - SÖZLEŞME TARİHİ</h5>
+                        <p>
+                            İşbu sözleşme, ALICI tarafından @Model.GeneratedDate tarihinde elektronik ortamda onaylanmıştır.
+                        </p>
+                        
+                        <h5>MADDE 3 - CAYMA HAKKI</h5>
+                        <p>
+                            ALICI, sözleşme konusu ürünün kendisine veya gösterdiği adresteki kişi/kuruluşa tesliminden itibaren 
+                            14 gün içinde cayma hakkına sahiptir. (Ancak Yazılım/Hizmet ürünlerinde cayma hakkı istisnaları saklıdır).
+                        </p>
+
+                         <h5>MADDE 4 - YETKİLİ MAHKEME</h5>
+                        <p>
+                            İşbu sözleşmenin uygulanmasında, Sanayi ve Ticaret Bakanlığınca ilan edilen değere kadar 
+                            Tüketici Hakem Heyetleri ile ALICI'nın veya SATICI'nın yerleşim yerindeki Tüketici Mahkemeleri yetkilidir.
+                        </p>
+                    </div>
+
+                    <div class="mt-5 text-center">
+                        <button onclick="window.print()" class="btn btn-outline-primary">
+                            <i class="bi bi-printer me-2"></i> Yazdır / PDF İndir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+@model IEnumerable<YDeveloper.Models.Ticket>
+@{
+    ViewData["Title"] = "Destek Talepleri";
+    Layout = "_Layout";
+    var currentStatus = ViewBag.CurrentStatus as string;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Destek Talepleri</h2>
+        <div class="btn-group">
+            <a asp-action="Index" asp-route-status="Open"
+                class="btn btn-outline-primary @(currentStatus == "Open" ? "active" : "")">Açık</a>
+            <a asp-action="Index" asp-route-status="Resolved"
+                class="btn btn-outline-success @(currentStatus == "Resolved" ? "active" : "")">Çözülen</a>
+            <a asp-action="Index" asp-route-status="Escalated"
+                class="btn btn-outline-danger @(currentStatus == "Escalated" ? "active" : "")">İletilenler</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="list-group list-group-flush">
+            @foreach (var ticket in Model)
+            {
+                <a asp-action="TicketDetails" asp-route-id="@ticket.Id" class="list-group-item list-group-item-action p-3">
+                    <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                        <h5 class="mb-0 text-primary">@ticket.Subject</h5>
+                        <small class="text-muted">@ticket.CreatedAt.ToShortDateString()
+                            @ticket.CreatedAt.ToShortTimeString()</small>
+                    </div>
+                    <div class="mb-1 small text-muted">Açan: <strong>@ticket.Creator?.Email</strong></div>
+                    <div>
+                        <span class="badge bg-secondary">@ticket.Priority</span>
+                        @if (ticket.Status == YDeveloper.Models.TicketStatus.Open)
+                        {
+                            <span class="badge bg-warning text-dark">Açık</span>
+                        }
+                        else if (ticket.Status == YDeveloper.Models.TicketStatus.Escalated)
+                        {
+                            <span class="badge bg-danger">Admin'de</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Çözüldü</span>
+                        }
+                    </div>
+                </a>
+            }
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p class="mt-2">Bu kategoride talep bulunmuyor.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

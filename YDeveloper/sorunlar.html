@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YDeveloper | Acımasız Risk ve Sorun Analizi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --danger: #ff4d4d;
+            --warning: #ffaa00;
+            --bg: #050505;
+            --card: #111;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg);
+            color: #ccc;
+            overflow-x: hidden;
+        }
+
+        .text-danger-glow {
+            color: var(--danger);
+            text-shadow: 0 0 20px rgba(255, 77, 77, 0.5);
+        }
+
+        .risk-card {
+            background: var(--card);
+            border-left: 4px solid var(--danger);
+            transition: all 0.3s;
+        }
+
+        .risk-card:hover {
+            background: #181818;
+            transform: translateX(10px);
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--danger), var(--warning), transparent);
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 77, 77, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            from {
+                bottom: 100%;
+            }
+
+            to {
+                bottom: -100px;
+            }
+        }
+
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before {
+            content: attr(data-text);
+            position: absolute;
+            left: -2px;
+            text-shadow: 2px 0 blue;
+            top: 0;
+            color: white;
+            background: black;
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+            animation: noise-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes noise-anim-2 {
+            0% {
+                clip: rect(10px, 9999px, 80px, 0);
+            }
+
+            100% {
+                clip: rect(60px, 9999px, 30px, 0);
+            }
+        }
+    </style>
+</head>
+
+<body class="p-6 md:p-12">
+
+    <div class="scanline"></div>
+
+    <header class="max-w-4xl mx-auto mb-20">
+        <div class="flex items-center gap-4 text-xs font-bold tracking-[0.5em] uppercase text-red-500 mb-4">
+            <i class="fas fa-exclamation-triangle animate-pulse"></i> KRİTİK ANALİZ MODU AKTİF
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black text-white mb-6 glitch" data-text="ACIMASIZ GERÇEKLER">ACIMASIZ
+            GERÇEKLER</h1>
+        <p class="text-xl text-gray-500 font-medium">
+            Övgüleri durum.html'de bıraktık. Burada sistemin yumuşak karınlarını, yarın başımızı ağrıtacak teknik
+            borçları ve pazarın karanlık yüzünü konuşacağız.
+        </p>
+    </header>
+
+    <div class="max-w-4xl mx-auto relative pl-12">
+        <div class="timeline-line"></div>
+
+        <!-- BUGÜN: Teknik Darboğazlar -->
+        <section class="mb-24 relative">
+            <div
+                class="absolute -left-[54px] top-0 w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white z-10 shadow-[0_0_20px_rgba(220,38,38,0.5)]">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="mb-10">
+                <h2 class="text-3xl font-bold text-white uppercase tracking-tighter">BUGÜN: <span
+                        class="text-red-500">Teknik Borç ve Performans</span></h2>
+                <p class="text-gray-500 mt-2">Sistemin şu anki "çalışıyor" hali, yük altında ilk sapacak yerdir.</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="risk-card p-6 rounded-r-xl">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-xl font-bold text-white">Proxy Bandwidth Maliyeti</h4>
+                        <span
+                            class="px-3 py-1 bg-red-500/10 text-red-500 text-[10px] font-black rounded uppercase">YÜKSEK
+                            RİSK</span>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Her resmi S3'ten sunucumuz üzerinden geçirmek (proxy), trafik arttıkça sunucu faturalarını
+                        patlatacak. Kullanıcılar resim yükledikçe bizim band genişliğimiz tükenecek. <strong>Acil
+                            çözüm:</strong> Statik dosyaları doğrudan S3/CDN üzerinden serve edip sadece HTML'i
+                        proxy'lemek.
+                    </p>
+                </div>
+
+                <div class="risk-card p-6 rounded-r-xl border-orange-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-xl font-bold text-white">Sihirbazdaki "Drop-off" Oranı</h4>
+                        <span
+                            class="px-3 py-1 bg-orange-500/10 text-orange-500 text-[10px] font-black rounded uppercase">KRİTİK
+                            UX</span>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        20 soruluk bir sihirbaz, "hızlı site" bekleyen sabırsız kullanıcıları yoracaktır. Kullanıcıların
+                        %40'ı 10. sorudan sonra ekranı kapatma riskiyle karşı karşıya. Soruları 3-4 kilit soruya indirip
+                        geri kalanı AI tahminine (hallucination riskine rağmen) bırakmalıyız.
+                    </p>
+                </div>
+
+                <div class="risk-card p-6 rounded-r-xl border-gray-600">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-xl font-bold text-white">AI Kod Kalitesi & Güvenlik</h4>
+                        <span
+                            class="px-3 py-1 bg-gray-500/10 text-gray-500 text-[10px] font-black rounded uppercase">ORTA</span>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Gemini'nin ürettiği HTML içinde XSS açıkları barındıran scriptler olabilir. Üretilen her kodun
+                        bir "Sanitizer"dan geçirilmemesi, bir gün tüm tenantların hacklenmesine yol açabilir.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ORTA VADE: Ölçekleme ve Yönetim -->
+        <section class="mb-24 relative">
+            <div
+                class="absolute -left-[54px] top-0 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white z-10 shadow-[0_0_20px_rgba(234,88,12,0.5)]">
+                <i class="fas fa-expand-arrows-alt"></i>
+            </div>
+            <div class="mb-10">
+                <h2 class="text-3xl font-bold text-white uppercase tracking-tighter">ORTA VADE: <span
+                        class="text-orange-500">Ölçekleme Kabusu</span></h2>
+                <p class="text-gray-500 mt-2">1.000 kullanıcıyı yönetmek bedava, 50.000 kullanıcıyı yönetmek sanattır.
+                </p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="risk-card p-6 rounded-r-xl border-red-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-xl font-bold text-white">Custom Domain SSL Sertifikaları</h4>
+                        <span
+                            class="px-3 py-1 bg-red-500/10 text-red-500 text-[10px] font-black rounded uppercase">ÖLÜMCÜL</span>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Site sayısı 10.000'i geçtiğinde, her bir domain için SSL sertifikası (Let's Encrypt) oluşturmak
+                        ve yenilemek Caddy/Nginx limitlerine takılacak. Sertifika yenilenemediği an siteler "Güvenli
+                        Değil" uyarısı verir ve marka biter. Merkezi bir Cloudflare Enterprise veya özel bir SSL
+                        orchestrator şart.
+                    </p>
+                </div>
+
+                <div class="risk-card p-6 rounded-r-xl border-yellow-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-xl font-bold text-white">Veritabanı Şişmesi & Cache Invalid</h4>
+                        <span
+                            class="px-3 py-1 bg-yellow-500/10 text-yellow-500 text-[10px] font-black rounded uppercase">TEKNİK
+                            BORÇ</span>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Cache ekledik ama; bir kullanıcı paketini iptal ettiğinde veya sitesini güncellediğinde Cache'in
+                        anında temizlenmesi (Invalidation) karmaşıklaştıkça, zombi siteler yayında kalmaya devam edecek.
+                        Yanlış cache mantığı veri bütünlüğünü bozar.
+                    </p>
+                </div>
+
+                <div class="risk-card p-6 rounded-r-xl border-blue-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-xl font-bold text-white">Maliyet / Fiyat Makası</h4>
+                        <span
+                            class="px-3 py-1 bg-blue-500/10 text-blue-500 text-[10px] font-black rounded uppercase">BİSİNESS</span>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        AWS S3, Gemini API ve Sunucu maliyetleri dolar bazlı artarken, TL üzerinden düşük ücretli
+                        abonelik satmak karlılığı yok edebilir. Otomatik maliyet takip sistemi ve dinamik fiyatlandırma
+                        altyapısı eksik.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- UZUN VADE: Pazar ve Varoluş -->
+        <section class="mb-24 relative">
+            <div
+                class="absolute -left-[54px] top-0 w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white z-10">
+                <i class="fas fa-skull"></i>
+            </div>
+            <div class="mb-10">
+                <h2 class="text-3xl font-bold text-white uppercase tracking-tighter">UZUN VADE: <span
+                        class="text-gray-500">Varoluşsal Tehditler</span></h2>
+                <p class="text-gray-500 mt-2">Büyük balıklar uyandı.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-red-500/5 border border-red-500/20 p-8 rounded-3xl">
+                    <h5 class="text-white font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-ghost"></i> AI Tekelleşmesi
+                    </h5>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Google (Gemini) veya OpenAI kendi "Site Builder"larını ücretsiz veya çok ucuza piyasaya
+                        sürdüğünde, bizim "AI Motoru" avantajımız ortadan kalkacak. Tek bir sağlayıcıya (Gemini) olan
+                        tam bağımlılık stratejik bir hatadır.
+                    </p>
+                </div>
+                <div class="bg-orange-500/5 border border-orange-500/20 p-8 rounded-3xl">
+                    <h5 class="text-white font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-robot"></i> SEO ve Bot Savaşları
+                    </h5>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Google arama motoru "Yapay Zeka tarafından üretilen seri siteleri" tespit edip topluca de-index
+                        ederse (SPAM olarak görürse), kullanıcılarımızın siteleri görünmez olur. AI sitelerin "insan eli
+                        değmiş" gibi hissettirilmesi teknik olarak zor bir savaş.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Conclusion -->
+    <footer class="max-w-4xl mx-auto border-t border-white/5 pt-12 text-center pb-24">
+        <h3 class="text-2xl font-bold text-white mb-4">Korkmalı mıyız?</h3>
+        <p class="text-gray-500 mb-8 max-w-xl mx-auto">
+            Hayır, ama uyanık kalmalıyız. Bu sorunların çoğu çözülebilir, ancak görmezden gelinirse sistemi içeriden
+            çürütecek olan "Sessiz Katiller" bunlardır.
+        </p>
+        <div
+            class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-500 transition-colors rounded-full text-white font-bold cursor-pointer">
+            <i class="fas fa-shield-virus"></i> Risk Yönetim Planını Başlat
+        </div>
+    </footer>
+
+</body>
+
+</html>

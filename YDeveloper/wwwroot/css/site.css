@@ -1,0 +1,397 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* UI/UX Phase 5 Improvements */
+
+/* 1. Profile Dropdown */
+.rounded-circle.bg-soft-primary {
+  background-color: rgba(37, 117, 252, 0.1);
+}
+
+.dropdown-menu.animated {
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+}
+
+.dropdown-menu.fadeIn {
+  animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 2. Button Ripple Effect */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform .5s, opacity 1s;
+}
+
+.btn:active:after {
+  transform: scale(0, 0);
+  opacity: .2;
+  transition: 0s;
+}
+
+/* 3. Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+  display: inline-block;
+  height: 1em;
+  width: 100%;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 4. Breadcrumbs */
+.breadcrumb-item+.breadcrumb-item::before {
+  content: "›";
+  font-size: 1.2em;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+/* 5. Mobile Bottom Nav (Batch 2) */
+@media (max-width: 767.98px) {
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    padding: 10px 0;
+    justify-content: space-around;
+    border-top: 1px solid #eee;
+  }
+
+  .mobile-bottom-nav a {
+    text-align: center;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mobile-bottom-nav a.active {
+    color: #2575fc;
+    font-weight: bold;
+  }
+
+  .mobile-bottom-nav a i {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+  }
+
+  /* Hide some footer elements or add padding to body to prevent overlap */
+  body {
+    padding-bottom: 80px;
+  }
+
+  /* Admin Sidebar Fix */
+  .admin-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .admin-sidebar.show {
+    transform: translateX(0);
+  }
+
+  .admin-main,
+  .admin-header {
+    margin-left: 0 !important;
+  }
+}
+
+/* 6. Admin Sidebar Collapse (Desktop) */
+body.sidebar-collapsed .admin-sidebar {
+  width: 80px;
+}
+
+body.sidebar-collapsed .admin-sidebar .admin-brand span,
+body.sidebar-collapsed .admin-sidebar .nav-link span,
+body.sidebar-collapsed .admin-sidebar .text-xs,
+body.sidebar-collapsed .admin-sidebar .btn span,
+body.sidebar-collapsed .admin-sidebar .p-3 .fw-bold,
+body.sidebar-collapsed .admin-sidebar .p-3 .text-muted {
+  display: none;
+}
+
+body.sidebar-collapsed .admin-sidebar .nav-link {
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+body.sidebar-collapsed .admin-sidebar .nav-link i {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+body.sidebar-collapsed .admin-main,
+body.sidebar-collapsed .admin-header {
+  margin-left: 80px;
+}
+
+body.sidebar-collapsed .admin-brand {
+  justify-content: center;
+  padding: 0;
+}
+
+/* =========================================
+   7. Mobile UX Enhancements (Roadmap Vol 1)
+   ========================================= */
+
+/* Mobile Overlay for Sidebar */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-overlay.show {
+  display: block;
+  opacity: 1;
+}
+
+/* Mobile Table Card View */
+@media (max-width: 768px) {
+
+  /* Force tables to not be like tables anymore */
+  .table-mobile-cards,
+  .table-mobile-cards thead,
+  .table-mobile-cards tbody,
+  .table-mobile-cards th,
+  .table-mobile-cards td,
+  .table-mobile-cards tr {
+    display: block;
+  }
+
+  /* Hide table headers (but not display: none;, for accessibility) */
+  .table-mobile-cards thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  .table-mobile-cards tr {
+    margin-bottom: 1rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .table-mobile-cards td {
+    /* Behave  like a "row" */
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+    position: relative;
+    padding-left: 50% !important;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-mobile-cards td:last-child {
+    border-bottom: 0;
+  }
+
+  .table-mobile-cards td:before {
+    /* Now like a table header */
+    position: absolute;
+    /* Top/left values mimic padding */
+    left: 1rem;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+    text-align: left;
+    color: #6b7280;
+    content: attr(data-label);
+    position: static;
+    /* Reset for flex */
+    width: auto;
+  }
+}
+
+/* Touch Targets */
+@media (max-width: 768px) {
+
+  .btn,
+  .form-control,
+  .nav-link {
+    min-height: 44px;
+    /* Apple Human Interface Guideline */
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* 8. Additional Animations (Phase 7) */
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 3s infinite ease-in-out;
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* --- Onboarding & Stepper Styles --- */
+.industry-card {
+  transition: all 0.2s ease;
+  border-color: #dee2e6 !important;
+  cursor: pointer;
+}
+
+.industry-card:hover {
+  border-color: var(--bs-primary) !important;
+  transform: translateY(-2px);
+}
+
+.btn-check:checked+.industry-card {
+  background-color: var(--bs-primary-bg-subtle, rgba(13, 110, 253, 0.1));
+  border-color: var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+}
+
+.step-pulse {
+  animation: stepPulse 2s infinite;
+}
+
+@keyframes stepPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+  }
+}
+
+.scale-110 {
+  transform: scale(1.1);
+}
+
+/* Choice Card (Step 2, 3 etc) */
+.choice-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 2px solid #dee2e6;
+  /* Default border */
+}
+
+.choice-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.ring-4 {
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.25) !important;
+  border-color: var(--bs-primary) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

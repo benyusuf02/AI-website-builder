@@ -1,0 +1,113 @@
+@model YDeveloper.Models.PaymentTransaction
+
+@{
+    ViewData["Title"] = "İşlem Detayı";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">İşlem Detayı</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index">Ödeme Raporları</a></li>
+        <li class="breadcrumb-item active">Detay</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header fw-bold">
+                    Genel Bilgiler
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">İşlem ID</dt>
+                        <dd class="col-sm-8">@Model.TransactionId</dd>
+
+                        <dt class="col-sm-4">Tarih</dt>
+                        <dd class="col-sm-8">@Model.Timestamp.ToLocalTime()</dd>
+
+                        <dt class="col-sm-4">Kullanıcı</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.User != null)
+                            {
+                                @Model.User.Email <br />
+                                <small class="text-muted">@Model.User.FullName</small>
+                            }
+                            else
+                            {
+                                @Model.UserId
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Tutar</dt>
+                        <dd class="col-sm-8 fw-bold">@Model.Amount.ToString("C2") @Model.Currency</dd>
+
+                        <dt class="col-sm-4">Durum</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Status == "Success")
+                            {
+                                <span class="badge bg-success">Başarılı</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">@Model.Status</span>
+                                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                                {
+                                    <div class="text-danger small mt-1">@Model.ErrorMessage</div>
+                                }
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card mb-4 border-warning">
+                <div class="card-header bg-warning text-dark fw-bold">
+                    Güvenlik & Fraud Kontrolü
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">IP Adresi</dt>
+                        <dd class="col-sm-8">
+                            @Model.IpAddress
+                            <a href="https://whatismyipaddress.com/ip/@Model.IpAddress" target="_blank"
+                                class="ms-2 btn btn-xs btn-outline-secondary" style="font-size: 0.7rem;">Konum
+                                Kontrol</a>
+                        </dd>
+
+                        <dt class="col-sm-4">User Agent</dt>
+                        <dd class="col-sm-8 small text-break">@Model.UserAgent</dd>
+
+                        <dt class="col-sm-4">3D Secure</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsThreeDSecure)
+                            {
+                                <span class="text-success fw-bold"><i class="fas fa-check-circle"></i> Kullanıldı</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle"></i>
+                                    Kullanılmadı</span>
+                                <div class="text-muted small">Chargeback riski yüksek.</div>
+                            }
+                        </dd>
+
+                        @if (!string.IsNullOrEmpty(Model.ThreeDSecureInfo))
+                        {
+                            <dt class="col-sm-4">3D Bilgisi</dt>
+                            <dd class="col-sm-8 small">@Model.ThreeDSecureInfo</dd>
+                        }
+                    </dl>
+
+                    <div class="alert alert-info small mb-0">
+                        <i class="fas fa-info-circle"></i>
+                        Eğer şüpheli bir işlem olduğunu düşünüyorsanız IP adresini engelleyebilir veya kullanıcıyı
+                        askıya alabilirsiniz.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

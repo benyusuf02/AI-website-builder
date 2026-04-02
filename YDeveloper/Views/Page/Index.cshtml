@@ -1,0 +1,230 @@
+﻿@model List<YDeveloper.Models.Page>
+@{
+    Layout = "_Layout";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sayfa Yönetimi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0 60px 0;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: -40px;
+        }
+
+        .main-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            background: white;
+            overflow: hidden;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 8px 20px;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="opacity-75 mb-1 text-uppercase" style="font-size: 0.8rem;">Site İçeriği</h5>
+                <h2 class="mb-0 fw-bold"><i class="bi bi-folder2-open me-2"></i> @(ViewBag.Domain ?? "Site")</h2>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("Create", "Page", new { siteId = ViewBag.SiteId })"
+                    class="btn btn-light text-primary fw-bold shadow-sm rounded-pill px-4">
+                    <i class="bi bi-plus-circle-fill me-1"></i> Yeni Sayfa Ekle
+                </a>
+                <a href="@Url.Action("Index", "Dashboard")" class="btn-back"><i class="bi bi-arrow-left me-1"></i>
+                    Panele Dön</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="card main-card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3">Sayfa Başlığı</th>
+                            <th class="py-3">URL</th>
+                            <th class="text-end pe-4 py-3">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model == null || Model.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center p-5 text-muted">
+                                    <i class="bi bi-file-earmark-plus display-4 mb-3 d-block opacity-50"></i>
+                                    <h5>Henüz hiç sayfa yok.</h5>
+                                    <p>Yukarıdaki "Yeni Sayfa Ekle" butonuyla Ana Sayfa'yı oluşturarak başla!</p>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var pages in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <strong>@(string.IsNullOrEmpty(pages.MetaTitle) ? "Başlıksız" :
+                                            pages.MetaTitle)</strong>
+                                        @if (pages.Slug == "/")
+                                        {
+                                            <span class="badge bg-primary ms-2" style="font-size:0.6rem">ANASAYFA</span>
+                                        }
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border">@pages.Slug</span></td>
+                                    <td class="text-end pe-4">
+                                        <!-- Düzenle (Editor) -->
+                                        <a href="@Url.Action("Edit", "Page", new { id = pages.Id })"
+                                            class="btn btn-warning btn-sm me-1 rounded-pill px-3">
+                                            <i class="bi bi-pencil-square"></i> Düzenle
+                                        </a>
+
+                                        <!-- Sil (Delete) -->
+                                        <button onclick="confirmDelete(@pages.Id, '@pages.MetaTitle')"
+                                            class="btn btn-danger btn-sm me-1 rounded-pill px-3" title="Sayfayı Sil">
+                                            <i class="bi bi-trash"></i> Sil
+                                        </button>
+                                        <form id="delete-form-@pages.Id" action="@Url.Action("Delete", "Page")" method="post"
+                                            style="display:none;">
+                                            <input type="hidden" name="id" value="@pages.Id" />
+                                        </form>
+
+                                        <!-- Yayınla (Publish) -->
+                                        <button onclick="publishToS3(this, @pages.Id, '@pages.MetaTitle')"
+                                            class="btn btn-success btn-sm me-1 rounded-pill px-3 btn-publish">
+                                            <i class="bi bi-cloud-upload"></i> Yayınla
+                                        </button>
+
+                                        <!-- Önizle (Preview) -->
+                                        @{
+                                            var previewUrl = string.IsNullOrEmpty(ViewBag.Domain)
+                                            ? "#"
+                                            : (ViewBag.Domain.Contains("localhost") ? $"http://{ViewBag.Domain}{pages.Slug}" :
+                                            $"https://{ViewBag.Domain}{pages.Slug}");
+                                        }
+                                        <a href="@previewUrl" target="_blank"
+                                            class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                            <i class="bi bi-eye"></i> Önizle
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(pageId, title) {
+            Swal.fire({
+                title: 'Sayfayı Sil?',
+                html: `<b>${title}</b> sayfasını silmek istediğinize emin misiniz?<br>Bu işlem geri alınamaz!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Evet, Sil!',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + pageId).submit();
+                }
+            });
+        }
+
+        function publishToS3(btnElement, pageId, pageTitle) {
+            Swal.fire({
+                title: 'Yayınla?',
+                text: `'${pageTitle}' sayfasını canlıya almak istiyor musunuz?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, Yayınla',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // UI Lock
+                    const originalHtml = btnElement.innerHTML;
+                    btnElement.disabled = true;
+                    btnElement.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Yayınlanıyor...';
+
+                    // Prepare Form Data (Controller expects form data)
+                    const formData = new URLSearchParams();
+                    formData.append('pageId', pageId);
+                    // htmlContent is optional and null here (re-publish existing)
+
+                    fetch('/Page/Publish', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Başarılı!',
+                                    html: `Sayfa yayınlandı!<br><a href="${data.url}" target="_blank" class="btn btn-sm btn-primary mt-2">Yayını Gör</a>`
+                                });
+                            } else {
+                                Swal.fire('Hata', data.message || 'Yayınlama başarısız.', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            Swal.fire('Hata', 'Sunucu ile iletişim kurulamadı.', 'error');
+                        })
+                        .finally(() => {
+                            btnElement.disabled = false;
+                            btnElement.innerHTML = originalHtml;
+                        });
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

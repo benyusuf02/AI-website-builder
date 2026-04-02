@@ -1,0 +1,101 @@
+@model YDeveloper.Models.BlogPost
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Yeni Blog Yazısı";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h4 fw-bold mb-0">Yeni Yazı</h2>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Listeye Dön</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label asp-for="Title" class="form-label fw-bold">Başlık</label>
+                                <input asp-for="Title" class="form-control" placeholder="Etkileyici bir başlık girin..."
+                                    required />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Slug" class="form-label small text-muted">URL (Opsiyonel - Boş
+                                    bırakırsanız otomatik oluşur)</label>
+                                <input asp-for="Slug" class="form-control form-control-sm"
+                                    placeholder="ornek-yazi-basligi" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Summary" class="form-label fw-bold">Kısa Özet</label>
+                                <textarea asp-for="Summary" class="form-control" rows="3"
+                                    placeholder="Listeleme sayfalarında görünecek kısa açıklama..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Content" class="form-label fw-bold">İçerik (HTML)</label>
+                                <textarea asp-for="Content" class="form-control font-monospace" rows="15"
+                                    placeholder="<p>Makale içeriği...</p>"></textarea>
+                                <div class="form-text">Şimdilik ham HTML veya metin girebilirsiniz.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0 mb-3">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">Yayın Ayarları</h6>
+
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsPublished" checked>
+                                        <label class="form-check-label" asp-for="IsPublished">Yayında</label>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Yayın Tarihi</label>
+                                        <input asp-for="PublishedAt" class="form-control" type="date" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card bg-light border-0 mb-3">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">Kapak Görseli</h6>
+                                    <input type="file" name="coverImage" class="form-control mb-2" accept="image/*" />
+                                </div>
+                            </div>
+
+                            <div class="card bg-light border-0 mb-3">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">SEO</h6>
+                                    <div class="mb-2">
+                                        <label asp-for="MetaTitle" class="form-label small">Meta Başlık</label>
+                                        <input asp-for="MetaTitle" class="form-control form-control-sm" />
+                                    </div>
+                                    <div class="mb-2">
+                                        <label asp-for="MetaDescription" class="form-label small">Meta Açıklama</label>
+                                        <textarea asp-for="MetaDescription" class="form-control form-control-sm"
+                                            rows="3"></textarea>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label asp-for="Tags" class="form-label small">Etiketler</label>
+                                        <input asp-for="Tags" class="form-control form-control-sm"
+                                            placeholder="teknoloji, güncelleme, ..." />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-light">İptal</a>
+                        <button type="submit" class="btn btn-primary px-4">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

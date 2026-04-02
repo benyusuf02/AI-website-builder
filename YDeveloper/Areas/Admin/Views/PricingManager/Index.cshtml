@@ -1,0 +1,58 @@
+@model IEnumerable<YDeveloper.Models.PricingPackage>
+
+@{
+    ViewData["Title"] = "Fiyatlandırma Yönetimi";
+    Layout = "_AdminLayout"; // Admin layout
+}
+
+<div class="container-fluid py-4">
+    <h1 class="h3 mb-4 text-gray-800">Paket Yönetimi</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Paket Adı</th>
+                            <th>Fiyat</th>
+                            <th>Periyot</th>
+                            <th>Popüler?</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@item.Name</td>
+                                <td>@item.Price.ToString("C0")</td>
+                                <td>@item.BillingPeriod</td>
+                                <td>
+                                    @if (item.IsPopular)
+                                    {
+                                        <span class="badge bg-primary">Evet</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Pasif</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Düzenle</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+@model YDeveloper.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Yeni Admin Oluştur";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h4 class="card-title fw-bold text-primary mb-4">Yeni Yönetici (Admin) Ekle</h4>
+
+                <form asp-action="CreateAdmin" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ad Soyad</label>
+                        <input name="fullName" class="form-control" required placeholder="Örn: Ahmet Yılmaz" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">E-Posta Adresi (Kullanıcı Adı)</label>
+                        <input name="email" type="email" class="form-control" required placeholder="admin@domain.com" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Şifre</label>
+                        <input name="password" type="password" class="form-control" required
+                            placeholder="Güçlü bir şifre belirleyin" />
+                        <div class="form-text">En az 6 karakter, büyük/küçük harf ve rakam içermelidir.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Admin Oluştur</button>
+                        <a href="/Admin/Dashboard/Users" class="btn btn-light">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

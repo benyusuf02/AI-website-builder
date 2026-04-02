@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Şablonlar";
+}
+
+<div class="py-5 text-center bg-light">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold mb-3">İlham Veren Tasarımlar</h1>
+        <p class="lead text-muted mb-0">Sektörünüze uygun, profesyonelce tasarlanmış yüzlerce şablon.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Filter -->
+    <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap">
+        <button class="btn btn-dark rounded-pill px-4">Tümü</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4">E-Ticaret</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4">Kurumsal</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4">Blog</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4">Portfolyo</button>
+    </div>
+
+    <div class="row g-4">
+        @for (int i = 1; i <= 6; i++)
+        {
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm overflow-hidden group">
+                    <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
+                        style="height: 250px;">
+                        <i class="bi bi-window fs-1 text-muted"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="fw-bold">Modern Business @i</h5>
+                        <p class="text-muted small">Kurumsal ve startuplar için ideal.</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 pt-0">
+                        <a href="/Identity/Account/Register" class="btn btn-outline-primary w-100 rounded-pill">Bu Şablonu
+                            Seç</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

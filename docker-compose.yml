@@ -1,0 +1,41 @@
+services:
+  ydeveloper:
+    build:
+      context: .
+      dockerfile: YDeveloper/Dockerfile
+    container_name: ydeveloper_app
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./YDeveloper/appsettings.Production.json:/app/appsettings.Production.json
+      - ./YDeveloper/wwwroot:/app/wwwroot # Persist uploads
+    networks:
+      - webnet
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy_server
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./YDeveloper/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - ydeveloper
+    networks:
+      - webnet
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  webnet:
+    driver: bridge

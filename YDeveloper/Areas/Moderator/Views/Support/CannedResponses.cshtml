@@ -1,0 +1,64 @@
+@model IEnumerable<YDeveloper.Models.CannedResponse>
+@{
+    ViewData["Title"] = "Hazır Cevaplar";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Hazır Cevaplar</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="bi bi-plus-lg"></i> Yeni Ekle
+        </button>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h5 class="card-title fw-bold">@item.Title</h5>
+                            <span class="badge bg-light text-dark">@item.Category</span>
+                        </div>
+                        <p class="card-text text-muted small">@item.Content</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-action="CreateCannedResponse" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Hazır Cevap</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Başlık</label>
+                        <input type="text" name="title" class="form-control" placeholder="Örn: İade Politikası"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <input type="text" name="category" class="form-control" placeholder="Örn: Finans">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">İçerik</label>
+                        <textarea name="content" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

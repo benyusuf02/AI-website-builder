@@ -1,0 +1,242 @@
+@model YDeveloper.Models.LiveChatSession
+@{
+    ViewData["Title"] = "Müşteri Sohbeti";
+}
+
+<div class="container-fluid py-4 h-100 d-flex flex-column" style="height: calc(100vh - 100px) !important;">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3 rounded-circle"
+                style="width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div>
+                <h4 class="fw-bold mb-0">@(Model.CustomerUser != null ? Model.CustomerUser.UserName : "Ziyaretçi")</h4>
+                <small class="text-muted">
+                    @(Model.CustomerUser != null ? Model.CustomerUser.Email : $"ID: {(Model.CustomerUserId != null && Model.CustomerUserId.Length > 8 ? Model.CustomerUserId.Substring(0, 8) : Model.CustomerUserId)}")
+                    - @Model.StartTime.ToString("g")
+                </small>
+            </div>
+        </div>
+        <div>
+            @if (Model.IsActive)
+            {
+                <form asp-action="CloseSession" asp-route-id="@Model.Id" method="post" id="closeForm" class="d-inline">
+                    <button type="button"
+                        onclick="confirmAction(event, 'Sohbeti Bitir?', 'Bu işlem sohbeti kapatacaktır.', 'Evet, Bitir')"
+                        class="btn btn-danger btn-sm rounded-pill">
+                        <i class="bi bi-x-circle me-1"></i> Sohbeti Bitir
+                    </button>
+                </form>
+            }
+            else
+            {
+                <span class="badge bg-secondary">Kapalı</span>
+            }
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="card shadow-sm border-0 flex-grow-1 overflow-hidden d-flex flex-column">
+
+        <!-- Messages -->
+        <div id="mod-chat-messages" class="card-body bg-light overflow-auto p-4 d-flex flex-column gap-3">
+            @foreach (var msg in Model.Messages.OrderBy(m => m.Timestamp))
+            {
+                var isCustomer = msg.SenderId == Model.CustomerUserId;
+                <div class="message-wrapper @(isCustomer ? "customer" : "moderator")">
+                    <div class="message-bubble shadow-sm">
+                        @msg.Message
+                    </div>
+                    <div class="message-time">@msg.Timestamp.ToString("HH:mm")</div>
+                </div>
+            }
+        </div>
+
+        <!-- Input -->
+        @if (Model.IsActive)
+        {
+            <div class="card-footer bg-white p-3 border-top">
+                <div class="input-group">
+                    <input type="text" id="mod-chat-input" class="form-control border-0 bg-light p-3"
+                        placeholder="Yanıt yazın...">
+                    <button id="mod-send-btn" class="btn btn-primary px-4">
+                        <i class="bi bi-send-fill fs-5"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* WhatsApp Background */
+    #mod-chat-messages {
+        background-color: #efe7dd;
+        background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png"); /* Subtle pattern */
+        background-repeat: repeat;
+    }
+
+    .message-wrapper {
+        display: flex;
+        flex-direction: column;
+        max-width: 65%;
+        margin-bottom: 4px;
+        position: relative;
+    }
+
+    /* CUSTOMER (Them) -> Left, White */
+    .message-wrapper.customer {
+        align-self: flex-start;
+        align-items: flex-start;
+    }
+
+    /* MODERATOR (Me) -> Right, Green */
+    .message-wrapper.moderator {
+        align-self: flex-end;
+        align-items: flex-end;
+    }
+
+    .message-bubble {
+        padding: 8px 12px;
+        border-radius: 7.5px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        position: relative;
+        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        word-wrap: break-word;
+    }
+
+    /* Customer Bubble Style */
+    .customer .message-bubble {
+        background-color: #ffffff;
+        color: #111b21;
+        border-top-left-radius: 0; /* Tail spot */
+    }
+    
+    /* Customer Tail */
+    .customer .message-bubble::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -8px;
+        width: 0;
+        height: 0;
+        border: 8px solid transparent;
+        border-top-color: #ffffff;
+        border-right-color: #ffffff;
+        border-bottom: 0;
+    }
+
+    /* Moderator Bubble Style */
+    .moderator .message-bubble {
+        background-color: #dcf8c6; /* WhatsApp Green */
+        color: #111b21;
+        border-top-right-radius: 0; /* Tail spot */
+    }
+
+    /* Moderator Tail */
+    .moderator .message-bubble::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -8px;
+        width: 0;
+        height: 0;
+        border: 8px solid transparent;
+        border-top-color: #dcf8c6;
+        border-left-color: #dcf8c6;
+        border-bottom: 0;
+    }
+
+    .message-time {
+        font-size: 0.65rem;
+        color: #667781;
+        text-align: right;
+        margin-top: -4px;
+        margin-bottom: 0;
+        margin-left: 8px;
+        float: right;
+        position: relative;
+        top: 4px;
+    }
+</style>
+
+@if (Model.IsActive)
+{
+    <!-- SignalR Script for Moderator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        const sessionId = @Model.Id; // int
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect()
+            .build();
+
+        const messagesDiv = document.getElementById('mod-chat-messages');
+        const input = document.getElementById('mod-chat-input');
+        const btn = document.getElementById('mod-send-btn');
+
+        // Scroll to bottom on load
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        connection.start().then(function () {
+            console.log("Connected to ChatHub as Moderator");
+            // Join specific session group to listen
+            connection.invoke("JoinSessionAsModerator", sessionId);
+        }).catch(err => console.error(err));
+
+        // Listen for new messages in this session
+        connection.on("ReceiveMessage", function (senderId, message) {
+            // Determine type based on sender
+            // In our Hub, moderator replies are sent with senderId="Support"
+            const type = (senderId === "Support") ? 'moderator' : 'customer';
+
+            // Avoid duplicating if we optimistically appended (though we don't here)
+            appendMessage(message, type);
+        });
+
+        btn.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const text = input.value;
+            if (!text) return;
+
+            connection.invoke("SendReply", sessionId, text).then(() => {
+                // Optimistic UI: Show message immediately
+                appendMessage(text, 'moderator');
+                input.value = '';
+            }).catch(err => {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata',
+                    text: 'Mesaj gönderilemedi: ' + err.toString()
+                });
+            });
+        }
+
+        function appendMessage(text, type) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-wrapper ${type}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = "message-bubble shadow-sm";
+            bubble.textContent = text;
+
+            const time = document.createElement('div');
+            time.className = "message-time";
+            time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            wrapper.appendChild(bubble);
+            wrapper.appendChild(time);
+            messagesDiv.appendChild(wrapper);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+}

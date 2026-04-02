@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Abonelik İptali";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i> Abonelik İptali</h5>
+                </div>
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">Ayrılıyor musunuz?</h4>
+                    <p class="text-muted">
+                        Aboneliğinizi iptal ettiğinizde:
+                    </p>
+                    <ul class="mb-4 text-muted small">
+                        <li>Mevcut paketiniz dönem sonuna kadar aktif kalır.</li>
+                        <li>Dönem sonunda web siteleriniz yayından kalkabilir.</li>
+                        <li>Verileriniz 30 gün boyunca saklanır, sonra silinebilir.</li>
+                    </ul>
+
+                    <form asp-action="ProcessCancellation" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">İptal Nedeniniz?</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" value="TooExpensive" id="r1" required>
+                                <label class="form-check-label" for="r1">Fiyatlar yüksek</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" value="MissingFeatures" id="r2">
+                                <label class="form-check-label" for="r2">İhtiyacım olan özellikler yok</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" value="SupportIssues" id="r3">
+                                <label class="form-check-label" for="r3">Destek yetersiz</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reason" value="Other" id="r4">
+                                <label class="form-check-label" for="r4">Diğer</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Görüşleriniz (İsteğe bağlı)</label>
+                            <textarea name="feedback" class="form-control" rows="3" placeholder="Bizi geliştirmemize yardımcı olun..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Aboneliğinizi iptal etmek istediğinize emin misiniz?');">
+                                Aboneliği İptal Et
+                            </button>
+                            <a href="/Admin/Dashboard" class="btn btn-link text-muted">Vazgeç ve Geri Dön</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,381 @@
+﻿@{
+    ViewData["Title"] = "Yeni Proje";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+    .sector-card {
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: white;
+        height: 100%;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .sector-card:hover,
+    .sector-card.active {
+        border-color: #764ba2;
+        background-color: #f8f0ff;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(118, 75, 162, 0.2);
+    }
+
+    .sector-icon {
+        font-size: 2.5rem;
+        color: #764ba2;
+        margin-bottom: 10px;
+    }
+
+    .sector-desc {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 8px;
+    }
+
+    .color-picker-group {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .color-option {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .color-option:hover {
+        transform: scale(1.1);
+    }
+
+    .color-option.selected {
+        border-color: #000;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .preset-palette {
+        display: flex;
+        gap: 10px;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .preset-palette:hover {
+        border-color: #764ba2;
+        background: #f8f0ff;
+    }
+
+    .preset-palette .color-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient text-white p-4 text-center"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h3 class="mb-0">🚀 Yeni Web Sitesi Başlat</h3>
+                    <p class="mb-0 mt-2 opacity-75">Sektörünüzü seçin, renklerinizi belirleyin ve hayalinizdeki siteyi
+                        oluşturun</p>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/Dashboard/Create" method="post" id="createForm">
+
+                        <!-- 1. DOMAIN -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold fs-5">📌 Domain Adı</label>
+                            <input type="text" name="domain" class="form-control form-control-lg"
+                                placeholder="orn: lezzetduragi.com" required />
+                        </div>
+
+                        <!-- 2. SEKTÖR SEÇİMİ -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold fs-5 mb-3">🏢 Sektörünüzü Seçin</label>
+                            <div class="row g-3">
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Restaurant')">
+                                        <i class="bi bi-egg-fried sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Restaurant/Kafe</h6>
+                                        <p class="sector-desc">Menü, rezervasyon, iştah açıcı tasarım</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Corporate')">
+                                        <i class="bi bi-building sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Kurumsal</h6>
+                                        <p class="sector-desc">Profesyonel, güven veren, hizmet odaklı</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Portfolio')">
+                                        <i class="bi bi-camera sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Kişisel/Blog</h6>
+                                        <p class="sector-desc">Portfolyo, blog, minimalist tasarım</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Ecommerce')">
+                                        <i class="bi bi-cart sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">E-Ticaret</h6>
+                                        <p class="sector-desc">Ürün vitrin, sepet, kategori yapısı</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Education')">
+                                        <i class="bi bi-book sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Eğitim/Kurs</h6>
+                                        <p class="sector-desc">Online eğitim, kurslar, ders programı</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Healthcare')">
+                                        <i class="bi bi-heart-pulse sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Sağlık/Klinik</h6>
+                                        <p class="sector-desc">Randevu, hizmetler, temiz tasarım</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('RealEstate')">
+                                        <i class="bi bi-house sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Gayrimenkul</h6>
+                                        <p class="sector-desc">İlan vitrin, filtreler, konum haritası</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Law')">
+                                        <i class="bi bi-briefcase sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Hukuk Bürosu</h6>
+                                        <p class="sector-desc">Ciddi, güvenilir, danışma formu</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Gym')">
+                                        <i class="bi bi-heart sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Spor/Fitness</h6>
+                                        <p class="sector-desc">Program, antrenörler, üyelik paketleri</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Beauty')">
+                                        <i class="bi bi-scissors sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Kuaför/Güzellik</h6>
+                                        <p class="sector-desc">Randevu, hizmetler, galeri</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Photography')">
+                                        <i class="bi bi-camera-reels sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Fotoğrafçılık</h6>
+                                        <p class="sector-desc">Portfolyo galerisi, paketler</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="sector-card" onclick="selectSector('Travel')">
+                                        <i class="bi bi-airplane sector-icon"></i>
+                                        <h6 class="mb-0 fw-bold">Seyahat Acentesi</h6>
+                                        <p class="sector-desc">Turlar, destinasyonlar, rezervasyon</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. RENK PALETİ -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold fs-5 mb-3">🎨 Renk Paletinizi Seçin</label>
+                            <p class="text-muted mb-3">Hazır paletlerden birini seçin veya özel renk belirleyin</p>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <div class="preset-palette"
+                                        onclick="selectPresetColors('#667eea', '#764ba2', '#f093fb')">
+                                        <div class="color-circle" style="background: #667eea;"></div>
+                                        <div class="color-circle" style="background: #764ba2;"></div>
+                                        <div class="color-circle" style="background: #f093fb;"></div>
+                                        <span class="ms-2">Mor Tonları</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="preset-palette"
+                                        onclick="selectPresetColors('#ff6b6b', '#ee5a6f', '#ff8787')">
+                                        <div class="color-circle" style="background: #ff6b6b;"></div>
+                                        <div class="color-circle" style="background: #ee5a6f;"></div>
+                                        <div class="color-circle" style="background: #ff8787;"></div>
+                                        <span class="ms-2">Kırmızı Tonları</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="preset-palette"
+                                        onclick="selectPresetColors('#4ecdc4', '#44a08d', '#95e1d3')">
+                                        <div class="color-circle" style="background: #4ecdc4;"></div>
+                                        <div class="color-circle" style="background: #44a08d;"></div>
+                                        <div class="color-circle" style="background: #95e1d3;"></div>
+                                        <span class="ms-2">Yeşil Tonları</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="preset-palette"
+                                        onclick="selectPresetColors('#3498db', '#2980b9', #74b9ff')">
+                                        <div class="color-circle" style="background: #3498db;"></div>
+                                        <div class="color-circle" style="background: #2980b9;"></div>
+                                        <div class="color-circle" style="background: #74b9ff;"></div>
+                                        <span class="ms-2">Mavi Tonları</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="preset-palette"
+                                        onclick="selectPresetColors('#f39c12', '#e67e22', '#f1c40f')">
+                                        <div class="color-circle" style="background: #f39c12;"></div>
+                                        <div class="color-circle" style="background: #e67e22;"></div>
+                                        <div class="color-circle" style="background: #f1c40f;"></div>
+                                        <span class="ms-2">Turuncu Tonları</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="preset-palette"
+                                        onclick="selectPresetColors('#2c3e50', '#34495e', #95a5a6')">
+                                        <div class="color-circle" style="background: #2c3e50;"></div>
+                                        <div class="color-circle" style="background: #34495e;"></div>
+                                        <div class="color-circle" style="background: #95a5a6;"></div>
+                                        <span class="ms-2">Siyah/Gri Tonları</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="primaryColor" id="primaryColorInput" value="#667eea">
+                            <input type="hidden" name="secondaryColor" id="secondaryColorInput" value="#764ba2">
+                            <input type="hidden" name="accentColor" id="accentColorInput" value="#f093fb">
+                        </div>
+
+                        <!-- 4. TASARIM TERCİHLERİ -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold fs-5 mb-3">💎 Tasarım Tercihleri</label>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Tasarım Stili</label>
+                                    <select name="designStyle" class="form-select">
+                                        <option value="Modern">Modern - Temiz ve çağdaş</option>
+                                        <option value="Classic">Klasik - Zarif ve geleneksel</option>
+                                        <option value="Minimalist">Minimalist - Sade ve işlevsel</option>
+                                        <option value="Bold">Cesur - Canlı ve dikkat çekici</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Hedef Kitle</label>
+                                    <select name="targetAudience" class="form-select">
+                                        <option value="Young">Genç - 18-30 yaş</option>
+                                        <option value="Professional">Profesyonel - İş dünyası</option>
+                                        <option value="Family">Aile - Her yaştan</option>
+                                        <option value="Luxury">Lüks - Premium segment</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Sitenin Tonu</label>
+                                    <select name="tone" class="form-select">
+                                        <option value="Formal">Resmi - Ciddi ve profesyonel</option>
+                                        <option value="Friendly">Samimi - Sıcak ve yakın</option>
+                                        <option value="Creative">Yaratıcı - Özgün ve ilham verici</option>
+                                        <option value="Professional">Kurumsal - Güvenilir ve düzenli</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. İŞLETME BİLGİSİ -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold fs-5">📝 İşletme Adı ve Kısa Bilgi</label>
+                            <textarea id="userDetail" class="form-control" rows="3"
+                                placeholder="Örn: Paşa Dönercisi. 1990'dan beri İstanbul'da hizmet veriyoruz. Lezzetli ve sağlıklı yemekler."></textarea>
+                        </div>
+
+                        <!-- GİZLİ PROMPT -->
+                        <input type="hidden" name="prompt" id="finalPrompt" />
+
+                        <div class="d-grid">
+                            <button type="button" onclick="prepareAndSubmit()"
+                                class="btn btn-primary btn-lg py-3 fw-bold">
+                                🚀 Siteyi Oluştur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedSector = "";
+
+    function selectSector(sector) {
+        selectedSector = sector;
+        document.querySelectorAll('.sector-card').forEach(c => c.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    function selectPresetColors(primary, secondary, accent) {
+        document.getElementById('primaryColorInput').value = primary;
+        document.getElementById('secondaryColorInput').value = secondary;
+        document.getElementById('accentColorInput').value = accent;
+
+        // Visual feedback
+        document.querySelectorAll('.preset-palette').forEach(p => p.style.borderColor = '#e9ecef');
+        event.currentTarget.style.borderColor = '#764ba2';
+    }
+
+    function prepareAndSubmit() {
+        if (!selectedSector) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Seçim Yapmadınız',
+                text: 'Lütfen bir sektör seçiniz!'
+            });
+            return;
+        }
+
+        const userText = document.getElementById("userDetail").value;
+        const designStyle = document.querySelector('[name="designStyle"]').value;
+        const targetAudience = document.querySelector('[name="targetAudience"]').value;
+        const tone = document.querySelector('[name="tone"]').value;
+        const primaryColor = document.getElementById('primaryColorInput').value;
+
+        let aiCommand = "";
+
+        // Sektöre göre özelleştirilmiş AI komutları
+        const sectorPrompts = {
+            'Restaurant': `Sektör: Restoran/Kafe. ${userText}. Tasarım: İştah açıcı renkler, büyük yemek görselleri, menü bölümü, rezervasyon butonu, çalışma saatleri.`,
+            'Corporate': `Sektör: Kurumsal. ${userText}. Tasarım: Profesyonel, güven veren, hizmetler bölümü, referanslar, temiz font.`,
+            'Portfolio': `Sektör: Portfolyo/Blog. ${userText}. Tasarım: Modern, minimalist, portfolyo galerisi, blog yazıları.`,
+            'Ecommerce': `Sektör: E-Ticaret. ${userText}. Tasarım: Ürün vitrin, kategori menüsü, sepet sistemi, ürün filtreleme.`,
+            'Education': `Sektör: Eğitim/Kurs. ${userText}. Tasarım: Kurs kartları, eğitmen profilleri, kayıt formu, ders programı.`,
+            'Healthcare': `Sektör: Sağlık/Klinik. ${userText}. Tasarım: Temiz ve steril görünüm, randevu formu, hizmetler, doktor kadrosu.`,
+            'RealEstate': `Sektör: Gayrimenkul. ${userText}. Tasarım: İlan vitrin, filtreler (fiyat, konum, m²), harita entegrasyonu.`,
+            'Law': `Sektör: Hukuk Bürosu. ${userText}. Tasarım: Ciddi ve güvenilir, uzmanlık alanları, danışma formu, referanslar.`,
+            'Gym': `Sektör: Spor/Fitness. ${userText}. Tasarım: Dinamik ve enerjik, antrenör kadrosu, program kartları, üyelik paketleri.`,
+            'Beauty': `Sektör: Kuaför/Güzellik. ${userText}. Tasarım: Şık ve zarif, hizmet menüsü, galeri, online randevu.`,
+            'Photography': `Sektör: Fotoğrafçılık. ${userText}. Tasarım: Portfolyo odaklı, büyük görseller, paketler, iletişim.`,
+            'Travel': `Sektör: Seyahat Acentesi. ${userText}. Tasarım: Destinasyon kartları, tur paketleri, rezervasyon formu.`
+        };
+
+        aiCommand = sectorPrompts[selectedSector] || userText;
+        aiCommand += `\n\nTasarım Tercihleri: Stil=${designStyle}, Hedef Kitle=${targetAudience}, Ton=${tone}, Ana Renk=${primaryColor}`;
+
+        document.getElementById("finalPrompt").value = aiCommand;
+        document.getElementById("createForm").submit();
+    }
+</script>

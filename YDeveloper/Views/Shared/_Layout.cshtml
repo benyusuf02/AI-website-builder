@@ -1,0 +1,1018 @@
+@using Microsoft.AspNetCore.Identity
+@using YDeveloper.Models
+@using YDeveloper.Services
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject ISystemSettingService SettingsService
+
+@{
+    var appTitle = await SettingsService.GetSiteTitleAsync();
+    var faviconUrl = await SettingsService.GetFaviconUrlAsync();
+    var logoUrl = await SettingsService.GetLogoUrlAsync();
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <partial name="_SeoHead" />
+
+    <script>
+        (function () {
+            /* ... existing theme script ... */
+            const getPreferredTheme = () => {
+                const storedTheme = localStorage.getItem('theme');
+                if (storedTheme) {
+                    return storedTheme;
+                }
+                return 'dark'; // Default to Dark Mode (Nebula Theme)
+            };
+            const theme = getPreferredTheme();
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Driver.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/homepage-enhanced.css" asp-append-version="true" />
+
+    <!-- Custom Layout Styles -->
+    <style>
+        /* [Existing CSS kept as is] */
+        :root {
+            /* PREMIUM BRAND PALETTE */
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+
+
+            /* Accents */
+            --secondary: #8B5CF6;
+            /* Violet */
+            --accent: #F59E0B;
+            /* Amber for premium touches */
+            --success: #10B981;
+            --danger: #EF4444;
+            --info: #3B82F6;
+
+            /* Neutral Scales (Slate) */
+            --light: #F8FAFC;
+            --dark: #0F172A;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --gray-400: #94A3B8;
+            --gray-500: #64748B;
+            --gray-800: #1E293B;
+
+            /* Theme Variables */
+            --bg-body: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --text-main: #0F172A;
+            --text-secondary: #475569;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+
+            /* Glassmorphism */
+            --navbar-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+
+            /* Spacing & Effects */
+            --radius-sm: 0.5rem;
+            --radius-md: 1rem;
+            --radius-pill: 9999px;
+
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-primary: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        [data-bs-theme="dark"] {
+            --bg-body: #020617;
+            /* Slate 950 - Deeper dark */
+            --bg-card: #0F172A;
+            /* Slate 900 */
+            --text-main: #F8FAFC;
+            --text-secondary: #CBD5E1;
+            --text-muted: #94A3B8;
+            --border-color: #1E293B;
+            /* Slate 800 */
+            --navbar-bg: rgba(15, 23, 42, 0.85);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+            --light: #0F172A;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: var(--navbar-bg);
+            box-shadow: var(--shadow-sm);
+            padding: 0.75rem 0;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-main) !important;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem !important;
+            border-radius: var(--radius-md);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        /* HEADERS */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: var(--text-main);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* BUTTONS */
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: var(--radius-pill);
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            color: white;
+        }
+
+        .btn-outline-custom {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-pill);
+            transition: all 0.2s;
+        }
+
+        .btn-outline-custom:hover {
+            background-color: var(--bg-card);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* NAVBAR */
+        nav.navbar {
+            background-color: var(--navbar-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: var(--glass-border);
+            box-shadow: var(--shadow-sm);
+            z-index: 1050;
+            transition: all 0.3s ease;
+        }
+
+        /* CARDS */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* User Avatar */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border: 2px solid var(--bg-card);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Dropdown */
+        .dropdown-menu {
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            box-shadow: var(--shadow-md);
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
+        }
+
+        .dropdown-item {
+            color: var(--text-main);
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+            /* Soft Primary */
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 4rem 0 2rem;
+            margin-top: auto;
+        }
+
+        footer h6 {
+            color: var(--text-main);
+        }
+
+        footer a {
+            color: var(--text-muted) !important;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--primary-color) !important;
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+        }
+
+        .container-main {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg fixed-top">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="@logoUrl" alt="@appTitle" class="me-2" style="height: 32px;"
+                        onerror="this.onerror=null; this.src='/images/logo.png'">
+                    <span class="brand-text">@appTitle</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ps-lg-4">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Pricing">Fiyatlar</a>
+                        </li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold text-danger" asp-area="Admin" asp-controller="Dashboard"
+                                    asp-action="Index">
+                                    <i class="bi bi-shield-lock-fill me-1"></i> Yönetim
+                                </a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Moderator"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold text-primary" asp-area="Moderator" asp-controller="Dashboard"
+                                    asp-action="Index">
+                                    <i class="bi bi-headset me-1"></i> Moderatör
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item me-2">
+                            <button class="btn btn-outline-custom border-0" id="bd-theme" type="button"
+                                aria-label="Toggle theme">
+                                <i class="bi bi-sun-fill" id="theme-icon"></i>
+                            </button>
+                        </li>
+
+                        <!-- Notifications -->
+                        <li class="nav-item dropdown me-2">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" id="notifDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bell"></i>
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                    id="notif-badge" style="display:none;">
+                                    0
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-0 shadow-lg" aria-labelledby="notifDropdown"
+                                style="width: 320px; max-height: 400px; overflow-y: auto;" id="notif-list">
+                                <li class="text-center p-3 text-muted small">Bildirim yok</li>
+                            </ul>
+                        </li>
+
+                        <!-- Language Switcher -->
+                        <li class="nav-item dropdown me-2">
+                            <a class="nav-link dropdown-toggle" href="#" id="langDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-translate"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="langDropdown"
+                                style="max-height: 400px; overflow-y: auto;">
+                                @{
+                                    var languages = new Dictionary<string, string>
+                                {
+                                {"tr-TR", "🇹🇷 Türkçe"}, {"en-US", "🇺🇸 English"}, {"de-DE", "🇩🇪 Deutsch"},
+                                {"fr-FR", "🇫🇷 Français"},
+                                {"es-ES", "🇪🇸 Español"}, {"it-IT", "🇮🇹 Italiano"}, {"ru-RU", "🇷🇺 Русский"},
+                                {"ar-SA", "🇸🇦 العربية"},
+                                {"pt-PT", "🇵🇹 Português"}, {"zh-CN", "🇨🇳 中文"}, {"ja-JP", "🇯🇵 日本語"}, {"ko-KR",
+                                "🇰🇷 한국어"},
+                                {"nl-NL", "🇳🇱 Nederlands"}, {"pl-PL", "🇵🇱 Polski"}, {"sv-SE", "🇸🇪 Svenska"},
+                                {"no-NO", "🇳🇴 Norsk"},
+                                {"da-DK", "🇩🇰 Dansk"}, {"fi-FI", "🇫🇮 Suomi"}, {"el-GR", "🇬🇷 Ελληνικά"}, {"hu-HU",
+                                "🇭🇺 Magyar"},
+                                {"cs-CZ", "🇨🇿 Čeština"}, {"ro-RO", "🇷🇴 Română"}, {"bg-BG", "🇧🇬 Български"},
+                                {"uk-UA", "🇺🇦 Українська"},
+                                {"hi-IN", "🇮🇳 हिन्दी"}, {"id-ID", "🇮🇩 Indonesia"}, {"ms-MY", "🇲🇾 Malay"},
+                                {"th-TH", "🇹🇭 ไทย"},
+                                {"vi-VN", "🇻🇳 Tiếng Việt"}, {"he-IL", "🇮🇱 עברית"}, {"fa-IR", "🇮🇷 فارسی"},
+                                {"sk-SK", "🇸🇰 Slovenčina"}
+                                };
+                                }
+                                @foreach (var lang in languages)
+                                {
+                                    <li>
+                                        <form asp-controller="Culture" asp-action="SetCulture"
+                                            asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString"
+                                            method="post" class="d-inline">
+                                            <input type="hidden" name="culture" value="@lang.Key" />
+                                            <button type="submit" class="dropdown-item btn-sm rounded">@lang.Value</button>
+                                        </form>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            var currentUser = await UserManager.GetUserAsync(User);
+                            var displayName = currentUser?.BusinessName ?? User.Identity.Name;
+                            var initial = !string.IsNullOrEmpty(displayName) ? displayName.Substring(0, 1).ToUpper() : "U";
+
+                            <li class="nav-item me-3 d-none d-lg-block">
+                                <a asp-controller="Onboarding" asp-action="Step1"
+                                    class="btn btn-primary-custom shadow-sm text-decoration-none">
+                                    <i class="bi bi-plus-lg me-1"></i> Site Oluştur
+                                </a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="userDropdown"
+                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="fw-medium text-dark me-2 d-none d-md-block">@displayName</span>
+                                    @if (!string.IsNullOrEmpty(currentUser?.ProfilePictureUrl))
+                                    {
+                                        <img src="@currentUser.ProfilePictureUrl" alt="Avatar" class="user-avatar shadow-sm"
+                                            style="object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="user-avatar shadow-sm">
+                                            @initial
+                                        </div>
+                                    }
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <h6 class="dropdown-header">HESABIM</h6>
+                                    </li>
+
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item text-danger fw-bold" asp-area="Admin"
+                                                asp-controller="Dashboard" asp-action="Index">
+                                                <i class="bi bi-shield-lock-fill"></i> Yönetim Paneli
+                                            </a>
+                                        </li>
+                                    }
+                                    @if (User.IsInRole("Moderator"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item text-primary fw-bold" asp-area="Moderator"
+                                                asp-controller="Dashboard" asp-action="Index">
+                                                <i class="bi bi-headset"></i> Moderatör Paneli
+                                            </a>
+                                        </li>
+                                    }
+
+                                    <!-- İstenen Alan Adlarım Linki -->
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">
+                                            <i class="bi bi-globe2"></i> Alan Adlarım
+                                        </a>
+                                    </li>
+
+                                    <!-- İstenen Hesap İşlemleri Linki -->
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
+                                            <i class="bi bi-gear"></i> Hesap İşlemleri
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Onboarding" asp-action="Step1">
+                                            <i class="bi bi-plus-circle"></i> Yeni Site Ekle
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="bi bi-credit-card"></i> Ödeme Geçmişi
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item" href="#" id="restart-tour-btn"
+                                            onclick="startTour(); return false;">
+                                            <i class="bi bi-question-circle"></i> Turu Başlat
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li>
+                                        <form class="form-inline m-0 p-0" asp-area="Identity" asp-page="/Account/Logout"
+                                            asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right"></i> Çıkış Yap
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item me-2">
+                                <a class="btn btn-sm btn-link text-dark text-decoration-none fw-bold" asp-area="Identity"
+                                    asp-page="/Account/Login">Giriş Yap</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary-custom" asp-area="Identity" asp-page="/Account/Register">Kayıt
+                                    Ol</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Spacer for Fixed Navbar -->
+    <div style="height: 80px;"></div>
+
+    <main role="main">
+        @if (ViewData["HideContainer"] as bool? == true)
+        {
+            @RenderBody()
+        }
+        else
+        {
+            <div class="container-main">
+                @RenderBody()
+            </div>
+        }
+    </main>
+
+    <!-- Footer Logic -->
+    @if (ViewData["UseDarkFooter"] as bool? == true)
+    {
+        /* DARK FOOTER (Landing Page) */
+        /* ULTRA-PREMIUM FOOTER (Project WOW) - Theme Compatible */
+        <footer class="footer-ultra pt-5 pb-4">
+
+            <!-- 1. MASSIVE WATERMARK BACKGROUND -->
+            <div class="watermark-text pointer-events-none select-none">
+                YAPTIK.COM
+            </div>
+
+            <!-- 2. AMBIENT GLOWS -->
+            <div class="position-absolute top-0 start-0 bg-primary opacity-20 blur-3xl rounded-circle"
+                style="width: 600px; height: 600px; transform: translate(-50%, -50%); z-index: 0;"></div>
+            <div class="position-absolute bottom-0 end-0 bg-purple-600 opacity-20 blur-3xl rounded-circle"
+                style="width: 600px; height: 600px; transform: translate(30%, 30%); z-index: 0;"></div>
+
+            <div class="container position-relative z-1 pt-5">
+
+                <!-- 3. MASSIVE CTA -->
+                <div class="row justify-content-center mb-5 pb-5 border-bottom border-light border-opacity-10">
+                    <div class="col-lg-10 text-center">
+                        <h2 class="display-3 fw-bold mb-4 font-heading footer-title">Fikriniz Var Mı?</h2>
+                        <a href="/Onboarding/Step1"
+                            class="btn btn-nb btn-glow px-5 py-3 fs-4 shadow-gold hover-scale d-inline-flex align-items-center gap-3">
+                            <span>Hemen Başlayın</span>
+                            <i class="bi bi-arrow-right-circle-fill fs-3"></i>
+                        </a>
+                        <p class="footer-text h6 mt-4">Kredi kartı gerekmez. 14 gün ücretsiz deneyin.</p>
+                    </div>
+                </div>
+
+                <!-- 4. CONTENT GRID (Glassmorphic) -->
+                <div class="p-4 p-md-5 rounded-5 shadow-2xl backdrop-blur position-relative overflow-hidden footer-card">
+
+                    <div class="row g-5">
+                        <!-- Brand -->
+                        <div class="col-lg-4">
+                            <a class="navbar-brand d-inline-flex align-items-center mb-4 footer-brand" href="#">
+                                <div class="bg-white text-primary p-2 rounded-3 me-2 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="bi bi-rocket-takeoff-fill fs-5"></i>
+                                </div>
+                                <span class="fs-4 fw-bold letter-spacing-1 font-heading">yaptık.com</span>
+                            </a>
+                            <p class="footer-text mb-4 lh-lg">
+                                Dijital dünyada izinizi bırakın. Yapay zeka destekli altyapımız ile kod yazmadan,
+                                profesyonel web siteleri oluşturun.
+                            </p>
+                            <!-- Socials -->
+                            <div class="d-flex gap-2">
+                                <a href="#" class="btn-social"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="btn-social"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="btn-social"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" class="btn-social"><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Links 1 -->
+                        <div class="col-6 col-lg-2">
+                            <h6 class="footer-heading mb-4 small letter-spacing-2 opacity-75">ÜRÜN</h6>
+                            <ul class="list-unstyled d-grid gap-3">
+                                <li><a asp-controller="Home" asp-action="Features" class="footer-link">Özellikler</a></li>
+                                <li><a asp-controller="Home" asp-action="Templates" class="footer-link">Şablonlar</a></li>
+                                <li><a asp-controller="Home" asp-action="Pricing" class="footer-link">Fiyatlandırma</a></li>
+                                <li><a asp-controller="Home" asp-action="Showcase" class="footer-link">Vitrin</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Links 2 -->
+                        <div class="col-6 col-lg-2">
+                            <h6 class="footer-heading mb-4 small letter-spacing-2 opacity-75">ŞİRKET</h6>
+                            <ul class="list-unstyled d-grid gap-3">
+                                <li><a asp-controller="Home" asp-action="About" class="footer-link">Hakkımızda</a></li>
+                                <li><a asp-controller="Home" asp-action="Careers" class="footer-link">Kariyer</a></li>
+                                <li><a asp-controller="Home" asp-action="Blog" class="footer-link">Blog</a></li>
+                                <li><a asp-controller="Home" asp-action="Contact" class="footer-link">İletişim</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Newsletter -->
+                        <div class="col-lg-4">
+                            <h6 class="footer-heading mb-4 small letter-spacing-2 opacity-75">BÜLTEN</h6>
+                            <p class="footer-text small mb-3">En son güncellemelerden haberdar olun.</p>
+                            <form class="position-relative">
+                                <input type="email" class="form-control form-control-lg footer-input"
+                                    placeholder="E-posta adresi">
+                                <button
+                                    class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-primary p-2 me-2"
+                                    type="submit">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </form>
+                            <div class="d-flex align-items-center gap-2 mt-3 footer-text small">
+                                <i class="bi bi-shield-check text-success"></i>
+                                <span>Verileriniz güvende. Spam yok.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Bar -->
+                    <div class="row align-items-center mt-5 pt-4 border-top border-light border-opacity-10">
+                        <div class="col-md-6 text-center text-md-start">
+                            <small class="footer-text">&copy; 2025 Yaptık Bilişim A.Ş.</small>
+                        </div>
+                        <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                            <div class="d-inline-flex gap-4 small">
+                                <a asp-controller="Home" asp-action="Kvkk" class="footer-link">Gizlilik & KVKK</a>
+                                <a asp-controller="Home" asp-action="Terms" class="footer-link">Kullanım Şartları</a>
+                                <a asp-controller="Home" asp-action="DistanceSalesAgreement" class="footer-link">Mesafeli
+                                    Satış</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </footer>
+    }
+    else
+    {
+        /* DEFAULT LIGHT FOOTER */
+        <footer>
+            <div class="container">
+                <div class="row g-4 justify-content-between">
+                    <div class="col-lg-4 col-md-6">
+                        <a class="navbar-brand d-flex align-items-center mb-3" href="#">
+                            <i class="bi bi-rocket-takeoff-fill me-2 bg-primary text-white p-1 rounded-circle fs-6"
+                                style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;"></i>
+                            <span class="fw-bold" style="color:var(--text-main)">yaptık.com</span>
+                        </a>
+                        <p class="small pe-lg-4" style="color:var(--text-muted)">
+                            Profesyonel web siteleri oluşturmanın en hızlı ve akıllı yolu.
+                        </p>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-6">
+                        <h6 class="mb-3">Platform</h6>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><a href="#" class="text-muted text-decoration-none">Nasıl Çalışır?</a></li>
+                            <li class="mb-2"><a href="#" class="text-muted text-decoration-none">Fiyatlandırma</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-6">
+                        <h6 class="mb-3">Kurumsal</h6>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><a asp-controller="Home" asp-action="About"
+                                    class="text-muted text-decoration-none">Hakkımızda</a></li>
+                            <li class="mb-2"><a asp-controller="Home" asp-action="Contact"
+                                    class="text-muted text-decoration-none">İletişim</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="small text-muted mt-5 pt-3 border-top d-flex justify-content-between flex-wrap">
+                    <div>&copy; 2025 yaptık.com</div>
+                    <div class="d-inline-flex gap-3">
+                        <a asp-controller="Home" asp-action="Kvkk" class="text-muted text-decoration-none">Gizlilik</a>
+                        <a asp-controller="Home" asp-action="Terms" class="text-muted text-decoration-none">Kullanım</a>
+                        <a asp-controller="Home" asp-action="DistanceSalesAgreement"
+                            class="text-muted text-decoration-none">Satış Sözleşmesi</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    }
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav d-none">
+        <a href="/" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+            <i class="bi bi-house-door"></i>
+            <span>Anasayfa</span>
+        </a>
+        <a href="/Identity/Account/Login"
+            class="@(ViewContext.RouteData.Values["Page"]?.ToString()?.Contains("Login") == true ? "active" : "")">
+            <i class="bi bi-person"></i>
+            <span>Hesabım</span>
+        </a>
+        <a href="/#features">
+            <i class="bi bi-stars"></i>
+            <span>Özellikler</span>
+        </a>
+        <a href="/Home/Contact">
+            <i class="bi bi-envelope"></i>
+            <span>İletişim</span>
+        </a>
+    </nav>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="btn btn-primary rounded-circle shadow-lg position-fixed bottom-0 end-0 m-4 d-none"
+        style="width: 50px; height: 50px; z-index: 1000;" aria-label="Yukarı Çık">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script>
+        // Global Toast Configuration
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // Trigger Toast from TempData
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                    Toast.fire({
+                        icon: 'success',
+                    title: '@TempData["Success"]'
+                                                                    });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+                    Toast.fire({
+                        icon: 'error',
+                    title: '@TempData["Error"]'
+                                                                    });
+            </text>
+        }
+        @if (TempData["Info"] != null)
+        {
+            <text>
+                    Toast.fire({
+                        icon: 'info',
+                    title: '@TempData["Info"]'
+                                                                    });
+            </text>
+        }
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/ui-polish.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <script src="~/js/tour.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/input-mask.js" asp-append-version="true"></script>
+    <script>
+            (() => {
+                'use strict'
+                const getStoredTheme = () => localStorage.getItem('theme')
+                const setStoredTheme = theme => localStorage.setItem('theme', theme)
+
+                const getPreferredTheme = () => {
+                    const storedTheme = getStoredTheme()
+                    if (storedTheme) {
+                        return storedTheme
+                    }
+                    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+                }
+
+                const setTheme = theme => {
+                    document.documentElement.setAttribute('data-bs-theme', theme)
+                }
+
+                const showActiveTheme = (theme) => {
+                    const themeSwitcherIcon = document.querySelector('#theme-icon')
+                    if (!themeSwitcherIcon) return;
+
+                    if (theme === 'dark') {
+                        themeSwitcherIcon.classList.remove('bi-sun-fill');
+                        themeSwitcherIcon.classList.add('bi-moon-stars-fill');
+                    } else {
+                        themeSwitcherIcon.classList.remove('bi-moon-stars-fill');
+                        themeSwitcherIcon.classList.add('bi-sun-fill');
+                    }
+                }
+
+                window.addEventListener('DOMContentLoaded', () => {
+                    const currentTheme = getPreferredTheme();
+                    showActiveTheme(currentTheme);
+
+                    document.querySelectorAll('#bd-theme').forEach(toggle => {
+                        toggle.addEventListener('click', () => {
+                            const activeTheme = document.documentElement.getAttribute('data-bs-theme');
+                            const newTheme = activeTheme === 'dark' ? 'light' : 'dark';
+                            setStoredTheme(newTheme)
+                            setTheme(newTheme)
+                            showActiveTheme(newTheme)
+                        })
+                    })
+                })
+            })()
+    </script>
+
+    <partial name="_ChatWidget" />
+    <partial name="_CookieConsentPartial" />
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // ============ GLOBAL TOAST HELPER (SweetAlert2) ============
+        window.showToast = function (type, message, title = '') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3500,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: type, // 'success', 'error', 'warning', 'info'
+                title: title || message
+            });
+        };
+
+        // ============ GLOBAL LOADING SPINNER ============
+        window.showLoading = function (message = 'Yükleniyor...') {
+            Swal.fire({
+                title: message,
+                html: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Yükleniyor...</span></div>',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            });
+        };
+
+        window.hideLoading = function () {
+            Swal.close();
+        };
+
+        // ============ SESSION TIMEOUT WARNING (25 dakika sonra uyarı) ============
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <text>
+                    let sessionTimer;
+                    let sessionWarned = false;
+
+                    function resetSessionTimer() {
+                        clearTimeout(sessionTimer);
+                    sessionWarned = false;
+                        // 25 dakika sonra uyarı göster (session timeout 30 dk)
+                        sessionTimer = setTimeout(() => {
+                            if (!sessionWarned) {
+                        sessionWarned = true;
+                    Swal.fire({
+                        icon: 'warning',
+                    title: 'Oturum Süresi Dolmak Üzere',
+                    text: 'Oturumunuz 5 dakika içinde sonlanacak. Devam etmek için bir işlem yapın.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Oturumu Yenile',
+                    cancelButtonText: 'Kapat'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                        // Ping endpoint to refresh session
+                        fetch('/api/session/ping', { method: 'POST' })
+                            .then(() => {
+                                showToast('success', 'Oturumunuz yenilendi');
+                                resetSessionTimer();
+                            });
+                                    }
+                                });
+                            }
+                        }, 25 * 60 * 1000); // 25 minutes
+                    }
+
+                    // Track user activity
+                    document.addEventListener('DOMContentLoaded', () => {
+                        resetSessionTimer();
+                        ['mousedown', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+                        document.addEventListener(event, resetSessionTimer, { passive: true });
+                        });
+                    });
+            </text>
+        }
+
+            // ============ AUTO TOAST FOR TEMPDATA MESSAGES ============
+            document.addEventListener('DOMContentLoaded', () => {
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                            window.showToast('success', '@Html.Raw(TempData["Success"])');
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+                            window.showToast('error', '@Html.Raw(TempData["Error"])');
+            </text>
+        }
+        @if (TempData["Warning"] != null)
+        {
+            <text>
+                            window.showToast('warning', '@Html.Raw(TempData["Warning"])');
+            </text>
+        }
+        @if (TempData["Info"] != null)
+        {
+            <text>
+                            window.showToast('info', '@Html.Raw(TempData["Info"])');
+            </text>
+        }
+        });
+    </script>
+
+    <script>
+        // Notification Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const badge = document.getElementById('notif-badge');
+            const list = document.getElementById('notif-list');
+
+            async function fetchNotifications() {
+                try {
+                    // Check if user logged in by checking existence of element
+                    if (!badge) return;
+
+                    const response = await fetch('/api/notifications/unread');
+                    if (response.ok) {
+                        const notifications = await response.json();
+
+                        if (notifications.length > 0) {
+                            badge.textContent = notifications.length;
+                            badge.style.display = 'inline-block';
+
+                            let html = '';
+                            html += '<li class="dropdown-header">Bildirimler</li>';
+
+                            notifications.forEach(n => {
+                                const date = new Date(n.createdAt).toLocaleDateString();
+                                let action = n.actionUrl ? `href="${n.actionUrl}"` : 'href="#"';
+
+                                html += `
+                                    <li>
+                                        <a class="dropdown-item p-3 border-bottom" ${action} onclick="markRead(${n.id})">
+                                            <div class="fw-bold small">${n.title}</div>
+                                            <div class="text-muted small text-wrap">${n.message}</div>
+                                            <div class="text-xs text-end text-muted mt-1" style="font-size:0.75rem">${date}</div>
+                                        </a>
+                                    </li>
+                                `;
+                            });
+                            list.innerHTML = html;
+                        } else {
+                            badge.style.display = 'none';
+                            list.innerHTML = '<li class="text-center p-3 text-muted small">Yeni bildirim yok</li>';
+                        }
+                    }
+                } catch (e) { console.error("Notif fetch error", e); }
+            }
+
+            // Poll every 60s
+            fetchNotifications();
+            setInterval(fetchNotifications, 60000);
+
+            // Global function
+            window.markRead = async (id) => {
+                await fetch(`/api/notifications/read/${id}`, { method: 'POST' });
+                // Redirect handled by href, or wait
+                setTimeout(fetchNotifications, 500);
+            };
+        });
+    </script>
+</body>
+
+</html>

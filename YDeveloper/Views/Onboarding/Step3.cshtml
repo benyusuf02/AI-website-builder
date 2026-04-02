@@ -1,0 +1,129 @@
+@model YDeveloper.Models.Onboarding.Step3ViewModel
+@{
+    ViewData["Title"] = "AI İçerik Üretimi";
+    Layout = "_Layout";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .onboarding-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .progress-step {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .progress-step.active {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .onboarding-card {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-continue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 3rem;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    .suggestion-chip {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #f0f0f0;
+        border-radius: 20px;
+        margin: 0.25rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .suggestion-chip:hover {
+        background: #667eea;
+        color: white;
+    }
+</style>
+
+<div class="onboarding-container">
+    <div class="progress-steps">
+        <div class="progress-step">1</div>
+        <div class="progress-step">2</div>
+        <div class="progress-step active">3</div>
+        <div class="progress-step">4</div>
+        <div class="progress-step">5</div>
+    </div>
+
+    <div class="onboarding-card">
+        <h1
+            style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            🤖 AI İçerik Oluşturma
+        </h1>
+        <p class="text-muted mb-4">Siteniz için AI destekli içerik oluşturalım</p>
+
+        <form asp-action="Step3" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-4">
+                <label asp-for="ContentPrompt" class="form-label fw-semibold">Ne tür bir içerik istiyorsunuz?</label>
+                <textarea asp-for="ContentPrompt" class="form-control" rows="5"
+                    style="border-radius: 12px; border: 2px solid #e9ecef;"
+                    placeholder="Örn: Modern bir kahve e-ticaret sitesi için ürün katalog ve hakkımızda sayfası oluştur. Profesyonel ve samimi bir ton kullan."></textarea>
+                <small class="text-muted">AI bu açıklamaya göre siteniz için içerik oluşturacak</small>
+            </div>
+
+            <div class="mb-3">
+                <small class="text-muted d-block mb-2">Öneri örnekleri:</small>
+                <div class="suggestion-chip" onclick="useSuggestion(this)">E-ticaret kataloğu ve hakkımızda sayfası
+                </div>
+                <div class="suggestion-chip" onclick="useSuggestion(this)">Blog ana sayfa ve yazılar</div>
+                <div class="suggestion-chip" onclick="useSuggestion(this)">Kurumsal tanıtım ve hizmetler</div>
+                <div class="suggestion-chip" onclick="useSuggestion(this)">Portföy showcase</div>
+            </div>
+
+            <div class="alert alert-info" style="border-radius: 12px;">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>İpucu:</strong> Boş bırakırsanız ilk adımda verdiğiniz bilgilere göre otomatik içerik
+                oluşturulur.
+            </div>
+
+            <button type="submit" class="btn-continue">Devam Et <i class="bi bi-arrow-right ms-2"></i></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function useSuggestion(el) {
+        document.querySelector('textarea').value = `@ViewBag.SiteName için ${el.textContent} oluştur.`;
+    }
+</script>

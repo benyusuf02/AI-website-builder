@@ -1,0 +1,337 @@
+@model YDeveloper.Models.Onboarding.Step4ViewModel
+@{
+    ViewData["Title"] = "Domain ve Paket Seçimi";
+    Layout = "_Layout";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .onboarding-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .progress-step {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .progress-step.active {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .onboarding-card {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .package-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .package-card {
+        border: 3px solid #e9ecef;
+        border-radius: 16px;
+        padding: 2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+    }
+
+    .package-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .package-card.selected {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .package-price {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+        margin: 1rem 0;
+    }
+
+    .btn-continue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 3rem;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    .domain-option {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .domain-option:hover {
+        border-color: #667eea;
+    }
+
+    .domain-option.selected {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .domain-option input[type="radio"] {
+        margin-right: 0.75rem;
+    }
+
+    .domain-input-group {
+        display: none;
+        margin-top: 1rem;
+    }
+
+    .domain-input-group.active {
+        display: block;
+    }
+</style>
+
+<div class="onboarding-container">
+    <div class="progress-steps">
+        <div class="progress-step">1</div>
+        <div class="progress-step">2</div>
+        <div class="progress-step">3</div>
+        <div class="progress-step active">4</div>
+        <div class="progress-step">5</div>
+    </div>
+
+    <div class="onboarding-card">
+        <h1
+            style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            🌐 Domain ve Paket
+        </h1>
+        <p class="text-muted mb-4">Sitenizin adresini ve paketinizi seçin</p>
+
+        <form asp-action="Step4" method="post" id="domainForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="IsCustomDomain" id="isCustomDomainInput" />
+            <input type="hidden" asp-for="Subdomain" id="subdomainInput" />
+            <input type="hidden" asp-for="CustomDomain" id="customDomainInput" />
+
+            <h5 class="mb-3">Domain Seçimi</h5>
+
+            <!-- Seçenek 1: Ücretsiz Subdomain -->
+            <div class="domain-option" onclick="selectDomainType('subdomain')" id="subdomainOption">
+                <div class="d-flex align-items-center">
+                    <input type="radio" name="domainType" value="subdomain" id="radioSubdomain" />
+                    <div class="flex-grow-1">
+                        <strong>Ücretsiz Alt Domain</strong>
+                        <p class="text-muted mb-0 small">örnek: markaadı.ydeveloper.com</p>
+                    </div>
+                    <span class="badge bg-success">Ücretsiz</span>
+                </div>
+                <div class="domain-input-group" id="subdomainInputGroup">
+                    <div class="input-group mt-3" style="border-radius: 12px; overflow: hidden;">
+                        <input type="text" class="form-control" id="subdomainField" placeholder="markaadı"
+                            style="border: 2px solid #e9ecef;" />
+                        <span class="input-group-text"
+                            style="background: #f8f9fa; border: 2px solid #e9ecef;">.ydeveloper.com</span>
+                    </div>
+                    <small class="text-muted">Alfanumerik karakterler ve tire kullanabilirsiniz</small>
+                </div>
+            </div>
+
+            <!-- Seçenek 2: Kendi Domaini - Var Olan -->
+            <div class="domain-option" onclick="selectDomainType('existing')" id="existingOption">
+                <div class="d-flex align-items-center">
+                    <input type="radio" name="domainType" value="existing" id="radioExisting" />
+                    <div class="flex-grow-1">
+                        <strong>Var Olan Domain Kullan</strong>
+                        <p class="text-muted mb-0 small">Zaten sahip olduğunuz domain'i bağlayın</p>
+                    </div>
+                    <span class="badge bg-primary">DNS Ayarı Gerekli</span>
+                </div>
+                <div class="domain-input-group" id="existingInputGroup">
+                    <div class="input-group mt-3">
+                        <span class="input-group-text" style="background: #f8f9fa;">https://</span>
+                        <input type="text" class="form-control" id="existingDomainField" placeholder="www.markam.com"
+                            style="border-radius: 0 12px 12px 0; border: 2px solid #e9ecef;" />
+                    </div>
+                    <small class="text-muted">DNS ayarlarını yapmanız gerekecek</small>
+                </div>
+            </div>
+
+            <!-- Seçenek 3: Yeni Domain Satın Al -->
+            <div class="domain-option" onclick="selectDomainType('purchase')" id="purchaseOption">
+                <div class="d-flex align-items-center">
+                    <input type="radio" name="domainType" value="purchase" id="radioPurchase" />
+                    <div class="flex-grow-1">
+                        <strong>Yeni Domain Satın Al</strong>
+                        <p class="text-muted mb-0 small">Domain arayın ve hemen satın alın</p>
+                    </div>
+                    <span class="badge bg-warning text-dark">~₺150/yıl</span>
+                </div>
+                <div class="domain-input-group" id="purchaseInputGroup">
+                    <div class="input-group mt-3">
+                        <input type="text" class="form-control" id="purchaseDomainField" placeholder="markam.com"
+                            style="border-radius: 12px 0 0 12px; border: 2px solid #e9ecef;" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="checkAvailability()"
+                            style="border-radius: 0 12px 12px 0;">
+                            <i class="bi bi-search"></i> Kontrol Et
+                        </button>
+                    </div>
+                    <div id="availabilityResult" class="mt-2"></div>
+                    <small class="text-muted">Fiyat domain uzantısına göre değişir</small>
+                </div>
+            </div>
+
+            <h5 class="mb-3 mt-4">Paket Seçimi</h5>
+            <input type="hidden" asp-for="PackageType" id="packageInput" />
+            <div class="package-grid">
+                <div class="package-card" data-package="starter" onclick="selectPackage('starter')">
+                    <h4>Starter</h4>
+                    <div class="package-price">₺299/ay</div>
+                    <ul class="text-start" style="list-style: none; padding: 0;">
+                        <li>✅ 5 Sayfa</li>
+                        <li>✅ SSL Sertifikası</li>
+                        <li>✅ Temel SEO</li>
+                        <li>✅ Subdomain</li>
+                    </ul>
+                </div>
+                <div class="package-card" data-package="pro" onclick="selectPackage('pro')">
+                    <h4>Pro</h4>
+                    <div class="package-price">₺599/ay</div>
+                    <ul class="text-start" style="list-style: none; padding: 0;">
+                        <li>✅ 20 Sayfa</li>
+                        <li>✅ SSL + CDN</li>
+                        <li>✅ Gelişmiş SEO</li>
+                        <li>✅ Analytics</li>
+                        <li>✅ Custom Domain</li>
+                    </ul>
+                </div>
+                <div class="package-card" data-package="enterprise" onclick="selectPackage('enterprise')">
+                    <h4>Enterprise</h4>
+                    <div class="package-price">₺1,499/ay</div>
+                    <ul class="text-start" style="list-style: none; padding: 0;">
+                        <li>✅ Sınırsız Sayfa</li>
+                        <li>✅ Öncelikli Destek</li>
+                        <li>✅ Domain Satın Alma</li>
+                        <li>✅ API Erişimi</li>
+                        <li>✅ White Label</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-continue">Ödemeye Geç <i class="bi bi-arrow-right ms-2"></i></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function selectDomainType(type) {
+        // Reset all
+        document.querySelectorAll('.domain-option').forEach(el => el.classList.remove('selected'));
+        document.querySelectorAll('.domain-input-group').forEach(el => el.classList.remove('active'));
+
+        // Activate selected
+        if (type === 'subdomain') {
+            document.getElementById('subdomainOption').classList.add('selected');
+            document.getElementById('subdomainInputGroup').classList.add('active');
+            document.getElementById('radioSubdomain').checked = true;
+            document.getElementById('isCustomDomainInput').value = 'false';
+        } else if (type === 'existing') {
+            document.getElementById('existingOption').classList.add('selected');
+            document.getElementById('existingInputGroup').classList.add('active');
+            document.getElementById('radioExisting').checked = true;
+            document.getElementById('isCustomDomainInput').value = 'true';
+        } else if (type === 'purchase') {
+            document.getElementById('purchaseOption').classList.add('selected');
+            document.getElementById('purchaseInputGroup').classList.add('active');
+            document.getElementById('radioPurchase').checked = true;
+            document.getElementById('isCustomDomainInput').value = 'true';
+        }
+    }
+
+    function selectPackage(pkg) {
+        document.querySelectorAll('[data-package]').forEach(el => el.classList.remove('selected'));
+        document.querySelector(`[data-package="${pkg}"]`).classList.add('selected');
+        document.getElementById('packageInput').value = pkg;
+    }
+
+    function checkAvailability() {
+        const domain = document.getElementById('purchaseDomainField').value;
+        const resultDiv = document.getElementById('availabilityResult');
+
+        if (!domain) {
+            resultDiv.innerHTML = '<div class="alert alert-warning small">Lütfen bir domain girin</div>';
+            return;
+        }
+
+        resultDiv.innerHTML = '<div class="alert alert-info small"><i class="bi bi-hourglass-split"></i> Kontrol ediliyor...</div>';
+
+        // Simüle edilmiş availability check
+        setTimeout(() => {
+            const available = Math.random() > 0.5;
+            if (available) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success small">
+                        <i class="bi bi-check-circle"></i> <strong>${domain}</strong> uygun! 
+                        <span class="float-end">₺150/yıl</span>
+                    </div>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger small">
+                        <i class="bi bi-x-circle"></i> <strong>${domain}</strong> alınmış.
+                        <br><small>Öneri: ${domain.replace('.com', '.net')}</small>
+                    </div>`;
+            }
+        }, 1000);
+    }
+
+    // Form submit handler
+    document.getElementById('domainForm').addEventListener('submit', function (e) {
+        const isCustom = document.getElementById('isCustomDomainInput').value === 'true';
+
+        if (isCustom) {
+            const existingDomain = document.getElementById('existingDomainField').value;
+            const purchaseDomain = document.getElementById('purchaseDomainField').value;
+            const domain = existingDomain || purchaseDomain;
+            document.getElementById('customDomainInput').value = domain;
+        } else {
+            const subdomain = document.getElementById('subdomainField').value;
+            document.getElementById('subdomainInput').value = subdomain;
+        }
+    });
+
+    // Initialize
+    selectDomainType('subdomain');
+    selectPackage('@Model.PackageType');
+</script>

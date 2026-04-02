@@ -1,0 +1,162 @@
+@{
+    ViewData["Title"] = "Sistem Ayarları";
+    Layout = "_AdminLayout";
+
+    var settings = ViewBag.Settings as Dictionary<string, string>;
+    var enable2FA = settings != null && settings.ContainsKey("Security:Enable2FA") && settings["Security:Enable2FA"] ==
+    "true";
+    var enableRecaptcha = settings != null && settings.ContainsKey("Security:EnableRecaptcha") &&
+    settings["Security:EnableRecaptcha"] == "true";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Sistem Ayarları</h1>
+        <p class="mb-0 text-muted">Sitenin genel çalışma prensiplerini buradan yönetebilirsiniz.</p>
+    </div>
+</div>
+
+<div class="row">
+
+    <!-- Security Settings -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3 bg-white border-bottom-0">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-shield-lock me-2"></i>Güvenlik Ayarları
+                </h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateSecurity" method="post">
+                    <div class="mb-4">
+                        <div class="form-check form-switch ps-0">
+                            <label class="form-check-label ms-5 fw-bold" for="enable2FA">2 Adımlı Doğrulama (2FA)
+                                Zorunluluğu</label>
+                            <input class="form-check-input ms-0" type="checkbox" id="enable2FA" name="enable2FA"
+                                value="true" @(enable2FA ? "checked" : "") style="width: 2.5em; height: 1.25em;">
+                            <small class="form-text text-muted d-block mt-1">Tüm kullanıcılar ve adminler için girişte
+                                2FA zorunlu olur.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch ps-0">
+                            <label class="form-check-label ms-5 fw-bold" for="enableRecaptcha">ReCaptcha (Robot
+                                Değilim)</label>
+                            <input class="form-check-input ms-0" type="checkbox" id="enableRecaptcha"
+                                name="enableRecaptcha" value="true" @(enableRecaptcha ? "checked" : "")
+                                style="width: 2.5em; height: 1.25em;">
+                            <small class="form-text text-muted d-block mt-1">Giriş ve kayıt sayfalarında Google
+                                ReCaptcha doğrulamasını aktif eder.</small>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm px-4 rounded-pill">Ayarları Kaydet</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Maintenance Mode -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow border-left-warning">
+            <div class="card-header py-3 bg-white border-bottom-0">
+                <h6 class="m-0 font-weight-bold text-warning"><i class="bi bi-cone-striped me-2"></i>Bakım Modu</h6>
+            </div>
+            <div class="card-body">
+                <p>Siteyi bakım moduna aldığınızda sadece <strong>Admin</strong> yetkisine sahip kullanıcılar giriş
+                    yapabilir.</p>
+
+                @if (ViewBag.IsMaintenanceMode)
+                {
+                    <div class="alert alert-warning border-0 shadow-sm">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Site şu an <strong>BAKIM MODUNDA</strong>.
+                    </div>
+                    <form asp-action="ToggleMaintenance" method="post">
+                        <input type="hidden" name="enable" value="false" />
+                        <button type="submit" class="btn btn-success w-100 fw-bold">Siteyi Yayına Al</button>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-success border-0 shadow-sm">
+                        <i class="bi bi-check-circle-fill me-2"></i> Site şu an <strong>YAYINDA</strong>.
+                    </div>
+                    <form asp-action="ToggleMaintenance" method="post"
+                        onsubmit="return confirm('Siteyi erişime kapatmak istediğinize emin misiniz?');">
+                        <input type="hidden" name="enable" value="true" />
+                        <button type="submit" class="btn btn-danger w-100 fw-bold">Bakım Moduna Al</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3 bg-white border-bottom-0">
+                <h6 class="m-0 font-weight-bold text-info"><i class="bi bi-database me-2"></i>Yedekleme</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span>Son Yedekleme:</span>
+                    <span class="badge bg-light text-dark border p-2">@ViewBag.LastBackup</span>
+                </div>
+                <form asp-action="TriggerBackup" method="post">
+                    <button type="submit" class="btn btn-info text-white w-100 fw-bold">
+                        <i class="bi bi-cloud-upload-fill me-2"></i>Yedekle ve S3'e Gönder
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Branding Settings -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3 bg-white border-bottom-0">
+                <h6 class="m-0 font-weight-bold text-dark"><i class="bi bi-brush me-2"></i>Marka & Görünüm</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateBranding" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Site Başlığı (Title)</label>
+                        <input type="text" name="siteTitle" class="form-control"
+                            value="@(settings != null && settings.ContainsKey("Branding:SiteTitle") ? settings["Branding:SiteTitle"] : "YDeveloper")"
+                            placeholder="Örn: YDeveloper">
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Logo Yükle</label>
+                            <input type="file" name="logo" class="form-control" accept="image/*">
+                            @if (settings != null && settings.ContainsKey("Branding:LogoUrl"))
+                            {
+                                <div class="mt-2 p-2 bg-light rounded text-center border">
+                                    <img src="@settings["Branding:LogoUrl"]" style="max-height: 40px;" alt="Mevcut Logo" />
+                                    <small class="d-block text-muted mt-1">Mevcut Logo</small>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Favicon Yükle</label>
+                            <input type="file" name="favicon" class="form-control" accept=".ico,.png">
+                            @if (settings != null && settings.ContainsKey("Branding:FaviconUrl"))
+                            {
+                                <div class="mt-2 p-2 bg-light rounded text-center border">
+                                    <img src="@settings["Branding:FaviconUrl"]" style="max-height: 32px;"
+                                        alt="Mevcut Favicon" />
+                                    <small class="d-block text-muted mt-1">Mevcut Favicon</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="mt-4 text-end">
+                        <button type="submit" class="btn btn-dark w-100 fw-bold"><i class="bi bi-save me-1"></i>Markayı
+                            Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

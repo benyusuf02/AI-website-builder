@@ -1,0 +1,659 @@
+﻿@model YDeveloper.Models.Page
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editör: @Model.MetaTitle</title>
+
+    <!-- Google Fonts: Modern Yazı Tipleri -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Ana GrapesJS Dosyaları -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    <script src="https://unpkg.com/grapesjs"></script>
+
+    <!-- Eklentiler -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css">
+    <script src="https://unpkg.com/grapesjs-preset-webpage"></script>
+    <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+    <script src="https://unpkg.com/grapesjs-plugin-forms"></script>
+    <script src="https://unpkg.com/grapesjs-navbar"></script>
+    <script src="https://unpkg.com/grapesjs-component-countdown"></script>
+    <script src="https://unpkg.com/grapesjs-tabs"></script>
+    <script src="https://unpkg.com/grapesjs-custom-code"></script>
+    <script src="https://unpkg.com/grapesjs-touch"></script>
+    <script src="/js/grapesjs-blocks.js?v=@DateTime.Now.Ticks"></script>
+
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            /* Indigo */
+            --secondary-color: #1e293b;
+            /* Dark Slate */
+            --accent-color: #10b981;
+            /* Emerald Green */
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --text-light: #f1f5f9;
+        }
+
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            overflow: hidden;
+            /* Scrollbarı editör içinde tut */
+        }
+
+        /* --- 1. MODERN SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* --- 2. CANVAS (TUVAL) ARKAPLANI --- */
+        /* Figma tarzı noktalı grid */
+        .gjs-cv-canvas {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- 3. PANEL TASARIMI (DARK THEME) --- */
+        .gjs-pn-panel {
+            background-color: var(--panel-bg);
+            border-right: 1px solid #334155;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .gjs-pn-buttons {
+            justify-content: center;
+        }
+
+        /* Panel İkonları */
+        .gjs-pn-btn {
+            color: #94a3b8;
+            margin: 2px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .gjs-pn-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .gjs-pn-btn.gjs-pn-active {
+            color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+
+        /* --- 4. BLOK YÖNETİCİSİ (GELİŞMİŞ) --- */
+        .gjs-block {
+            background: white !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            padding: 15px 5px !important;
+            min-height: 90px !important;
+            width: 30% !important;
+            margin: 0 !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab !important;
+        }
+
+        .gjs-block:hover {
+            transform: translateY(-4px) !important;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2) !important;
+            border-color: var(--primary-color) !important;
+            background: #f8fafc !important;
+        }
+
+        /* SVG İkon Rengi */
+        .gjs-block svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 10px;
+            stroke: #64748b;
+            transition: stroke 0.2s;
+        }
+
+        .gjs-block:hover svg {
+            stroke: var(--primary-color);
+        }
+
+        .gjs-block-label {
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            letter-spacing: -0.01em;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Category Headers */
+        .gjs-block-category .gjs-title {
+            background: transparent !important;
+            border-bottom: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 15px 10px 5px;
+            letter-spacing: 1px;
+        }
+
+        .gjs-block-category .gjs-title:hover {
+            color: white;
+        }
+
+        /* --- 5. ÖZEL BUTONLAR (KAYDET & GERİ) --- */
+        .btn-save-custom {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn-save-custom:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-save-custom:active {
+            transform: scale(0.98);
+        }
+
+        .btn-back-custom {
+            background: #475569;
+            color: #f1f5f9;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-right: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .btn-back-custom:hover {
+            background: #64748b;
+            color: white;
+        }
+
+        /* --- 6. KATMAN YÖNETİCİSİ VE STİL EDİTÖRÜ --- */
+        .gjs-sm-sector .gjs-sm-title {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            border-bottom: 1px solid #334155;
+        }
+
+        .gjs-sm-field {
+            background-color: #334155;
+            color: white;
+            border: 1px solid #475569;
+            border-radius: 4px;
+        }
+
+        .gjs-field {
+            background-color: #334155;
+        }
+
+        .gjs-field input,
+        .gjs-field select {
+            color: white;
+        }
+
+        /* Seçili eleman çerçevesi */
+        .gjs-cv-canvas .gjs-highlighter,
+        .gjs-cv-canvas .gjs-selected {
+            outline: 2px solid var(--primary-color) !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="gjs" style="height:0px; overflow:hidden;"></div>
+
+    <script type="text/javascript">
+
+        var dbContent = @Json.Serialize(Model.HtmlContent);
+
+        // Modern Başlangıç İçeriği
+        if (!dbContent) {
+            dbContent = `
+                <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: transparent;">
+                    <div style="text-align: center; padding: 40px; border: 2px dashed #cbd5e1; border-radius: 12px; background: rgba(255,255,255,0.8);">
+                        <h1 style="color: #334155; margin-bottom: 10px; font-family: 'Inter', sans-serif;">Tasarıma Başla</h1>
+                        <p style="color: #64748b; font-family: 'Inter', sans-serif;">Blokları sağ panelden sürükleyip buraya bırakın.</p>
+                    </div>
+                </div>`;
+        }
+
+        var editor = grapesjs.init({
+            container: '#gjs',
+            height: '100vh',
+            width: 'auto',
+            storageManager: false,
+            fromElement: false,
+            components: dbContent,
+            panels: { defaults: [] }, // Custom Panels
+
+            // 🔥 TAM TÜRKÇE DİL DESTEĞİ 🔥
+            run: function (editor, sender) {
+                sender.set('active', 0); // Turn off the button
+
+                Swal.fire({
+                    title: 'Emin misiniz?',
+                    text: 'Bu sayfayı AWS S3\'e yayınlamak istediğinizden emin misiniz?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet, Yayınla',
+                    cancelButtonText: 'İptal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const loadingToast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        loadingToast.fire({
+                            icon: 'info',
+                            title: 'Yayınlanıyor...'
+                        });
+
+                        const html = editor.getHtml(); // Sadece HTML, CSS sunucuda halledilecek (veya inline)
+                        // Tam HTML yapısını oluşturmak daha sağlıklı olabilir ama sunucu tarafı da ekliyor olabilir.
+                        // Şimdilik sadece body'yi gönderiyoruz gibi görünüyor, PageService bunu sarmalıyor.
+
+                        // CSS'i de gönderelim ki sunucu birleştirsin
+                        const css = editor.getCss();
+                        const fullHtml = `<style>${css}</style>${html}`;
+
+                        fetch('/Page/PublishToS3', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            },
+                            body: JSON.stringify({
+                                pageId: @Model.Id,
+                                htmlContent: fullHtml
+                            })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Yayınlandı!',
+                                        html: `Sayfanız yayında!<br><a href="${data.url}" target="_blank" class="btn btn-primary mt-2">Görüntüle</a>`
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Hata',
+                                        text: data.message
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Hata',
+                                    text: error.message
+                                });
+                            });
+                    }
+                });
+            },
+            i18n: {
+                locale: 'tr',
+                detectLocale: false,
+                messages: {
+                    tr: {
+                        assetManager: {
+                            addButton: 'Resim Ekle',
+                            inputPlh: 'http://ornek-resim.com/resim.jpg',
+                            modalTitle: 'Resim Seçin',
+                            uploadTitle: 'Dosyayı buraya bırakın veya tıklayın'
+                        },
+                        blockManager: {
+                            labels: {
+                                // Kategoriler
+                                'layout': 'Düzen',
+                                'text': 'Metin',
+                                'media': 'Medya',
+                                'forms': 'Formlar'
+                            }
+                        },
+                        domComponents: {
+                            names: {
+                                '': 'Element',
+                                'wrapper': 'Sayfa',
+                                'text': 'Metin',
+                                'heading': 'Başlık',
+                                'image': 'Resim',
+                                'link': 'Link',
+                                'map': 'Harita',
+                                'video': 'Video'
+                            }
+                        },
+                        deviceManager: {
+                            device: 'Cihaz',
+                            devices: {
+                                desktop: 'Masaüstü',
+                                tablet: 'Tablet',
+                                mobileLandscape: 'Mobil Yatay',
+                                mobilePortrait: 'Mobil Dikey'
+                            }
+                        },
+                        panels: {
+                            buttons: {
+                                titles: {
+                                    preview: 'Önizleme',
+                                    fullscreen: 'Tam Ekran',
+                                    'sw-visibility': 'Kenarlıkları Göster',
+                                    'export-template': 'Kodu Dışa Aktar',
+                                    'open-blocks': 'Bloklar',
+                                    'open-layers': 'Katmanlar',
+
+                                    'open-sm': 'Stil Yöneticisi',
+                                    'open-tm': 'Ayarlar'
+                                }
+                            }
+                        },
+                        styleManager: {
+                            empty: 'Düzenlemek için bir öğe seçin',
+                            layer: 'Katman',
+                            sectors: {
+                                general: 'Genel',
+                                layout: 'Düzen (Layout)',
+                                typography: 'Yazı Tipi',
+                                decorations: 'Dekorasyon',
+                                extra: 'Ekstra',
+                                flex: 'Flexbox',
+                                dimension: 'Boyutlar'
+                            },
+                            properties: {
+                                'width': 'Genişlik',
+                                'height': 'Yükseklik',
+                                'max-width': 'Max Genişlik',
+                                'min-height': 'Min Yükseklik',
+                                'margin': 'Dış Boşluk (Margin)',
+                                'padding': 'İç Boşluk (Padding)',
+                                'font-family': 'Yazı Tipi',
+                                'font-size': 'Yazı Boyutu',
+                                'font-weight': 'Kalınlık',
+                                'letter-spacing': 'Harf Aralığı',
+                                'color': 'Renk',
+                                'text-align': 'Hizalama',
+                                'border': 'Kenarlık',
+                                'border-radius': 'Yuvarlaklık',
+                                'background-color': 'Arkaplan Rengi',
+                                'background-image': 'Arkaplan Resmi',
+                                'box-shadow': 'Gölge',
+                                'opacity': 'Şeffaflık'
+                            }
+                        },
+                        traitManager: {
+                            empty: 'Ayarlar için öğe seçin',
+                            label: 'Özellikler',
+                            traits: {
+                                'id': 'ID',
+                                'title': 'Başlık (Title)',
+                                'href': 'Link (URL)',
+                                'target': 'Hedef (Target)',
+                                'alt': 'Alternatif Metin (Alt)'
+                            }
+                        }
+                    }
+                }
+            },
+
+            // Canvas içinde fontların düzgün görünmesi için
+            canvas: {
+                styles: [
+                    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
+                ]
+            },
+
+            plugins: [
+                'gjs-preset-webpage', 'gjs-blocks-basic', 'grapesjs-plugin-forms',
+                'grapesjs-navbar', 'grapesjs-component-countdown', 'grapesjs-tabs',
+                'grapesjs-custom-code', 'grapesjs-touch'
+            ],
+
+            pluginsOpts: {
+                'gjs-preset-webpage': {
+                    modalImportTitle: 'Kodu Düzenle',
+                    modalExportTitle: 'Kodu Al',
+                    blocks: ['link-block', 'quote', 'text-basic'],
+                    textCleanCanvas: 'Temizlemek istediğinize emin misiniz?'
+                },
+                'grapesjs-blocks-basic': {
+                    flexGrid: true,
+                    stylePrefix: 'gjs-',
+                    category: 'Temel',
+                    labelColumn1: '1 Sütun',
+                    labelColumn2: '2 Sütun',
+                    labelColumn3: '3 Sütun',
+                    labelText: 'Metin',
+                    labelImage: 'Resim',
+                    labelVideo: 'Video',
+                    labelMap: 'Harita'
+                }
+            }
+        });
+
+        // ==========================================
+        // 🔥 HARİCİ BLOK KÜTÜPHANESİNİ YÜKLE 🔥
+        // ==========================================
+
+        // grapesjs-blocks.js dosyasındaki fonksiyonu çağırıyoruz
+        // grapesjs-blocks.js dosyasındaki fonksiyonu çağırıyoruz
+        function initCustomBlocks() {
+            if (typeof loadCustomBlocks === 'function') {
+                loadCustomBlocks(editor);
+                console.log('✅ Custom Blocks Loaded via initCustomBlocks');
+            } else {
+                console.warn('⚠️ loadCustomBlocks not found, retrying in 500ms...');
+                setTimeout(() => {
+                    if (typeof loadCustomBlocks === 'function') {
+                        loadCustomBlocks(editor);
+                        console.log('✅ Custom Blocks Loaded via Retry');
+                    } else {
+                        console.error('❌ loadCustomBlocks function not found after retry! Check /js/grapesjs-blocks.js file.');
+                    }
+                }, 500);
+            }
+        }
+        initCustomBlocks();
+
+
+
+        // ==========================================
+        // 🔥 BUTON KONFİGÜRASYONU 🔥
+        // ==========================================
+
+        editor.Panels.addButton('options', [
+            {
+                id: 'save-db',
+                className: 'btn-save-custom',
+                label: `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    KAYDET`,
+                command: 'save-db',
+                attributes: { title: 'Projeyi Kaydet' }
+            },
+            {
+                id: 'publish-s3',
+                className: 'btn-save-custom',
+                label: `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    YAYINLA`,
+                command: 'publish-s3',
+                attributes: { title: 'AWS S3\'e Yayınla' },
+                style: 'background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); margin-right: 10px;'
+            },
+            {
+                id: 'back-btn',
+                className: 'btn-back-custom',
+                label: '← Geri Dön',
+                command: function () { window.location.href = '/Page/Index?siteId=@Model.SiteId'; }
+            }
+        ]);
+
+        // Kaydetme Fonksiyonu
+        editor.Commands.add('save-db', {
+            run: function (editor, sender) {
+                sender && sender.set('active', 0);
+
+                const html = editor.getHtml();
+                const css = editor.getCss();
+                const fullContent = `<style>${css}</style>` + html;
+
+                editor.Modal.setTitle(`
+                    <div style="text-align:center; font-family:'Inter',sans-serif;">
+                        <div style="font-size:24px; margin-bottom:5px;">💾</div>
+                        Kaydediliyor...
+                    </div>
+                `);
+                editor.Modal.open();
+
+                const formData = new URLSearchParams();
+                formData.append('pageId', '@Model.Id');
+                formData.append('htmlContent', fullContent);
+
+                fetch('/Page/Save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            editor.Modal.setContent(`
+                            <div style="text-align:center; padding:20px; font-family:'Inter', sans-serif;">
+                                <div style="font-size:50px; color:#10b981; margin-bottom:15px;">✓</div>
+                                <h3 style="margin:0; color:#1e293b;">Başarıyla Kaydedildi!</h3>
+                                <p style="color:#64748b;">Değişiklikleriniz yayında.</p>
+                            </div>
+                        `);
+                            setTimeout(() => editor.Modal.close(), 1200);
+                        } else {
+                            editor.Modal.setContent('<h3 style="color:red; text-align:center;">Hata oluştu.</h3>');
+                        }
+                    });
+            }
+        });
+
+        // AWS S3 Yayınlama Fonksiyonu
+        editor.Commands.add('publish-s3', {
+            run: function (editor, sender) {
+                sender && sender.set('active', 0);
+
+                if (!confirm('Bu sayfayı AWS S3\'e yayınlamak istediğinizden emin misiniz?')) {
+                    return;
+                }
+
+                const html = editor.getHtml();
+                const css = editor.getCss();
+                const fullContent = `<style>${css}</style>` + html;
+
+                editor.Modal.setTitle(`
+                    <div style="text-align:center; font-family:'Inter',sans-serif;">
+                        <div style="font-size:24px; margin-bottom:5px;">☁️</div>
+                        AWS S3'e Yayınlanıyor...
+                    </div>
+                `);
+                editor.Modal.open();
+
+                const formData = new URLSearchParams();
+                formData.append('pageId', '@Model.Id');
+                formData.append('htmlContent', fullContent);
+
+                fetch('/Page/Publish', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            editor.Modal.setContent(`
+                            <div style="text-align:center; padding:20px; font-family:'Inter', sans-serif;">
+                                <div style="font-size:50px; color:#10b981; margin-bottom:15px;">✓</div>
+                                <h3 style="margin:0; color:#1e293b;">Başarıyla Yayınlandı!</h3>
+                                <p style="color:#64748b;">Sayfanız canlıya alındı.</p>
+                                <a href="${data.url}" target="_blank" style="display:inline-block; margin-top:15px; padding:10px 20px; background:#4f46e5; color:white; text-decoration:none; border-radius:8px;">Canlı Siteyi Görüntüle</a>
+                            </div>
+                        `);
+                        } else {
+                            editor.Modal.setContent(`<h3 style="color:red; text-align:center;">Hata: ${data.message}</h3>`);
+                        }
+                    })
+                    .catch(error => {
+                        editor.Modal.setContent(`<h3 style="color:red; text-align:center;">Bir hata oluştu: ${error.message}</h3>`);
+                    });
+            }
+        });
+
+    </script>
+</body>
+
+</html>

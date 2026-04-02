@@ -1,0 +1,154 @@
+@model YDeveloper.Models.Ticket
+@{
+    ViewData["Title"] = "Talep Detayı #" + Model.Id;
+    Layout = "_Layout";
+    var cannedResponses = ViewBag.CannedResponses as List<YDeveloper.Models.CannedResponse>;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a asp-action="Index" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left"></i> Listeye
+                Dön</a>
+            <h2 class="mt-2">@Model.Subject <span class="text-muted fs-5">#@Model.Id</span></h2>
+        </div>
+        <div>
+            <span
+                class="badge bg-@(@Model.Status == YDeveloper.Models.TicketStatus.Open ? "warning" : "secondary") fs-6">
+                @Model.Status
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Chat History -->
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-body bg-light" style="height: 500px; overflow-y: auto;">
+                    @if (Model.Messages != null)
+                    {
+                        foreach (var msg in Model.Messages.OrderBy(m => m.Timestamp))
+                        {
+                            var isMe = msg.SenderId == Model.CreatorId; // Customer
+                            var isInternal = msg.IsInternal;
+
+                            <div
+                                class="d-flex mb-3 @(isInternal ? "justify-content-center" : (isMe ? "justify-content-start" : "justify-content-end"))">
+                                <div class="card shadow-sm @(isInternal ? "bg-warning bg-opacity-10 border-warning" : (isMe ? "bg-white" : "bg-primary text-white"))"
+                                    style="max-width: 75%;">
+                                    <div class="card-body p-2 px-3">
+                                        @if (isInternal)
+                                        {
+                                            <div class="text-warning small fw-bold text-center mb-1"><i class="bi bi-lock"></i>
+                                                GİZLİ NOT</div>
+                                        }
+                                        <p class="mb-1">@msg.Message</p>
+                                        <div class="text-end small @(isMe ? "text-muted" : "text-white-50")"
+                                            style="font-size: 0.7rem;">
+                                            @msg.Sender?.Email @msg.Timestamp.ToShortTimeString()
+                                        </div>
+                                        
+                                        @if (Model.Attachments != null && Model.Attachments.Any(a => a.TicketMessageId == msg.Id))
+                                        {
+                                            <div class="mt-2 pt-2 border-top border-light">
+                                                @foreach(var att in Model.Attachments.Where(a => a.TicketMessageId == msg.Id))
+                                                {
+                                                    <div class="d-flex align-items-center bg-light rounded p-1 mb-1 border">
+                                                        <i class="bi bi-paperclip me-2 text-secondary"></i>
+                                                        <a href="@att.FileUrl" target="_blank" class="text-decoration-none text-break small text-dark">@att.FileName</a>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Reply Box -->
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="ReplyTicket" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="ticketId" value="@Model.Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Hazır Cevap Ekle</label>
+                            <select class="form-select form-select-sm mb-2" id="cannedSelect"
+                                onchange="insertCannedResponse()">
+                                <option value="">Şablon seçiniz...</option>
+                                @if (cannedResponses != null)
+                                {
+                                    foreach (var r in cannedResponses)
+                                    {
+                                        <option value="" data-content="@r.Content">@r.Title</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea name="message" id="messageBox" class="form-control" rows="4"
+                                placeholder="Yanıtınızı yazın..." required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Dosya Ekle</label>
+                            <input type="file" name="attachment" class="form-control form-control-sm" />
+                            <div class="form-text text-muted" style="font-size: 0.75rem;">Maksimum 5MB. Desteklenenler: PDF, PNG, JPG</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="internalNote" value="true"
+                                    id="internalCheck">
+                                <label class="form-check-label text-warning fw-bold" for="internalCheck">
+                                    <i class="bi bi-lock"></i> Sadece Personel Görsün (Gizli Not)
+                                </label>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <select name="status" class="form-select w-auto">
+                                    <option value="Resolved">Çözüldü Olarak İşaretle</option>
+                                    <option value="Pending">Beklemeye Al</option>
+                                    <option value="Escalated">Admin'e İlet</option>
+                                    <option value="Open">Açık Kalsın</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Gönder</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header fw-bold">Müşteri Bilgileri</div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>İsim:</strong> @Model.Creator?.FullName</p>
+                    <p class="mb-1"><strong>E-posta:</strong> @Model.Creator?.Email</p>
+                    <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.CreatorId"
+                        class="btn btn-sm btn-outline-info w-100 mt-2">Profili Görüntüle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function insertCannedResponse() {
+        var select = document.getElementById("cannedSelect");
+        var textarea = document.getElementById("messageBox");
+        var selectedOption = select.options[select.selectedIndex];
+        var content = selectedOption.getAttribute('data-content');
+        
+        if (content) {
+            textarea.value += (textarea.value ? "\n\n" : "") + content;
+            select.selectedIndex = 0; // reset
+        }
+    }
+</script>

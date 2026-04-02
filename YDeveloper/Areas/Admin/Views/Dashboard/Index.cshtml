@@ -1,0 +1,183 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 2rem;">Dashboard</h1>
+
+<!-- Stats Cards -->
+<div class="admin-grid admin-grid-4" style="margin-bottom: 2rem;">
+    <div class="admin-card">
+        <div class="admin-card-title">Toplam Site</div>
+        <div class="admin-card-value">
+            @{
+                var totalSites = ViewBag.TotalSites ?? 0;
+            }
+            @totalSites
+        </div>
+        <div class="admin-card-trend up">
+            <i class="bi bi-arrow-up"></i> +12% bu ay
+        </div>
+    </div>
+    
+    <div class="admin-card">
+        <div class="admin-card-title">Aktif Kullanıcı</div>
+        <div class="admin-card-value">
+            @{
+                var totalUsers = ViewBag.TotalUsers ?? 0;
+            }
+            @totalUsers
+        </div>
+        <div class="admin-card-trend up">
+            <i class="bi bi-arrow-up"></i> +8% bu ay
+        </div>
+    </div>
+    
+    <div class="admin-card">
+        <div class="admin-card-title">Aylık Gelir</div>
+        <div class="admin-card-value">
+            ₺@{
+                var monthlyRevenue = ViewBag.MonthlyRevenue ?? 0;
+            }@monthlyRevenue.ToString("N0")
+        </div>
+        <div class="admin-card-trend up">
+            <i class="bi bi-arrow-up"></i> +24% bu ay
+        </div>
+    </div>
+    
+    <div class="admin-card">
+        <div class="admin-card-title">Okunmamış Mesaj</div>
+        <div class="admin-card-value">
+            @{
+                var unreadMessages = ViewBag.UnreadMessages ?? 0;
+            }
+            @unreadMessages
+        </div>
+        <div class="admin-card-trend">
+            <i class="bi bi-envelope"></i> Yeni
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="admin-grid admin-grid-2" style="margin-bottom: 2rem;">
+    <div class="admin-card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700;">Site Büyüme (7 Gün)</h3>
+        <canvas id="siteGrowthChart" height="200"></canvas>
+    </div>
+    
+    <div class="admin-card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700;">Gelir Trendi (30 Gün)</h3>
+        <canvas id="revenueChart" height="200"></canvas>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="admin-card">
+    <h3 style="margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700;">Son Aktiviteler</h3>
+    <div class="admin-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Kullanıcı</th>
+                    <th>Aksiyon</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Ahmet Yılmaz</strong></td>
+                    <td>Yeni site oluşturdu</td>
+                    <td>5 dakika önce</td>
+                    <td><span class="admin-badge admin-badge-success">Başarılı</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Ayşe Demir</strong></td>
+                    <td>Paket yükseltti</td>
+                    <td>15 dakika önce</td>
+                    <td><span class="admin-badge admin-badge-success">Başarılı</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Mehmet Kaya</strong></td>
+                    <td>İletişim mesajı gönderdi</td>
+                    <td>1 saat önce</td>
+                    <td><span class="admin-badge admin-badge-primary">Yeni</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Site Growth Chart
+    const ctx1 = document.getElementById('siteGrowthChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+            datasets: [{
+                label: 'Yeni Siteler',
+                data: [12, 19, 15, 25, 22, 30, 28],
+                borderColor: 'hsl(250, 84%, 54%)',
+                backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: 'rgba(255,255,255,0.7)' }
+                },
+                x: { 
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: 'rgba(255,255,255,0.7)' }
+                }
+            }
+        }
+    });
+
+    // Revenue Chart
+    const ctx2 = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['1-5', '6-10', '11-15', '16-20', '21-25', '26-30'],
+            datasets: [{
+                label: 'Gelir (₺)',
+                data: [15000, 22000, 18000, 28000, 25000, 32000],
+                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                borderColor: 'rgb(16, 185, 129)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: 'rgba(255,255,255,0.7)' }
+                },
+                x: { 
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: 'rgba(255,255,255,0.7)' }
+                }
+            }
+        }
+    });
+</script>
+}

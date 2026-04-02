@@ -1,0 +1,6 @@
+
+
+# 3. HTTP Redirect (Automatic by Caddy usually, but being explicit)
+http:// {
+    redir https://{host}{uri}
+}

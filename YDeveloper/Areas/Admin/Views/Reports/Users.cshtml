@@ -1,0 +1,114 @@
+@{
+    ViewData["Title"] = "Kullanıcı Raporu";
+    Layout = "_AdminLayout";
+}
+
+<h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 2rem;">👥 Kullanıcı Raporu</h1>
+
+<!-- Stats Cards -->
+<div class="admin-grid admin-grid-4" style="margin-bottom: 2rem;">
+    <div class="admin-card">
+        <div class="admin-card-title">Toplam Kullanıcı</div>
+        <div class="admin-card-value">@ViewBag.TotalUsers</div>
+        <div style="font-size: 0.875rem; color: var(--admin-text-muted);">Tüm zamanlar</div>
+    </div>
+    
+    <div class="admin-card">
+        <div class="admin-card-title">Yeni Kullanıcı</div>
+        <div class="admin-card-value">@ViewBag.NewUsersLast30Days</div>
+        <div style="font-size: 0.875rem; color: var(--admin-text-muted);">Son 30 gün</div>
+    </div>
+    
+    <div class="admin-card">
+        <div class="admin-card-title">Sitesi Olan</div>
+        <div class="admin-card-value">@ViewBag.UsersWithSites</div>
+        <div class="admin-card-trend up">
+            <i class="bi bi-arrow-up"></i> @ViewBag.ConversionRate.ToString("F1")% dönüşüm
+        </div>
+    </div>
+    
+    <div class="admin-card">
+        <div class="admin-card-title">Sitesi Olmayan</div>
+        <div class="admin-card-value">@ViewBag.UsersWithoutSites</div>
+        <div class="admin-card-trend down">
+            <i class="bi bi-arrow-down"></i> Pasif
+        </div>
+    </div>
+</div>
+
+<!-- AI Insights -->
+<div class="admin-card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border: 1px solid rgba(59, 130, 246, 0.3);">
+    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <div style="width: 40px; height: 40px; background: var(--admin-info); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
+            <i class="bi bi-stars" style="font-size: 1.25rem;"></i>
+        </div>
+        <h3 style="font-size: 1.125rem; font-weight: 700; margin: 0;">AI Kullanıcı Analizi</h3>
+    </div>
+    <div style="white-space: pre-wrap; line-height: 1.8; opacity: 0.95;">@ViewBag.AIInsight</div>
+</div>
+
+<!-- Charts -->
+<div class="admin-grid admin-grid-2" style="margin-bottom: 2rem;">
+    <div class="admin-card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700;">Son 7 Günlük Kayıtlar</h3>
+        <canvas id="registrationChart" height="250"></canvas>
+    </div>
+    
+    <div class="admin-card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.125rem; font-weight: 700;">Kullanıcı Aktivasyon Oranı</h3>
+        <div style="display: flex; align-items: center; justify-content: center; height: 250px;">
+            <div style="text-align: center;">
+                <div style="font-size: 4rem; font-weight: 800; background: linear-gradient(135deg, var(--admin-primary), var(--admin-info)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    @ViewBag.ConversionRate.ToString("F1")%
+                </div>
+                <div style="color: var(--admin-text-muted); margin-top: 1rem;">
+                    @ViewBag.UsersWithSites / @ViewBag.TotalUsers kullanıcı sitesi var
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Registration Chart
+    const ctx = document.getElementById('registrationChart').getContext('2d');
+    const dailyRegistrations = @Html.Raw(Json.Serialize(ViewBag.DailyRegistrations));
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dailyRegistrations.map(d => new Date(d.date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })),
+            datasets: [{
+                label: 'Yeni Kayıtlar',
+                data: dailyRegistrations.map(d => d.count),
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderColor: 'rgb(59, 130, 246)',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { 
+                        color: 'rgba(255,255,255,0.7)',
+                        stepSize: 1
+                    }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: 'rgba(255,255,255,0.7)' }
+                }
+            }
+        }
+    });
+</script>
+}

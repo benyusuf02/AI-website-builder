@@ -1,0 +1,43 @@
+@model IEnumerable<YDeveloper.Models.AuditLog>
+@{
+    ViewData["Title"] = "Sistem Logları (Audit)";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-danger"><i class="bi bi-shield-lock"></i> Yönetici Denetim Kayıtları (Audit Logs)</h2>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tarih</th>
+                        <th>İşlem (Action)</th>
+                        <th>Personel</th>
+                        <th>Hedef Kullanıcı</th>
+                        <th>Detaylar</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td class="small">@log.Timestamp.ToString("g")</td>
+                            <td><span class="badge bg-secondary">@log.Action</span></td>
+                            <td class="fw-bold text-primary">@log.PerformerUserId</td>
+                            <td>@log.TargetUserId</td>
+                            <td class="small text-muted"
+                                style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                                title="@log.Details">
+                                @log.Details
+                            </td>
+                            <td class="small font-monospace">@log.IpAddress</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

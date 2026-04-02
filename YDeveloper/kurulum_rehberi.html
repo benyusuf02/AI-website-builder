@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YDeveloper - Her Şey Dahil Kurulum Rehberi (v6)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 25px 0;
+            background: #2c3e50;
+            color: #fff;
+            width: 260px;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-left-color: #3498db;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 1.1em;
+            width: 25px;
+            text-align: center;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 20px 30px;
+            color: #34495e;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .badge-step {
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .command-box {
+            background: #2d3436;
+            color: #dfe6e9;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .btn-copy {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .service-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .service-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .step-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .step-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .step-list li:before {
+            content: "✓";
+            color: #27ae60;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .alert-warning-custom {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h5 class="fw-bold mb-1">Kurulum Rehberi</h5>
+            <small class="opacity-50">Sıfırdan Canlıya - v6</small>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link active" href="#bolum1"><i class="bi bi-cart"></i> 1. Alışveriş &
+                    Servisler</a></li>
+            <li class="nav-item"><a class="nav-link" href="#bolum2"><i class="bi bi-key"></i> 2. API Key Alma
+                    (Detaylı)</a></li>
+            <li class="nav-item"><a class="nav-link" href="#bolum3"><i class="bi bi-box-seam"></i> 3. Projeyi
+                    Paketle</a></li>
+            <li class="nav-item"><a class="nav-link" href="#bolum4"><i class="bi bi-terminal"></i> 4. Sunucu
+                    Kurulumu</a></li>
+            <li class="nav-item"><a class="nav-link" href="#bolum5"><i class="bi bi-database"></i> 5. SQL Server</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="#bolum6"><i class="bi bi-upload"></i> 6. Dosya Yükleme</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="#bolum7"><i class="bi bi-sliders"></i> 7. Ayarlar
+                    (appsettings)</a></li>
+            <li class="nav-item"><a class="nav-link" href="#bolum8"><i class="bi bi-play-circle"></i> 8. Final:
+                    Çalıştır</a></li>
+        </ul>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+        <div class="alert alert-info shadow-sm mb-5">
+            <h4 class="mb-2"><i class="bi bi-info-circle-fill me-2"></i>Hoşgeldiniz</h4>
+            <p class="mb-0">Bu rehber size <strong>ne satın alacağınızı</strong>, satın aldıklarınızı <strong>nasıl
+                    kuracağınızı</strong> (API Key alma vb.) ve <strong>kodları sunucuya nasıl atacağınızı</strong> adım
+                adım anlatır.</p>
+        </div>
+
+        <!-- BÖLÜM 1: ALIŞVERİŞ -->
+        <div id="bolum1" class="card">
+            <div class="card-header">
+                <div><span class="badge-step">1</span>Alışveriş Listesi</div>
+            </div>
+            <div class="card-body">
+                <p>Projeyi çalıştırmak için 3 şeye ihtiyacınız var. Bunları satın alın:</p>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="service-card h-100">
+                            <i class="bi bi-hdd-network service-icon text-primary"></i>
+                            <h5 class="fw-bold">1. Sunucu (VPS)</h5>
+                            <p class="small text-muted"><strong>Contabo</strong> önerilir. "VPS S" veya "VPS M" paketi.
+                            </p>
+                            <span class="badge bg-success">Gerekli: Ubuntu 24.04</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-card h-100">
+                            <i class="bi bi-globe service-icon text-success"></i>
+                            <h5 class="fw-bold">2. Alan Adı (Domain)</h5>
+                            <p class="small text-muted"><strong>Namecheap</strong> önerilir. API desteği iyidir.</p>
+                            <span class="badge bg-success">Örn: siteadi.com</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-card h-100">
+                            <i class="bi bi-envelope service-icon text-warning"></i>
+                            <h5 class="fw-bold">3. AWS Hesabı</h5>
+                            <p class="small text-muted">E-posta (SES) ve Dosya (S3) için <strong>Amazon AWS</strong>
+                                hesabı açın.</p>
+                            <span class="badge bg-success">Kredi Kartı Gerekir</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BÖLÜM 2: API KEY ALMA -->
+        <div id="bolum2" class="card border-warning border-2">
+            <div class="card-header bg-warning text-dark">
+                <div><i class="bi bi-key-fill me-2"></i>2. Servis Kurulumları (API Key Alma)</div>
+            </div>
+            <div class="card-body">
+                <p>Satın aldınız ama bunları projeye nasıl bağlayacaksınız? "API Key" alarak. İşte yöntemleri:</p>
+
+                <div class="accordion" id="apiAccordion">
+
+                    <!-- AWS -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#awsKey">Amazon AWS (SES ve S3)</button></h2>
+                        <div id="awsKey" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <ol class="step-list">
+                                    <li>AWS Konsoluna giriş yapın ve arama çubuğuna <strong>IAM</strong> yazın.</li>
+                                    <li>Soldan <strong>Users</strong> -> <strong>Create user</strong> deyin. Adına
+                                        "YDeveloper" diyebilirsiniz.</li>
+                                    <li>İzinler (Permissions) ekranında <strong>Attach policies directly</strong> seçin.
+                                    </li>
+                                    <li>Arama kutusuna yazıp şunları tikleyin: <code>AmazonS3FullAccess</code> ve
+                                        <code>AmazonSESFullAccess</code>.</li>
+                                    <li>Kullanıcıyı oluşturun. Sonra kullanıcıya tıklayın -> <strong>Security
+                                            credentials</strong> sekmesine gelin.</li>
+                                    <li><strong>Create access key</strong> butonuna basın.</li>
+                                    <li>Size <code>Access Key ID</code> (AKIA...) ve <code>Secret Access Key</code>
+                                        verecek. <strong>BUNLARI KAYDEDİN!</strong> Bir daha göremezsiniz.</li>
+                                </ol>
+                                <hr>
+                                <strong>E-posta Onayı (SES):</strong>
+                                <ol class="step-list">
+                                    <li>AWS aramaya <strong>Amazon SES</strong> yazın.</li>
+                                    <li>Soldan <strong>Identities</strong> -> <strong>Create identity</strong>.</li>
+                                    <li><strong>Email address</strong> seçin, e-postanızı yazın ve Create deyin.</li>
+                                    <li>E-postanıza gelen linke tıklayıp onaylayın. Artık bu mailden gönderim
+                                        yapabilirsiniz.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NAMECHEAP -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#ncKey">Namecheap (Domain API)</button></h2>
+                        <div id="ncKey" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="alert alert-warning small">Not: Namecheap API'yi açmak için hesabınızda en
+                                    az 50$ bakiye olmalı veya 20 domain olmalı. Yoksa Sandbox (Test) kullanın.</div>
+                                <ol class="step-list">
+                                    <li>Namecheap'e girin. Profil -> <strong>Tools</strong> -> <strong>API
+                                            Access</strong> menüsüne gidin.</li>
+                                    <li>API Access'i <strong>Enable</strong> (Aktif) yapın.</li>
+                                    <li><strong>Whitelisted IPs</strong> kısmına <strong>Edit</strong> deyin ve
+                                        Contabo'dan aldığınız Sunucu IP adresini ekleyin.</li>
+                                    <li>Size verilen <code>API Key</code>'i kaydedin. <code>ApiUser</code> ise kullanıcı
+                                        adınızdır.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- IYZICO -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#iyzKey">Iyzico (Ödeme)</button></h2>
+                        <div id="iyzKey" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ol class="step-list">
+                                    <li><a href="https://sandbox-merchant.iyzipay.com" target="_blank">Iyzico
+                                            Sandbox</a> (Test) veya Gerçek panele girin.</li>
+                                    <li>Sol altta <strong>Ayarlar</strong> menüsüne tıklayın.</li>
+                                    <li>Üstteki sekmelerden <strong>Geliştirici</strong> (Developer) sekmesine geçin.
+                                    </li>
+                                    <li>Orada <code>API Key</code> ve <code>Secret Key</code> göreceksiniz. Kopyalayın.
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GEMINI -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#gemKey">Google Gemini (Yapay Zeka)</button>
+                        </h2>
+                        <div id="gemKey" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ol class="step-list">
+                                    <li><a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI
+                                            Studio</a> adresine gidin.</li>
+                                    <li><strong>Create API Key</strong> butonuna basın.</li>
+                                    <li>Oluşan anahtarı kopyalayın.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BÖLÜM 3: PAKETLEME -->
+        <div id="bolum3" class="card">
+            <div class="card-header">
+                <div><span class="badge-step">3</span>Projeyi Paketle</div>
+            </div>
+            <div class="card-body">
+                <p>Kodları sunucuya göndermeden önce paketlememiz (Publish) lazım.</p>
+                <ol>
+                    <li>Visual Studio'da projenize (Solution değil, proje ismine) sağ tıklayın.</li>
+                    <li><strong>Publish</strong> seçeneğine tıklayın.</li>
+                    <li>Hedef (Target) olarak <strong>Folder</strong> (Klasör) seçin. Finish deyin.</li>
+                    <li><strong>Publish</strong> butonuna basın.</li>
+                    <li>Çıktı klasöründeki dosya yolunu açın. Bu klasördeki <strong>her şeyi</strong> masaüstünde
+                        <code>SiteDosyalari</code> diye bir klasöre kopyalayın.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- BÖLÜM 4: SUNUCU KURULUMU -->
+        <div id="bolum4" class="card">
+            <div class="card-header">
+                <div><span class="badge-step">4</span>Sunucu Kurulumu</div>
+            </div>
+            <div class="card-body">
+                <p>Contabo'dan aldığınız IP ve şifre ile sisteme girin (PowerShell: <code>ssh root@IPSUNUCU</code>).</p>
+                <p>Sırayla şu komutları yapıştırın:</p>
+
+                <strong>1. Temel Güncelleme:</strong>
+                <div class="command-box">
+                    <button class="btn-copy" onclick="copyCode(this)">Kopyala</button>
+                    <div>sudo apt update && sudo apt upgrade -y</div>
+                </div>
+
+                <strong>2. .NET 8 Kurulumu:</strong>
+                <div class="command-box">
+                    <button class="btn-copy" onclick="copyCode(this)">Kopyala</button>
+                    <div>sudo apt-get install -y aspnetcore-runtime-8.0</div>
+                </div>
+
+                <strong>3. Caddy (SSL) Kurulumu:</strong>
+                <div class="command-box">
+                    <button class="btn-copy" onclick="copyCode(this)">Kopyala</button>
+                    <div>sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+                        curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o
+                        /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+                        curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee
+                        /etc/apt/sources.list.d/caddy-stable.list
+                        sudo apt update
+                        sudo apt install caddy</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BÖLÜM 5: SQL SERVER -->
+        <div id="bolum5" class="card">
+            <div class="card-header">
+                <div><span class="badge-step">5</span>SQL Server Kurulumu (Docker)</div>
+            </div>
+            <div class="card-body">
+                <p>Veritabanı sunucusu kurmak için en kolay yol Docker'dır.</p>
+
+                <strong>1. Docker Kur:</strong>
+                <div class="command-box">
+                    <button class="btn-copy" onclick="copyCode(this)">Kopyala</button>
+                    <div>sudo apt install -y docker.io && sudo systemctl start docker && sudo systemctl enable docker
+                    </div>
+                </div>
+
+                <strong>2. SQL Server Başlat:</strong>
+                <p class="small text-danger">Aşağıdaki 'Sifreniz123!' kısmını değiştirin ve unutmayın!</p>
+                <div class="command-box">
+                    <button class="btn-copy" onclick="copyCode(this)">Kopyala</button>
+                    <div>sudo docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Sifreniz123!" -p 1433:1433 --name sql_server
+                        --restart always -d mcr.microsoft.com/mssql/server:2022-latest</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BÖLÜM 6: DOSYA TRANSFERİ -->
+        <div id="bolum6" class="card">
+            <div class="card-header">
+                <div><span class="badge-step">6</span>Dosyaları Yükle</div>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li><strong>FileZilla</strong> programını açın.</li>
+                    <li>Sunucu bilgilerinizi (IP, root, şifre, port 22) girip bağlanın.</li>
+                    <li>Sağ tarafta <code>/var/www/</code> klasörüne gidin.</li>
+                    <li>Sağ tıklayıp <code>sitem</code> (veya istediğiniz bir isim) klasörü oluşturun.</li>
+                    <li>Masaüstündeki <code>SiteDosyalari</code> içindekileri buraya sürükleyin.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- BÖLÜM 7: AYARLAR -->
+        <div id="bolum7" class="card border-danger border-2">
+            <div class="card-header bg-danger text-white">
+                <div><i class="bi bi-sliders me-2"></i>7. Ayarlar (En Önemli Kısım)</div>
+            </div>
+            <div class="card-body">
+                <p>FileZilla'da <code>appsettings.json</code> dosyasına sağ tıklayıp düzenleyin. Adım 2'de aldığınız
+                    Key'leri buraya yapıştırın.</p>
+
+                <h6 class="fw-bold">A. Veritabanı</h6>
+                <pre class="bg-light p-2 border">"ConnectionStrings": {
+  "YDeveloperContext": "Server=127.0.0.1,1433;Database=YDeveloperDB;User Id=sa;Password=Sifreniz123!;TrustServerCertificate=True;"
+}</pre>
+
+                <h6 class="fw-bold mt-3">B. Diğer Servisler</h6>
+                <pre class="bg-light p-2 border">"AWS": { "AccessKey": "AKIA...", "SecretKey": "..." },
+"DomainRegistrar": { "ApiUser": "...", "ApiKey": "..." },
+"Payment": { "ApiKey": "...", "SecretKey": "..." }</pre>
+
+                <div class="alert alert-warning-custom mt-3">
+                    <strong>Veritabanını Kur:</strong> Ayarları kaydettikten sonra terminalde şu komutu çalıştırın:
+                    <br><code>cd /var/www/sitem && dotnet YDeveloper.dll --migrate</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- BÖLÜM 8: FİNAL -->
+        <div id="bolum8" class="card bg-success text-white">
+            <div class="card-header border-0 text-white">
+                <div><span class="badge-step bg-white text-success">8</span>Final: Çalıştır</div>
+            </div>
+            <div class="card-body">
+                <strong>1. Servis Dosyası Oluştur:</strong>
+                <div class="command-box text-white bg-transparent border border-light">
+                    <button class="btn-copy">Kopyala</button>
+                    <div>sudo nano /etc/systemd/system/ydeveloper.service</div>
+                </div>
+
+                <strong>2. İçine Yapıştır (Klasör adını kendinize göre düzenleyin):</strong>
+                <pre class="bg-dark p-3 rounded small">
+[Unit]
+Description=SaaS App
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/sitem
+ExecStart=/usr/bin/dotnet /var/www/sitem/YDeveloper.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=ydeveloper-app
+User=root
+Environment=ASPNETCORE_ENVIRONMENT=Production
+
+[Install]
+WantedBy=multi-user.target</pre>
+                <p class="small">Kaydet: CTRL+X -> Y -> Enter.</p>
+
+                <strong>3. Başlat:</strong>
+                <div class="command-box text-white bg-transparent border border-light">
+                    <button class="btn-copy">Kopyala</button>
+                    <div>sudo systemctl enable ydeveloper.service
+                        sudo systemctl start ydeveloper.service
+                        sudo cp /var/www/sitem/Caddyfile /etc/caddy/Caddyfile
+                        sudo systemctl reload caddy</div>
+                </div>
+
+                <h3 class="text-center mt-3">🎉 Mutlu Son! Siteniz Yayında.</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function copyCode(btn) {
+            const text = btn.nextElementSibling.innerText;
+            navigator.clipboard.writeText(text);
+            const original = btn.innerText;
+            btn.innerText = "Kopyalandı!";
+            setTimeout(() => { btn.innerText = original; }, 2000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,334 @@
+@model YDeveloper.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Kayıt Ol";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - YDeveloper</title>
+    <link rel="stylesheet" href="~/css/design-system.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: var(--font-primary);
+            overflow-x: hidden;
+        }
+
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        .auth-left {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8);
+        }
+
+        .auth-right {
+            background: var(--gradient-hero);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8);
+            color: white;
+        }
+
+        .auth-right::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .auth-content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+        }
+
+        .auth-content h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: var(--space-4);
+        }
+
+        .auth-content p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+        }
+
+        .auth-form-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .auth-form-container h2 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+        }
+
+        .auth-subtitle {
+            color: var(--gray-600);
+            margin-bottom: var(--space-6);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-4);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-2);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: all var(--transition-base);
+            font-family: var(--font-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-2);
+        }
+
+        .form-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .password-strength {
+            margin-top: var(--space-2);
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            transition: all var(--transition-base);
+            background: var(--error);
+        }
+
+        .password-strength-bar.weak {
+            width: 33%;
+            background: var(--error);
+        }
+
+        .password-strength-bar.medium {
+            width: 66%;
+            background: var(--warning);
+        }
+
+        .password-strength-bar.strong {
+            width: 100%;
+            background: var(--success);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: var(--space-5) 0;
+            color: var(--gray-500);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--gray-200);
+        }
+
+        .divider::before {
+            margin-right: var(--space-4);
+        }
+
+        .divider::after {
+            margin-left: var(--space-4);
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            background: white;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .social-btn:hover {
+            border-color: var(--gray-300);
+            box-shadow: var(--shadow-md);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: var(--space-6);
+            color: var(--gray-600);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        @@media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-form-container">
+                <h2>Hesap Oluştur</h2>
+                <p class="auth-subtitle">Ücretsiz başlayın, kredi kartı gerektirmez</p>
+
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="All" class="text-danger" style="margin-bottom: var(--space-4);"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Email" class="form-label">E-posta</label>
+                        <input asp-for="Email" class="form-input" type="email" placeholder="ornek@email.com" required />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Password" class="form-label">Şifre</label>
+                        <input asp-for="Password" class="form-input" type="password" placeholder="••••••••" required
+                            id="password-input" />
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="password-strength-bar"></div>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword" class="form-label">Şifre Tekrar</label>
+                        <input asp-for="ConfirmPassword" class="form-input" type="password" placeholder="••••••••"
+                            required />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-checkbox-group">
+                            <input type="checkbox" class="form-checkbox" required />
+                            <label style="font-size: 0.875rem; color: var(--gray-600);">
+                                <a href="/Home/Terms" style="color: var(--primary); text-decoration: none;">Kullanım
+                                    Koşulları</a> ve
+                                <a href="/Home/Privacy" style="color: var(--primary); text-decoration: none;">Gizlilik
+                                    Politikası</a>'nı kabul ediyorum
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; margin-top: var(--space-4); padding: var(--space-4);">
+                        Kayıt Ol
+                    </button>
+                </form>
+
+                <div class="divider">veya</div>
+
+                <button class="social-btn">
+                    <span>🔵</span>
+                    <span>Google ile Kayıt Ol</span>
+                </button>
+
+                <div class="login-link">
+                    Zaten hesabınız var mı? <a href="/Account/Login">Giriş Yap</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <div class="auth-content">
+                <h1>Başlamak Çok Kolay!</h1>
+                <p>Birkaç dakika içinde web sitenizi oluşturun. AI destekli platformumuzla profesyonel sonuçlar alın.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        // Password strength indicator
+        document.getElementById('password-input').addEventListener('input', function (e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('password-strength-bar');
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+            strengthBar.className = 'password-strength-bar';
+            if (strength <= 1) {
+                strengthBar.classList.add('weak');
+            } else if (strength <= 3) {
+                strengthBar.classList.add('medium');
+            } else {
+                strengthBar.classList.add('strong');
+            }
+        });
+    </script>
+</body>
+
+</html>

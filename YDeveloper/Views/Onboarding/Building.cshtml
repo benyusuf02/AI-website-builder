@@ -1,0 +1,174 @@
+@model YDeveloper.Models.ApplicationUser
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery Antiforgery
+@{
+    ViewData["Title"] = "Siteniz Hazırlanıyor...";
+    Layout = null; // Full screen
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sihir Yapılıyor... | yaptık.com</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .loader-container {
+            text-center: center;
+            max-width: 500px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #ec4899);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            min-height: 1.5rem;
+        }
+
+        .icon-bounce {
+            animation: bounce 2s infinite;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @@keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-20px);
+            }
+
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loader-container">
+        <i class="bi bi-stars icon-bounce"></i>
+        <h2 class="fw-bold mb-3">Siteniz İnşa Ediliyor...</h2>
+        <p class="text-white-50">Yapay zeka asistanımız sizin için harika bir tasarım oluşturuyor.</p>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="status-text" id="statusText">Başlatılıyor...</div>
+    </div>
+
+    <script>
+        const statuses = [
+            "Sunucu hazırlanıyor...",
+            "Alan adı yapılandırılıyor...",
+            "Yapay zeka içerikleri yazıyor...",
+            "Görseller seçiliyor...",
+            "Tasarım şablonu uygulanıyor...",
+            "Mobil uyumluluk testleri yapılıyor...",
+            "Son dokunuşlar..."
+        ];
+
+        let progress = 0;
+        const bar = document.getElementById('progressBar');
+        const text = document.getElementById('statusText');
+
+        // Simulate progress visually
+        const interval = setInterval(() => {
+            progress += Math.random() * 5;
+            if (progress > 95) progress = 95; // Wait for real completion
+            bar.style.width = progress + '%';
+
+            // Random status text
+            if (Math.random() > 0.7) {
+                text.innerText = statuses[Math.floor(Math.random() * statuses.length)];
+            }
+        }, 800);
+
+        // Start Actual Process via AJAX (with 2 min timeout)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 dakika timeout
+
+        fetch('@Url.Action("FinalizeCreation", "Onboarding")', {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': '@Antiforgery.GetAndStoreTokens(Context).RequestToken'
+            },
+            signal: controller.signal
+        })
+            .then(response => {
+                clearTimeout(timeoutId);
+                if (response.redirected) {
+                    clearInterval(interval);
+                    bar.style.width = '100%';
+                    text.innerText = "Tamamlandı! Yönlendiriliyorsunuz...";
+                    setTimeout(() => window.location.href = response.url, 1000);
+                } else {
+                    return response.json(); // Check for errors
+                }
+            })
+            .then(data => {
+                if (data && data.success === false) {
+                    clearInterval(interval);
+                    text.innerHTML = `<span class="text-danger">⚠️ ${data.message || 'Bir hata oluştu'}</span><br><small>Lütfen <a href="/Onboarding/Step1_Details" class="text-white">buraya</a> tıklayarak yeniden deneyin.</small>`;
+                } else if (data && data.redirectUrl) {
+                    clearInterval(interval);
+                    bar.style.width = '100%';
+                    text.innerText = "Tamamlandı! Yönlendiriliyorsunuz...";
+                    setTimeout(() => window.location.href = data.redirectUrl, 1000);
+                }
+            })
+            .catch(err => {
+                clearInterval(interval);
+                if (err.name === 'AbortError') {
+                    text.innerHTML = `<span class="text-warning">⏱️ İşlem zaman aşımına uğradı</span><br><small>Siteniz arka planda oluşturulmaya devam ediyor. <a href="/Page" class="text-white">Panel</a>'e gidebilirsiniz.</small>`;
+                } else {
+                    text.innerHTML = `<span class="text-danger">⚠️ Bağlantı hatası</span><br><small>Lütfen internet bağlantınızı kontrol edin ve <a href="/Onboarding/Step1_Details" class="text-white">tekrar deneyin</a>.</small>`;
+                }
+                console.error('Site creation error:', err);
+            });
+    </script>
+</body>
+
+</html>

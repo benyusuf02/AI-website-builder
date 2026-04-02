@@ -1,0 +1,89 @@
+@model IEnumerable<YDeveloper.Models.PaymentTransaction>
+
+@{
+    ViewData["Title"] = "Ödeme Raporları";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 fw-bold mb-0">Ödeme Raporları</h2>
+        <a href="/Admin/PaymentReports/CreateManualTransaction" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Manuel Ödeme Ekle
+        </a>
+    </div>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Ödeme Raporları</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Tüm İşlemler
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered" id="datatablesSimple">
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Kullanıcı</th>
+                        <th>Tutar</th>
+                        <th>Durum</th>
+                        <th>IP Adresi</th>
+                        <th>3D Secure</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Timestamp.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                @if (item.User != null)
+                                {
+                                    <span>@item.User.Email</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Silinmiş Kullanıcı (@item.UserId)</span>
+                                }
+                            </td>
+                            <td>@item.Amount.ToString("C2") @item.Currency</td>
+                            <td>
+                                @if (item.Status == "Success")
+                                {
+                                    <span class="badge bg-success">Başarılı</span>
+                                }
+                                else if (item.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning">Bekliyor</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Başarısız</span>
+                                }
+                            </td>
+                            <td>@item.IpAddress</td>
+                            <td>
+                                @if (item.IsThreeDSecure)
+                                {
+                                    <span class="badge bg-success">Evet</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Hayır</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id"
+                                    class="btn btn-sm btn-info text-white">Detay</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

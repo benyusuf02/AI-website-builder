@@ -1,0 +1,75 @@
+@* Toast Notification System *@
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11000;">
+    <div id="globalToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+        aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastBody">
+                Mesaj içeriği
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .toast-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+
+    .toast-error {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+    }
+
+    .toast-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+
+    .toast-info {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+    }
+</style>
+
+<script>
+    // Global toast notification functions
+    window.showToast = function (message, type = 'info') {
+        const toastEl = document.getElementById('globalToast');
+        const toastBody = document.getElementById('toastBody');
+
+        if (toastEl && toastBody) {
+            // Remove previous type classes
+            toastEl.classList.remove('toast-success', 'toast-error', 'toast-warning', 'toast-info');
+
+            // Add new type class
+            toastEl.classList.add(`toast-${type}`);
+            toastBody.textContent = message;
+
+            const toast = new bootstrap.Toast(toastEl, {
+                autohide: true,
+                delay: type === 'error' ? 5000 : 3000
+            });
+            toast.show();
+        }
+    };
+
+    // Convenience methods
+    window.showSuccess = function (message) {
+        showToast(message, 'success');
+    };
+
+    window.showError = function (message) {
+        showToast(message, 'error');
+    };
+
+    window.showWarning = function (message) {
+        showToast(message, 'warning');
+    };
+
+    window.showInfo = function (message) {
+        showToast(message, 'info');
+    };
+</script>

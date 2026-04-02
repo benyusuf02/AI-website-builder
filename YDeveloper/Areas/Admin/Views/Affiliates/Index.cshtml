@@ -1,0 +1,65 @@
+@model List<YDeveloper.Models.Affiliate>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Affiliate Ortakları";
+}
+
+<div class="mb-4">
+    <h2 class="h4 fw-bold mb-0">Affiliate (Satış Ortaklığı)</h2>
+    <p class="text-muted small mb-0">Referans sistemi ile kazanç sağlayan kullanıcılar.</p>
+</div>
+
+<div class="admin-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4">Kullanıcı</th>
+                    <th>Referans Kodu</th>
+                    <th>Tıklanma</th>
+                    <th>Dönüşüm (Kayıt)</th>
+                    <th>Toplam Kazanç</th>
+                    <th>Bakiye</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark">@item.User?.FullName</div>
+                            <div class="small text-muted">@item.User?.Email</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-primary border font-monospace">@item.ReferralCode</span>
+                        </td>
+                        <td>@item.ClickCount</td>
+                        <td>@item.ConversionCount</td>
+                        <td class="text-success fw-bold">₺@item.TotalEarnings.ToString("N2")</td>
+                        <td class="text-primary fw-bold">₺@item.Balance.ToString("N2")</td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="badge bg-success rounded-pill">Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary rounded-pill">Pasif</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="bi bi-people fs-1 d-block mb-3 opacity-25"></i>
+                            Henüz affiliate ortağı bulunmuyor.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

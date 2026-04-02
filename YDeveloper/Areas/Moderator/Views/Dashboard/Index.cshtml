@@ -1,0 +1,93 @@
+@model IEnumerable<YDeveloper.Models.Ticket>
+@{
+    ViewData["Title"] = "Moderatör Paneli";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Moderatör Paneli</h1>
+        <div>
+            <span class="badge bg-secondary p-2">Rol: Moderatör</span>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <a asp-action="Index" asp-controller="Support" asp-area="Moderator" class="text-decoration-none">
+                <div class="card bg-warning text-dark h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-clock-history"></i> Bekleyen Talepler</h5>
+                        <p class="display-4 fw-bold mb-0">@ViewBag.PendingTickets</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a asp-action="Index" asp-controller="LiveChat" asp-area="Moderator" class="text-decoration-none">
+                <div class="card bg-success text-white h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-chat-dots"></i> Aktif Sohbetler</h5>
+                        <p class="display-4 fw-bold mb-0">@ViewBag.ActiveChats</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white h-100 shadow-sm border-0 transition-hover">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-check-circle"></i> Bugün Çözülen</h5>
+                    <p class="display-4 fw-bold mb-0">@ViewBag.ResolvedToday</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header fw-bold">Hızlı İşlemler</div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Index" asp-controller="Users" asp-area="Moderator"
+                            class="btn btn-outline-primary">
+                            <i class="bi bi-people"></i> Kullanıcı Ara / Yönet
+                        </a>
+                        <a asp-action="Index" asp-controller="Support" asp-area="Moderator"
+                            class="btn btn-outline-primary">
+                            <i class="bi bi-ticket-perforated"></i> Destek Talepleri
+                        </a>
+                         <a asp-action="Index" asp-controller="LiveChat" asp-area="Moderator" class="btn btn-outline-success">
+                            <i class="bi bi-chat-dots-fill"></i> Canlı Sohbetleri Yönet
+                        </a>
+                         <a asp-action="CannedResponses" asp-controller="Support" asp-area="Moderator" class="btn btn-outline-secondary">
+                            <i class="bi bi-lightning-charge"></i> Hazır Cevapları Düzenle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header fw-bold">Son Aktiviteler (Biletler)</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var item in Model)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">@item.CreatedAt.ToShortTimeString()</small>
+                                <span class="fw-bold ms-2">@item.Creator?.Email</span>
+                            </div>
+                            <span
+                                class="badge bg-@(@item.Status == YDeveloper.Models.TicketStatus.Open ? "warning" : "secondary")">
+                                @item.Status
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

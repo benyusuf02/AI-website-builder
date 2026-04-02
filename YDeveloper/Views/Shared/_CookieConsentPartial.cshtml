@@ -1,0 +1,37 @@
+@using Microsoft.AspNetCore.Http.Features
+
+<div id="cookieConsent" class="alert alert-info alert-dismissible fade show fixed-bottom m-3 shadow-lg border-0"
+    role="alert" style="display:none; z-index: 9999;">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <h5 class="alert-heading fw-bold"><i class="bi bi-cookie me-2"></i> Çerez Politikası</h5>
+            <p class="mb-0 small">
+                Sizlere daha iyi bir deneyim sunmak için çerezleri kullanıyoruz.
+                Sitemizi kullanmaya devam ederek çerez kullanımını kabul etmiş sayılırsınız.
+                <a asp-action="Privacy" asp-controller="Home" class="alert-link">Detaylı Bilgi</a>
+            </p>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm ms-3" id="acceptCookies">
+            Kabul Et
+        </button>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var cookieName = "YDeveloperCookieConsent";
+        var consent = localStorage.getItem(cookieName);
+
+        if (!consent) {
+            document.getElementById("cookieConsent").style.display = "block";
+        }
+
+        document.getElementById("acceptCookies").addEventListener("click", function () {
+            localStorage.setItem(cookieName, "true");
+            document.getElementById("cookieConsent").classList.remove("show");
+            setTimeout(function () {
+                document.getElementById("cookieConsent").style.display = "none";
+            }, 1000);
+        });
+    })();
+</script>

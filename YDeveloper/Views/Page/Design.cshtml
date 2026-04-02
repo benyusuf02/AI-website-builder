@@ -1,0 +1,540 @@
+﻿@model YDeveloper.Models.Page
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editör: @Model.MetaTitle</title>
+
+    <!-- Google Fonts: Modern Yazı Tipleri -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- GrapesJS ve Gerekli Eklentiler -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    <script src="https://unpkg.com/grapesjs"></script>
+
+    <!-- Web Sayfası Hazır Ayarları -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css">
+    <script src="https://unpkg.com/grapesjs-preset-webpage"></script>
+
+    <!-- Ekstra Bloklar -->
+    <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+    <script src="https://unpkg.com/grapesjs-plugin-forms"></script>
+    <script src="https://unpkg.com/grapesjs-navbar"></script>
+    <script src="https://unpkg.com/grapesjs-component-countdown"></script>
+    <script src="https://unpkg.com/grapesjs-tabs"></script>
+    <script src="https://unpkg.com/grapesjs-custom-code"></script>
+    <script src="https://unpkg.com/grapesjs-touch"></script>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            /* İndigo */
+            --secondary: #1e293b;
+            /* Koyu Gri Panel */
+            --bg-dark: #0f172a;
+            /* Arkaplan */
+            --text-light: #f8fafc;
+            --border-color: #334155;
+        }
+
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            overflow: hidden;
+        }
+
+        /* --- MODERN SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+
+        /* --- KANVAS (CANVAS) ARKAPLANI --- */
+        .gjs-cv-canvas {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- PANEL TASARIMI --- */
+        .gjs-pn-panel {
+            background-color: var(--secondary);
+            border-right: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color);
+        }
+
+        /* Panel Başlıkları */
+        .gjs-block-category .gjs-title {
+            background-color: #334155;
+            color: #fff;
+            font-weight: 600;
+            padding: 12px 15px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* --- BLOK KARTLARI (GÖRSEL ODAKLI) --- */
+        .gjs-blocks-c {
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .gjs-block {
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            padding: 10px 5px;
+            min-height: 85px;
+            width: 45% !important;
+            /* İkili ızgara */
+            flex-grow: 1;
+            color: #334155;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: grab;
+        }
+
+        .gjs-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Blok içindeki SVG (Görsel) Ayarları */
+        .gjs-block svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+            fill: currentColor;
+            opacity: 0.8;
+        }
+
+        .gjs-block-label {
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* --- BUTONLAR --- */
+        .btn-save-custom {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white !important;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 15px;
+            transition: transform 0.1s;
+        }
+
+        .btn-save-custom:active {
+            transform: scale(0.96);
+        }
+
+        .btn-back-custom {
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-right: 10px;
+        }
+
+        .btn-back-custom:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* GrapesJS UI Düzeltmeleri */
+        .gjs-sm-sector .gjs-sm-title {
+            background-color: var(--secondary);
+            color: #e2e8f0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .gjs-field {
+            background-color: #334155;
+            color: white;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .gjs-field input {
+            color: white;
+        }
+
+        .gjs-two-color {
+            color: #cbd5e1;
+        }
+
+        .gjs-pn-btn {
+            color: #94a3b8;
+        }
+
+        .gjs-pn-btn.gjs-pn-active {
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="gjs" style="height:0px; overflow:hidden;"></div>
+
+    <script type="text/javascript">
+
+        var dbContent = @Json.Serialize(Model.HtmlContent);
+
+        // İçerik boşsa gösterilecek varsayılan ekran
+        if (!dbContent) {
+            dbContent = `
+                <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: transparent;">
+                    <div style="text-align: center; padding: 40px; border: 2px dashed #94a3b8; border-radius: 16px; background: rgba(255,255,255,0.95); box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🚀</div>
+                        <h2 style="color: #1e293b; margin:0 0 10px 0; font-family: 'Inter', sans-serif;">Sayfa Tasarımına Başla</h2>
+                        <p style="color: #64748b; font-family: 'Inter', sans-serif;">Sağ panelden blokları sürükleyip buraya bırakın.</p>
+                    </div>
+                </div>`;
+        }
+
+        var editor = grapesjs.init({
+            container: '#gjs',
+            height: '100vh',
+            width: 'auto',
+            storageManager: false, // Kendi kaydetme fonksiyonumuzu kullanacağız
+            fromElement: false,
+            components: dbContent,
+
+            // Türkçe Dil Desteği
+            i18n: {
+                locale: 'tr',
+                messages: {
+                    tr: {
+                        styleManager: { empty: 'Düzenlemek için bir öğe seçin' },
+                        traitManager: { label: 'Ayarlar', empty: 'Özellikler için öğe seçin' },
+                        panels: { defaults: {} } // Panel isimlerini buraya ekleyebilirsiniz
+                    }
+                }
+            },
+
+            // Eklentiler
+            plugins: [
+                'gjs-preset-webpage',
+                'gjs-blocks-basic',
+                'grapesjs-plugin-forms',
+                'grapesjs-navbar',
+                'grapesjs-component-countdown',
+                'grapesjs-tabs',
+                'grapesjs-custom-code',
+                'grapesjs-touch'
+            ],
+
+            pluginsOpts: {
+                'gjs-preset-webpage': {
+                    modalImportTitle: 'İçe Aktar',
+                    modalExportTitle: 'Kodu Görüntüle',
+                    // Panelleri SAKIN silmeyelim, sadece bazılarını kullanalım
+                    blocks: ['link-block', 'quote', 'text-basic'],
+                },
+                'gjs-blocks-basic': {
+                    flexGrid: true,
+                    category: 'Temel Parçalar'
+                }
+            }
+        });
+
+        // ==========================================
+        // 🔥 GÖRSEL DESTEKLİ BLOK YÖNETİCİSİ 🔥
+        // ==========================================
+        const bm = editor.BlockManager;
+
+        // Kategoriler
+        const catLayout = { id: 'layout', label: '🏗️ Sayfa Düzeni', open: true };
+        const catSections = { id: 'sections', label: '✨ Hazır Bölümler', open: false };
+        const catMedia = { id: 'media', label: '📷 Medya & Galeri', open: false };
+        const catComponents = { id: 'components', label: '🧩 Bileşenler', open: false };
+
+        // --- 1. DÜZEN (LAYOUT) ---
+
+        const svgContainer = `<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="2" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="1"/></svg>`;
+        bm.add('container-fluid', {
+            label: 'Tam Genişlik',
+            category: catLayout,
+            media: svgContainer,
+            content: `<div style="padding: 50px 20px; min-height: 100px;"></div>`
+        });
+
+        const svgBox = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="1" stroke="currentColor" stroke-width="2" fill="none"/></svg>`;
+        bm.add('container-box', {
+            label: 'Ortalı Kutu',
+            category: catLayout,
+            media: svgBox,
+            content: `<div style="max-width: 1100px; margin: 0 auto; padding: 20px; min-height: 100px;"></div>`
+        });
+
+        const svg2Col = `<svg viewBox="0 0 24 24"><rect x="2" y="4" width="9" height="16" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><rect x="13" y="4" width="9" height="16" rx="1" stroke="currentColor" stroke-width="2" fill="none"/></svg>`;
+        bm.add('grid-2', {
+            label: '2 Sütun',
+            category: catLayout,
+            media: svg2Col,
+            content: `<div style="display:flex; flex-wrap:wrap; gap:20px;"><div style="flex:1; min-width:300px; padding:10px;">Sol</div><div style="flex:1; min-width:300px; padding:10px;">Sağ</div></div>`
+        });
+
+        const svg3Col = `<svg viewBox="0 0 24 24"><rect x="2" y="4" width="6" height="16" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="9" y="4" width="6" height="16" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="16" y="4" width="6" height="16" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>`;
+        bm.add('grid-3', {
+            label: '3 Sütun',
+            category: catLayout,
+            media: svg3Col,
+            content: `<div style="display:flex; flex-wrap:wrap; gap:20px;"><div style="flex:1; min-width:200px;">1</div><div style="flex:1; min-width:200px;">2</div><div style="flex:1; min-width:200px;">3</div></div>`
+        });
+
+        // --- 2. HAZIR BÖLÜMLER (SECTIONS) ---
+
+        // Hero Bölümü
+        const svgHero = `<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2" fill="#e2e8f0"/><circle cx="12" cy="10" r="3" fill="#94a3b8"/><rect x="6" y="15" width="12" height="2" fill="#94a3b8"/><rect x="8" y="18" width="8" height="2" fill="#94a3b8"/></svg>`;
+        bm.add('hero-section', {
+            label: 'Hero Başlık',
+            category: catSections,
+            media: svgHero,
+            content: `
+                <section style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 100px 20px; text-align: center;">
+                    <h1 style="font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; font-family:sans-serif;">Başlığınız Burada</h1>
+                    <p style="font-size: 1.25rem; opacity: 0.8; max-width: 600px; margin: 0 auto 30px; font-family:sans-serif;">Alt açıklama metni buraya gelecek.</p>
+                    <a href="#" style="background: #6366f1; color: white; padding: 15px 35px; border-radius: 50px; text-decoration: none; font-weight: 600; font-family:sans-serif; display:inline-block;">Harekete Geç</a>
+                </section>
+            `
+        });
+
+        // Özellikler (Features)
+        const svgFeatures = `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1" fill="none" stroke="currentColor"/><rect x="13" y="3" width="8" height="8" rx="1" fill="none" stroke="currentColor"/><rect x="3" y="13" width="8" height="8" rx="1" fill="none" stroke="currentColor"/><rect x="13" y="13" width="8" height="8" rx="1" fill="none" stroke="currentColor"/></svg>`;
+        bm.add('features-grid', {
+            label: 'Özellikler',
+            category: catSections,
+            media: svgFeatures,
+            content: `
+                <div style="padding: 60px 20px; background: #fff;">
+                    <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="font-size: 40px; margin-bottom: 15px;">⚡</div>
+                            <h3 style="font-family:sans-serif;">Hızlı</h3>
+                            <p style="color:#666; font-family:sans-serif;">Yüksek performanslı altyapı.</p>
+                        </div>
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="font-size: 40px; margin-bottom: 15px;">🛡️</div>
+                            <h3 style="font-family:sans-serif;">Güvenli</h3>
+                            <p style="color:#666; font-family:sans-serif;">Son teknoloji koruma sistemleri.</p>
+                        </div>
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="font-size: 40px; margin-bottom: 15px;">💎</div>
+                            <h3 style="font-family:sans-serif;">Premium</h3>
+                            <p style="color:#666; font-family:sans-serif;">En iyi kalite standartları.</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // Ekip (Team)
+        const svgTeam = `<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="19" cy="9" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M16 21v-1a3 3 0 0 1 1-2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="5" cy="9" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 21v-1a3 3 0 0 0-1-2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`;
+        bm.add('team-section', {
+            label: 'Ekip Üyeleri',
+            category: catSections,
+            media: svgTeam,
+            content: `
+                <div style="padding: 60px 20px; background: #f8fafc;">
+                    <h2 style="text-align: center; margin-bottom: 40px; font-family:sans-serif;">Ekibimizle Tanışın</h2>
+                    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                        <div style="background: white; padding: 20px; border-radius: 12px; width: 250px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                            <div style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin: 0 auto 15px;"></div>
+                            <h4 style="margin: 0; font-family:sans-serif;">Ali Yılmaz</h4>
+                            <span style="color: #64748b; font-size: 0.9rem; font-family:sans-serif;">CEO</span>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; width: 250px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                            <div style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin: 0 auto 15px;"></div>
+                            <h4 style="margin: 0; font-family:sans-serif;">Ayşe Demir</h4>
+                            <span style="color: #64748b; font-size: 0.9rem; font-family:sans-serif;">Tasarımcı</span>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // SSS (Accordion)
+        const svgFAQ = `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="10" width="18" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="16" width="18" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+        bm.add('faq-section', {
+            label: 'S.S.S. (Akordiyon)',
+            category: catComponents,
+            media: svgFAQ,
+            content: `
+                <div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+                    <h2 style="text-align: center; margin-bottom: 30px; font-family:sans-serif;">Sıkça Sorulan Sorular</h2>
+                    <details style="background: white; margin-bottom: 10px; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden;">
+                        <summary style="padding: 15px; font-weight: 600; cursor: pointer; background: #f8fafc; list-style: none; font-family:sans-serif;">Hizmet ücretli mi?</summary>
+                        <div style="padding: 15px; color: #475569; font-family:sans-serif;">Evet, ancak 14 günlük ücretsiz deneme sürümümüz mevcuttur. İstediğiniz zaman iptal edebilirsiniz.</div>
+                    </details>
+                    <details style="background: white; margin-bottom: 10px; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden;">
+                        <summary style="padding: 15px; font-weight: 600; cursor: pointer; background: #f8fafc; list-style: none; font-family:sans-serif;">Destek alabilir miyim?</summary>
+                        <div style="padding: 15px; color: #475569; font-family:sans-serif;">7/24 teknik destek ekibimiz size yardımcı olmak için hazır.</div>
+                    </details>
+                </div>
+            `
+        });
+
+        // Alt Bilgi (Footer)
+        const svgFooter = `<svg viewBox="0 0 24 24"><rect x="2" y="16" width="20" height="6" fill="#1e293b"/><rect x="2" y="2" width="20" height="12" fill="none" stroke="#ccc" stroke-dasharray="2,2"/></svg>`;
+        bm.add('footer-section', {
+            label: 'Alt Bilgi (Footer)',
+            category: catSections,
+            media: svgFooter,
+            content: `
+                <footer style="background: #1e293b; color: white; padding: 50px 20px; font-family:sans-serif;">
+                    <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <h3>Şirket Adı</h3>
+                            <p style="opacity: 0.7; line-height: 1.6;">Modern çözümler sunan teknoloji ortağınız.</p>
+                        </div>
+                        <div style="flex: 1; min-width: 200px;">
+                            <h4>Bağlantılar</h4>
+                            <ul style="list-style: none; padding: 0; opacity: 0.8;">
+                                <li style="margin-bottom: 10px;"><a href="#" style="color: white; text-decoration: none;">Anasayfa</a></li>
+                                <li style="margin-bottom: 10px;"><a href="#" style="color: white; text-decoration: none;">Hakkımızda</a></li>
+                                <li style="margin-bottom: 10px;"><a href="#" style="color: white; text-decoration: none;">İletişim</a></li>
+                            </ul>
+                        </div>
+                        <div style="flex: 1; min-width: 200px;">
+                            <h4>İletişim</h4>
+                            <p style="opacity: 0.7;">info@sirket.com</p>
+                            <p style="opacity: 0.7;">+90 555 123 45 67</p>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; opacity: 0.5; font-size: 0.9rem;">
+                        &copy; 2024 Tüm hakları saklıdır.
+                    </div>
+                </footer>
+            `
+        });
+
+        // İletişim Formu
+        const svgForm = `<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="7" x2="16" y2="7" stroke="currentColor" stroke-width="2"/><line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2"/><rect x="8" y="16" width="8" height="3" fill="currentColor"/></svg>`;
+        bm.add('contact-form-modern', {
+            label: 'İletişim Formu',
+            category: catComponents,
+            media: svgForm,
+            content: `
+                <div style="max-width: 500px; margin: 0 auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); font-family:sans-serif;">
+                    <h3 style="text-align: center; margin-top: 0;">Bize Ulaşın</h3>
+                    <form>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; margin-bottom: 5px; font-weight: 500;">Ad Soyad</label>
+                            <input type="text" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;" placeholder="Adınız">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; margin-bottom: 5px; font-weight: 500;">E-posta</label>
+                            <input type="email" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;" placeholder="ornek@email.com">
+                        </div>
+                        <button type="button" style="width: 100%; padding: 12px; background: #6366f1; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Gönder</button>
+                    </form>
+                </div>
+            `
+        });
+
+        // ==========================================
+        // 🔥 KAYDET BUTONU YAPILANDIRMASI 🔥
+        // ==========================================
+        editor.Panels.addButton('options', [
+            {
+                id: 'save-db',
+                className: 'btn-save-custom',
+                label: `<span>💾</span> Kaydet`,
+                command: 'save-db',
+                attributes: { title: 'Projeyi Kaydet' }
+            },
+            {
+                id: 'back-btn',
+                className: 'btn-back-custom',
+                label: '← Geri Dön',
+                command: function () { window.location.href = '/Page/Index?siteId=@Model.SiteId'; }
+            }
+        ]);
+
+        editor.Commands.add('save-db', {
+            run: function (editor, sender) {
+                sender && sender.set('active', 0);
+                const fullContent = `<style>${editor.getCss()}</style>` + editor.getHtml();
+
+                editor.Modal.setTitle('Kaydediliyor...');
+                editor.Modal.open();
+
+                const formData = new URLSearchParams();
+                formData.append('pageId', '@Model.Id');
+                formData.append('htmlContent', fullContent);
+
+                fetch('/Page/Save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            editor.Modal.setContent(`
+                            <div style="text-align:center; padding:30px; font-family:'Inter', sans-serif;">
+                                <div style="font-size:60px; color:#10b981; margin-bottom:15px;">✓</div>
+                                <h3 style="margin:0; color:#1e293b;">Kaydedildi!</h3>
+                                <p style="color:#64748b;">Değişiklikleriniz yayında.</p>
+                            </div>
+                        `);
+                            setTimeout(() => editor.Modal.close(), 1200);
+                        } else {
+                            editor.Modal.setContent('<h3 style="color:red; text-align:center;">Hata oluştu.</h3>');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        editor.Modal.setContent('<h3 style="color:red; text-align:center;">Sunucu hatası.</h3>');
+                    });
+            }
+        });
+
+    </script>
+</body>
+
+</html>

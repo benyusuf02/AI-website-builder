@@ -1,0 +1,82 @@
+@model List<YDeveloper.Models.BlogPost>
+@{
+    ViewData["Title"] = "Blog";
+}
+
+<div class="py-5 bg-light">
+    <div class="container py-5 text-center">
+        <h1 class="display-4 fw-bold mb-3">YDeveloper Blog</h1>
+        <p class="lead text-muted">Web teknolojileri, tasarım trendleri ve başarı hikayeleri.</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var post in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        @if (!string.IsNullOrEmpty(post.CoverImageUrl))
+                        {
+                            <img src="@post.CoverImageUrl" class="card-img-top" alt="@post.Title"
+                                style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                style="height: 200px;">
+                                <i class="bi bi-image fs-1 text-muted"></i>
+                            </div>
+                        }
+                        <div class="card-body p-4">
+                            <small class="text-primary fw-bold text-uppercase">Blog</small>
+                            <h4 class="fw-bold mt-2 mb-3">@post.Title</h4>
+                            <p class="text-muted text-truncate">
+                                @if (!string.IsNullOrEmpty(post.Content) && post.Content.Length > 100)
+                                {
+                                    @Html.Raw(post.Content.Substring(0, 100) + "...")
+                                }
+                                else
+                                {
+                                    @Html.Raw(post.Content)
+                                }
+                            </p>
+                            <a asp-controller="Home" asp-action="BlogPost" asp-route-id="@post.Id"
+                                class="fw-bold text-decoration-none">Devamını Oku <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <!-- Fallback Static Content -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?auto=format&fit=crop&q=80&w=500"
+                        class="card-img-top" alt="Blog 1">
+                    <div class="card-body p-4">
+                        <small class="text-primary fw-bold text-uppercase">Rehber</small>
+                        <h4 class="fw-bold mt-2 mb-3">2025 Web Tasarım Trendleri</h4>
+                        <p class="text-muted">Yapay zeka, minimalizm ve karanlık modun yükselişi.</p>
+                        <a href="#" class="fw-bold text-decoration-none">Devamını Oku <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1555421689-d68471e189f2?auto=format&fit=crop&q=80&w=500"
+                        class="card-img-top" alt="Blog 2">
+                    <div class="card-body p-4">
+                        <small class="text-success fw-bold text-uppercase">Başarı Hikayesi</small>
+                        <h4 class="fw-bold mt-2 mb-3">Bir Girişimin Yükselişi</h4>
+                        <p class="text-muted">E-ticaret başarısının sırları.</p>
+                        <a href="#" class="fw-bold text-decoration-none">Devamını Oku <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

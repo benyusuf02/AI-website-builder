@@ -1,0 +1,297 @@
+@model List<YDeveloper.Areas.Admin.Models.AdminUserViewModel>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+    ViewData["CurrentPage"] = "Users";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 position-relative">
+    <div class="d-flex align-items-center gap-3">
+        <h2 class="h4 fw-bold mb-0">Kullanıcı Yönetimi</h2>
+        
+        <!-- Batch Actions (Item 48) -->
+        <div id="bulk-actions" class="d-none bg-white shadow-sm border rounded-pill px-3 py-1 d-flex align-items-center animate-fade-in ms-3">
+            <span class="small fw-bold text-primary me-3"><span class="selected-count">0</span> seçildi</span>
+            <button class="btn btn-sm btn-link text-danger text-decoration-none p-0 fw-bold" onclick="alert('Toplu silme demo!')">
+                <i class="bi bi-trash"></i> Sil
+            </button>
+            <div class="vr mx-2"></div>
+            <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 fw-bold" onclick="alert('Toplu mail demo!')">
+                <i class="bi bi-envelope"></i> E-posta
+            </button>
+        </div>
+    </div>
+    <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+        <form method="get" class="d-flex gap-2 w-100">
+            <select name="status" class="form-select w-auto">
+                <!option value="All" @(ViewData["CurrentStatus"]?.ToString() == "All" ? "selected" : "")>Tüm Durumlar</!option>
+                <!option value="Active" @(ViewData["CurrentStatus"]?.ToString() == "Active" ? "selected" : "")>Aktif</!option>
+                <!option value="Banned" @(ViewData["CurrentStatus"]?.ToString() == "Banned" ? "selected" : "")>Yasaklı</!option>
+            </select>
+            <select name="role" class="form-select w-auto">
+                <!option value="All" @(ViewData["CurrentRole"]?.ToString() == "All" ? "selected" : "")>Tüm Roller</!option>
+                <!option value="Admin" @(ViewData["CurrentRole"]?.ToString() == "Admin" ? "selected" : "")>Yönetici</!option>
+                <!option value="Moderator" @(ViewData["CurrentRole"]?.ToString() == "Moderator" ? "selected" : "")>Moderatör</!option>
+            </select>
+            <input type="text" name="search" class="form-control" placeholder="Ara: İsim, Email..." value="@ViewData["CurrentSearch"]" style="min-width: 200px;">
+            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="bi bi-filter"></i> <span class="d-none d-md-inline">Filtrele</span>
+            </button>
+            @if (ViewData["CurrentSearch"]?.ToString() != null || ViewData["CurrentRole"]?.ToString() != "All" || ViewData["CurrentStatus"]?.ToString() != "All")
+            {
+                <a href="/Admin/Users" class="btn btn-outline-secondary" title="Temizle"><i class="bi bi-x-lg"></i></a>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 table-mobile-cards table-clickable">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3" style="width: 40px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="checkAll">
+                            </div>
+                        </th>
+                        <th class="py-3">Kullanıcı</th>
+                        <th>Roller</th>
+                        <th>Durum</th>
+                        <th>Siteler</th>
+                        <th>Limit</th>
+                        <th>Kayıt Tarihi</th>
+                        <th class="text-end pe-4">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr data-href="/Admin/Users/Details/@user.Id">
+                            <td class="ps-4">
+                                <div class="form-check">
+                                    <input class="form-check-input row-check" type="checkbox" value="@user.Id">
+                                </div>
+                            </td>
+                            <td data-label="Kullanıcı">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-weight: bold; color: #4b5563;">
+                                        @(!string.IsNullOrEmpty(user.FullName) && user.FullName.Length > 0 ? user.FullName.Substring(0, 1).ToUpper() : "?")
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">
+                                            <a href="/Admin/Users/Details/@user.Id" class="text-decoration-none text-dark hover-primary">@user.FullName</a>
+                                        </div>
+                                        <div class="small text-muted">@user.Email</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-label="Roller">
+                                @if (user.Roles.Contains("Admin"))
+                                {
+                                    <span class="badge bg-dark rounded-pill">Yönetici</span>
+                                }
+                                @if (user.Roles.Contains("Moderator"))
+                                {
+                                    <span class="badge bg-primary rounded-pill">Moderatör</span>
+                                }
+                                @if (!user.Roles.Any())
+                                {
+                                    <span class="badge bg-light text-dark border rounded-pill">Kullanıcı</span>
+                                }
+                            </td>
+                            <td data-label="Durum">
+                                @if (user.IsBanned)
+                                {
+                                    <span class="badge bg-danger">Yasaklı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                            </td>
+                            <td class="text-center" data-label="Siteler">
+                                <span class="badge bg-light text-secondary border">@user.SiteCount Site</span>
+                            </td>
+                            <td data-label="Limit">
+                                <form action="/Admin/Users/UpdateLimit" method="post" class="d-flex align-items-center gap-1 justify-content-end justify-content-md-start">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <input type="number" name="limit" value="@user.WebsiteLimit" min="0" class="form-control form-control-sm" style="width: 70px;" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Kaydet">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="text-muted small" data-label="Kayıt Tarihi">
+                                @user.CreatedAt.ToString("dd MMM yyyy")
+                            </td>
+                            <td class="text-end pe-4" data-label="İşlemler">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        İşlemler
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                        <li>
+                                            <a href="/Admin/Users/Details/@user.Id" class="dropdown-item fw-bold">
+                                                <i class="bi bi-eye me-2 text-primary"></i> Detayları Gör
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><h6 class="dropdown-header">Yetki İşlemleri</h6></li>
+                                        
+                                        @if (!user.Roles.Contains("Admin"))
+                                        {
+                                            <li>
+                                                <form action="/Admin/Users/Promote" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id">
+                                                    <input type="hidden" name="role" value="Admin">
+                                                    <button type="submit" class="dropdown-item" onclick="confirmAction(event, 'Admin Yap?', 'Bu kullanıcıya Tam Yetki verilecek.', 'Evet, Yönetici Yap')">
+                                                        <i class="bi bi-shield-lock me-2 text-dark"></i> Yönetici Yap
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <form action="/Admin/Users/Demote" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id">
+                                                    <input type="hidden" name="role" value="Admin">
+                                                    <button type="submit" class="dropdown-item" onclick="confirmAction(event, 'Yetkiyi Al?', 'Yöneticilik yetkisi alınacak.', 'Evet, Al')">
+                                                        <i class="bi bi-person-dash me-2 text-danger"></i> Yöneticiliği Al
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+
+                                        @if (!user.Roles.Contains("Moderator"))
+                                        {
+                                            <li>
+                                                <form action="/Admin/Users/Promote" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id">
+                                                    <input type="hidden" name="role" value="Moderator">
+                                                    <button type="submit" class="dropdown-item" onclick="confirmAction(event, 'Moderatör Yap?', 'Kullanıcı destek paneline erişebilecek.', 'Evet, Yap')">
+                                                        <i class="bi bi-headset me-2 text-primary"></i> Moderatör Yap
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <form action="/Admin/Users/Demote" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id">
+                                                    <input type="hidden" name="role" value="Moderator">
+                                                    <button type="submit" class="dropdown-item" onclick="confirmAction(event, 'Yetkiyi Al?', 'Moderatörlük yetkisi alınacak.', 'Evet, Al')">
+                                                        <i class="bi bi-person-dash me-2 text-warning"></i> Moderatörlüğü Al
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+
+                                        @if (!user.Roles.Contains("Admin"))
+                                        {
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form action="/Admin/Users/Impersonate" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id">
+                                                    <button type="submit" class="dropdown-item text-primary" onclick="confirmAction(event, 'Giriş Yapılsın mı?', 'Kendi hesabınızdan çıkış yapılacak ve bu kullanıcı olarak giriş yapacaksınız.', 'Evet, Giriş Yap')">
+                                                        <i class="bi bi-box-arrow-in-right me-2"></i> Olarak Giriş Yap
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form action="/Admin/Users/RevokeSession" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id">
+                                                    <button type="submit" class="dropdown-item text-warning" onclick="confirmAction(event, 'Oturumu Kapat?', 'Kullanıcının tüm cihazlardaki oturumu sonlandırılacak.', 'Evet, Kapat')">
+                                                        <i class="bi bi-laptop me-2"></i> Oturumu Sonlandır (Revoke)
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <li>
+                                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#noteModal" 
+                                                    data-userid="@user.Id" data-username="@user.FullName" data-note="@user.AdminNote">
+                                                <i class="bi bi-sticky me-2 text-info"></i> Not Ekle/Düzenle
+                                            </button>
+                                        </li>
+
+                                        @if (!user.IsBanned)
+                                        {
+                                            <li>
+                                                <form action="/Admin/Users/Ban" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id">
+                                                    <button type="submit" class="dropdown-item text-danger" onclick="confirmAction(event, 'Kullanıcıyı Yasakla?', 'Bu kullanıcı sisteme giriş yapamayacak.', 'Evet, Yasakla')">
+                                                        <i class="bi bi-slash-circle me-2"></i> Yasakla
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <form action="/Admin/Users/Unban" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id">
+                                                    <button type="submit" class="dropdown-item text-success" onclick="confirmAction(event, 'Yasağı Kaldır?', 'Kullanıcı tekrar giriş yapabilecek.', 'Evet, Kaldır')">
+                                                        <i class="bi bi-check-circle me-2"></i> Yasağı Kaldır
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Note Modal -->
+<div class="modal fade" id="noteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/Admin/Users/SaveNote" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kullanıcı Notu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="userId" id="noteUserId">
+                    <div class="mb-3">
+                        <label class="form-label">Notunuz (<span id="noteUserName" class="fw-bold"></span>)</label>
+                        <textarea class="form-control" name="note" id="noteText" rows="4" placeholder="Bu kullanıcı hakkında admin notu..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var noteModal = document.getElementById('noteModal');
+    noteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var userId = button.getAttribute('data-userid');
+        var username = button.getAttribute('data-username');
+        var note = button.getAttribute('data-note');
+
+        var modalUserId = noteModal.querySelector('#noteUserId');
+        var modalUserName = noteModal.querySelector('#noteUserName');
+        var modalNoteText = noteModal.querySelector('#noteText');
+
+        modalUserId.value = userId;
+        modalUserName.textContent = username;
+        modalNoteText.value = note;
+    });
+</script>

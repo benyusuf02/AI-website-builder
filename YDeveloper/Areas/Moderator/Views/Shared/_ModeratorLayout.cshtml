@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Moderatör Paneli</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --mod-primary: #0ea5e9;
+            /* Sky blue for Moderators */
+            --mod-bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--mod-bg);
+            min-height: 100vh;
+        }
+
+        .mod-sidebar {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mod-brand {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--mod-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1.5rem;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background-color: #f0f9ff;
+            color: var(--mod-primary);
+        }
+
+        .nav-link.active {
+            background-color: #e0f2fe;
+            color: var(--mod-primary);
+            border-left-color: var(--mod-primary);
+        }
+
+        .mod-main {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="mod-sidebar">
+        <a href="/Moderator/LiveChat" class="mod-brand">
+            <i class="bi bi-shield-check me-2"></i> Moderatör Paneli
+        </a>
+
+        <nav class="flex-grow-1 pt-4">
+            <div class="px-3 mb-2 text-xs text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">İletişim</div>
+
+            <a href="/Moderator/LiveChat"
+                class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "LiveChat" ? "active" : "")">
+                <i class="bi bi-chat-dots-fill"></i> Canlı Destek
+            </a>
+
+            <a href="/Moderator/Support"
+                class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Support" ? "active" : "")">
+                <i class="bi bi-ticket-perforated-fill"></i> Destek Talepleri
+            </a>
+
+            <div class="px-3 mb-2 mt-4 text-xs text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Üyeler
+            </div>
+
+            <a href="/Moderator/Users"
+                class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")">
+                <i class="bi bi-people-fill"></i> Müşteri Listesi
+            </a>
+        </nav>
+
+        <div class="p-3 border-top bg-light">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="bg-white border rounded-circle p-2 text-center" style="width:40px;height:40px;">
+                    <i class="bi bi-person-fill text-secondary"></i>
+                </div>
+                <div class="overflow-hidden">
+                    <div class="fw-bold text-truncate" style="font-size: 0.9rem;">@User.Identity?.Name</div>
+                    <div class="text-xs text-muted">Moderatör</div>
+                </div>
+            </div>
+            <a href="/" class="btn btn-outline-secondary w-100 btn-sm bg-white">
+                <i class="bi bi-box-arrow-left me-1"></i> Siteye Dön
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="mod-main">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 mb-4" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmAction(e, title, text, confirmText) {
+            e.preventDefault();
+            const form = e.target.closest('form');
+            Swal.fire({
+                title: title || 'Emin misiniz?',
+                text: text || "Bu işlem geri alınamaz!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#0ea5e9',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: confirmText || 'Evet, Onayla',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) form.submit();
+            });
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

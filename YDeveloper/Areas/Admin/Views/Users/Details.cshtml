@@ -1,0 +1,312 @@
+@model YDeveloper.Areas.Admin.Models.AdminUserDetailViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = Model.User.FullName;
+    ViewData["CurrentPage"] = "Users";
+}
+
+<div class="row g-3 mb-4">
+    <!-- Profile & Actions -->
+    <div class="col-12 col-lg-8">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fs-2 fw-bold"
+                style="width: 64px; height: 64px;">
+                @(!string.IsNullOrEmpty(Model.User.FullName) ? Model.User.FullName.Substring(0, 1).ToUpper() : "?")
+            </div>
+            <div>
+                <h1 class="h3 fw-bold mb-0">@Model.User.FullName</h1>
+                <div class="text-muted">@Model.User.Email <i class="bi bi-dot"></i> @Model.User.BusinessName</div>
+                <div class="d-flex gap-2 mt-2">
+                    @foreach (var role in Model.Roles)
+                    {
+                        <span class="badge bg-secondary">@role</span>
+                    }
+                    @if (Model.User.LockoutEnd > DateTimeOffset.UtcNow)
+                    {
+                        <span class="badge bg-danger">Yasaklı</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Aktif</span>
+                    }
+                    <span class="badge bg-light text-dark border">Limit: @Model.User.WebsiteLimit Site</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4 text-lg-end">
+        <div class="btn-group shadow-sm">
+            <form action="/Admin/Users/Impersonate" method="post" style="display:inline;">
+                <input type="hidden" name="userId" value="@Model.User.Id">
+                <button type="submit" class="btn btn-outline-primary"
+                    onclick="return confirm('Bu kullanıcı olarak giriş yapılsın mı?');">
+                    <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+                </button>
+            </form>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                data-bs-toggle="dropdown"></button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <form action="/Admin/Users/RevokeSession" method="post">
+                        <input type="hidden" name="userId" value="@Model.User.Id">
+                        <button class="dropdown-item text-warning" onclick="return confirm('Oturum kapatılsın mı?');">
+                            <i class="bi bi-laptop me-2"></i> Oturumu Sonlandır
+                        </button>
+                    </form>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                @if (Model.User.LockoutEnd > DateTimeOffset.UtcNow)
+                {
+                    <li>
+                        <form action="/Admin/Users/Unban" method="post">
+                            <input type="hidden" name="userId" value="@Model.User.Id">
+                            <button class="dropdown-item text-success"><i class="bi bi-check-circle me-2"></i> Yasağı
+                                Kaldır</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <form action="/Admin/Users/Ban" method="post">
+                            <input type="hidden" name="userId" value="@Model.User.Id">
+                            <button class="dropdown-item text-danger"
+                                onclick="return confirm('Kullanıcı yasaklansın mı?');"><i
+                                    class="bi bi-slash-circle me-2"></i> Yasakla</button>
+                        </form>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4" id="userTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button"
+            role="tab">Genel Bakış</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="billing-tab" data-bs-toggle="tab" data-bs-target="#billing" type="button"
+            role="tab">Ödemeler & Faturalar</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button"
+            role="tab">Aktivite Logları</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button"
+            role="tab">Admin Notları</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="userTabsContent">
+    <!-- Overview Tab -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+        <div class="row g-4">
+            <!-- Stats -->
+            <div class="col-md-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted text-uppercase small fw-bold">Toplam Harcama</h6>
+                        <h3 class="fw-bold mb-0">@Model.Transactions.Sum(t => t.Amount).ToString("C2")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted text-uppercase small fw-bold">Site Sayısı</h6>
+                        <h3 class="fw-bold mb-0">@Model.Sites.Count <span class="text-muted fs-6">/
+                                @Model.User.WebsiteLimit</span></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted text-uppercase small fw-bold">Son Giriş</h6>
+                        <div class="fw-bold">
+                            @(Model.User.LastLoginDate.HasValue
+                                ? Model.User.LastLoginDate.Value.ToString("dd MMM yyyy HH:mm")
+                                : "Henüz giriş yapmadı")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted text-uppercase small fw-bold">Kayıt Tarihi</h6>
+                        <div class="fw-bold">@Model.User.CreatedAt.ToString("dd MMM yyyy")</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Websites -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="card-title mb-0">Web Siteleri</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Site Adı</th>
+                                    <th>Domain</th>
+                                    <th>Paket</th>
+                                    <th>Durum</th>
+                                    <th class="text-end pe-4">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Sites.Any())
+                                {
+                                    @foreach (var site in Model.Sites)
+                                    {
+                                        <tr>
+                                            <td class="ps-4 fw-bold">@site.Subdomain</td>
+                                            <td>
+                                                <a href="#" target="_blank">@site.Subdomain</a>.ydeveloper.com
+                                                @if (!string.IsNullOrEmpty(site.Domain))
+                                                {
+                                                    <br>
+
+                                                    <small class="text-muted">@site.Domain</small>
+                                                }
+                                            </td>
+                                            <td><span class="badge bg-info text-dark">Standart</span></td> <!-- Dummy -->
+                                            <td><span class="badge bg-success">Yayında</span></td> <!-- Dummy -->
+                                            <td class="text-end pe-4">
+                                                <a href="#" class="btn btn-sm btn-light border">Yönet</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">Hiç site oluşturulmamış.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Billing Tab -->
+    <div class="tab-pane fade" id="billing" role="tabpanel">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Tarih</th>
+                                <th>Tutar</th>
+                                <th>Durum</th>
+                                <th>Açıklama</th>
+                                <th>Transaction ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Transactions.Any())
+                            {
+                                @foreach (var tx in Model.Transactions)
+                                {
+                                    <tr>
+                                        <td class="ps-4">@tx.Timestamp.ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td class="fw-bold">@tx.Amount.ToString("C2")</td>
+                                        <td>
+                                            @if (tx.Status == "Success")
+                                            {
+                                                <span class="badge bg-success">Başarılı</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">@tx.Status</span>
+                                            }
+                                        </td>
+                                        <td>@(string.IsNullOrEmpty(tx.ErrorMessage) ? "Ödeme İşlemi" : tx.ErrorMessage)</td>
+                                        <td class="text-monospace small">@tx.TransactionId</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">İşlem geçmişi bulunamadı.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Tab -->
+    <div class="tab-pane fade" id="activity" role="tabpanel">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Zaman</th>
+                                <th>İşlem</th>
+                                <th>Detay</th>
+                                <th>IP Adresi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.AuditLogs.Any())
+                            {
+                                @foreach (var log in Model.AuditLogs)
+                                {
+                                    <tr>
+                                        <td class="ps-4 text-muted small">@log.Timestamp.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                                        <td class="fw-bold text-primary">@log.Action</td>
+                                        <td>@log.Details</td>
+                                        <td class="text-monospace small">@log.IpAddress</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">Kayıt bulunamadı.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Tab -->
+    <div class="tab-pane fade" id="notes" role="tabpanel">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <form action="/Admin/Users/SaveNote" method="post">
+                    <input type="hidden" name="userId" value="@Model.User.Id" />
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Yönetici Notları</label>
+                        <div class="form-text mb-2">Bu notları sadece yöneticiler görebilir. Müşteri göremez.</div>
+                        <textarea name="note" class="form-control" rows="10"
+                            placeholder="Kullanıcı hakkında özel notlar...">@Model.User.AdminNote</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Notu Kaydet</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

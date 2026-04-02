@@ -1,0 +1,333 @@
+﻿@{
+    Layout = "_Layout";
+    var site = ViewBag.Site as YDeveloper.Models.Site;
+    ViewData["Title"] = "Yeni Sayfa Sihirbazı";
+}
+
+<style>
+    body {
+        background-color: #f4f7f6;
+    }
+
+    .header-gradient {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #4338ca 100%);
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 30px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(67, 56, 202, 0.3);
+    }
+
+    .template-card {
+        background: white;
+        border: 2px solid white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+
+    .template-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .template-card.active {
+        border-color: var(--primary-color);
+        background-color: #fcf8ff;
+    }
+
+    .template-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    #customPromptArea {
+        display: none;
+        margin-top: 20px;
+        animation: fadeIn 0.5s;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="header-gradient text-center mt-4">
+    <h2 class="fw-bold mb-1">✨ Sayfa Sihirbazı</h2>
+    <p class="mb-0 opacity-75">@(site?.Domain ?? "Site") için ne tür bir sayfa eklemek istersin?</p>
+</div>
+
+<div class="container pb-5">
+    <form action="@Url.Action("Create", "Page")" method="post" id="pageForm">
+        <input type="hidden" name="siteId" value="@(site?.Id ?? 0)" />
+        <input type="hidden" name="pageName" id="inputPageName" />
+        <input type="hidden" name="slug" id="inputSlug" />
+        <input type="hidden" name="prompt" id="inputPrompt" />
+
+        <!-- ŞABLON SEÇİMİ -->
+        <div class="row g-4 mb-5">
+            <!-- 1. İletişim -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('İletişim', '/iletisim', `Sen web geliştiricisisin. GÖREV: 'İletişim' sayfası yap. Harita, adres, telefon, e-posta ve iletişim formu (name, email, message) olsun.`)">
+                    <i class="bi bi-geo-alt-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">İletişim</h5>
+                </div>
+            </div>
+            <!-- 2. Hakkımızda -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Hakkımızda', '/hakkimizda', `Sen web geliştiricisisin. GÖREV: 'Hakkımızda' sayfası yap. Şirket tarihçesi, misyon, vizyon ve kurucu mesajı olsun.`)">
+                    <i class="bi bi-buildings-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Hakkımızda</h5>
+                </div>
+            </div>
+            <!-- 3. Hizmetler -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Hizmetler', '/hizmetler', `Sen web geliştiricisisin. GÖREV: 'Hizmetler' sayfası yap. Grid yapıda hizmet kutuları, ikonlar ve detay butonları olsun.`)">
+                    <i class="bi bi-briefcase-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Hizmetler</h5>
+                </div>
+            </div>
+            <!-- 4. Galeri -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Galeri', '/galeri', `Sen web geliştiricisisin. GÖREV: 'Galeri' sayfası yap. Masonry veya Grid yapıda bol görsel, lightbox efekti olsun.`)">
+                    <i class="bi bi-images template-icon"></i>
+                    <h5 class="fw-bold fs-6">Galeri</h5>
+                </div>
+            </div>
+            <!-- 5. S.V.S (FAQ) -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('S.S.S', '/sss', `Sen web geliştiricisisin. GÖREV: 'Sıkça Sorulan Sorular' (FAQ) sayfası yap. Accordion (açılır/kapanır) yapıda soru-cevaplar olsun.`)">
+                    <i class="bi bi-question-circle-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">S.S.S</h5>
+                </div>
+            </div>
+            <!-- 6. Ekibimiz -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Ekibimiz', '/ekip', `Sen web geliştiricisisin. GÖREV: 'Ekibimiz' sayfası yap. Çalışan fotoğrafları, isimleri ve unvanları olan kartlar olsun.`)">
+                    <i class="bi bi-people-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Ekibimiz</h5>
+                </div>
+            </div>
+            <!-- 7. Referanslar -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Referanslar', '/referanslar', `Sen web geliştiricisisin. GÖREV: 'Referanslar' sayfası yap. Müşteri logoları gridi ve müşteri yorumları (testimonials) slider'ı olsun.`)">
+                    <i class="bi bi-star-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Referanslar</h5>
+                </div>
+            </div>
+            <!-- 8. Fiyatlandırma -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Fiyatlar', '/fiyatlar', `Sen web geliştiricisisin. GÖREV: 'Fiyatlandırma' sayfası yap. 3'lü fiyat tablosu (Basic, Pro, Enterprise), özellik listesi ve satın al butonu olsun.`)">
+                    <i class="bi bi-tag-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Fiyatlar</h5>
+                </div>
+            </div>
+            <!-- 9. Blog -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Blog', '/blog', `Sen web geliştiricisisin. GÖREV: 'Blog' sayfası yap. Makale listesi, öne çıkan görsel, başlık, özet ve 'Devamını Oku' butonu olsun.`)">
+                    <i class="bi bi-pencil-square template-icon"></i>
+                    <h5 class="fw-bold fs-6">Blog</h5>
+                </div>
+            </div>
+            <!-- 10. Kariyer -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Kariyer', '/kariyer', `Sen web geliştiricisisin. GÖREV: 'Kariyer' sayfası yap. Açık pozisyonlar listesi, şirket kültürü ve başvuru butonu olsun.`)">
+                    <i class="bi bi-person-workspace template-icon"></i>
+                    <h5 class="fw-bold fs-6">Kariyer</h5>
+                </div>
+            </div>
+            <!-- 11. Menü (Restoran) -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Menü', '/menu', `Sen web geliştiricisisin. GÖREV: 'Restoran Menüsü' yap. Kategoriler (Başlangıç, Ana Yemek, Tatlı), yemek isimleri, fiyatlar ve kısa açıklamalar olsun.`)">
+                    <i class="bi bi-cup-hot-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Menü</h5>
+                </div>
+            </div>
+            <!-- 12. Rezervasyon -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Rezervasyon', '/rezervasyon', `Sen web geliştiricisisin. GÖREV: 'Rezervasyon' sayfası yap. Tarih, saat, kişi sayısı seçimi ve iletişim bilgileri formu olsun.`)">
+                    <i class="bi bi-calendar-check-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Rezervasyon</h5>
+                </div>
+            </div>
+            <!-- 13. Etkinlikler -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Etkinlikler', '/etkinlikler', `Sen web geliştiricisisin. GÖREV: 'Etkinlik Takvimi' sayfası yap. Yaklaşan etkinlikler listesi, tarih, yer ve bilet al butonu olsun.`)">
+                    <i class="bi bi-ticket-perforated-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Etkinlikler</h5>
+                </div>
+            </div>
+            <!-- 14. Belgelerim -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Belgeler', '/belgeler', `Sen web geliştiricisisin. GÖREV: 'Belgeler/Sertifikalar' sayfası yap. İndirilebilir PDF ikonları listesi ve dosya açıklamaları olsun.`)">
+                    <i class="bi bi-file-earmark-pdf-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Belgeler</h5>
+                </div>
+            </div>
+            <!-- 15. Videolar -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Videolar', '/videolar', `Sen web geliştiricisisin. GÖREV: 'Video Galerisi' yap. YouTube embed placeholderları olan grid yapıda video listesi olsun.`)">
+                    <i class="bi bi-play-btn-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Videolar</h5>
+                </div>
+            </div>
+            <!-- 16. Kampanyalar -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Kampanyalar', '/kampanyalar', `Sen web geliştiricisisin. GÖREV: 'Kampanyalar' sayfası yap. Büyük bannerlar, indirim kodları ve geri sayım sayacı olsun.`)">
+                    <i class="bi bi-megaphone-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Kampanyalar</h5>
+                </div>
+            </div>
+            <!-- 17. Gizlilik Politikası -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Gizlilik', '/gizlilik', `Sen web geliştiricisisin. GÖREV: 'Gizlilik Politikası' sayfası yap. Standart KVKK ve gizlilik metinleri içeren düz yazı formatı olsun.`)">
+                    <i class="bi bi-shield-lock-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Gizlilik</h5>
+                </div>
+            </div>
+            <!-- 18. Kullanım Şartları -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Şartlar', '/sartlar', `Sen web geliştiricisisin. GÖREV: 'Kullanım Şartları' sayfası yap. Yasal metinler, maddeler halinde kullanım koşulları olsun.`)">
+                    <i class="bi bi-file-text-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">Şartlar</h5>
+                </div>
+            </div>
+            <!-- 19. 404 Sayfası -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('404', '/404', `Sen web geliştiricisisin. GÖREV: '404 Hata Sayfası' yap. Yaratıcı bir 'Sayfa Bulunamadı' mesajı ve ana sayfaya dönüş butonu olsun.`)">
+                    <i class="bi bi-exclamation-triangle-fill template-icon"></i>
+                    <h5 class="fw-bold fs-6">404 Sayfası</h5>
+                </div>
+            </div>
+            <!-- 20. Çok Yakında -->
+            <div class="col-md-3 col-6">
+                <div class="template-card"
+                    onclick="selectTemplate('Yakında', '/yakinda', `Sen web geliştiricisisin. GÖREV: 'Çok Yakında' (Coming Soon) sayfası yap. Logo, 'Yapım Aşamasında' yazısı ve e-bülten kayıt formu olsun.`)">
+                    <i class="bi bi-hourglass-split template-icon"></i>
+                    <h5 class="fw-bold fs-6">Çok Yakında</h5>
+                </div>
+            </div>
+
+            <!-- Özel (Custom) -->
+            <div class="col-md-12">
+                <div class="template-card d-flex align-items-center justify-content-center gap-3 p-3"
+                    onclick="showCustomInput()">
+                    <i class="bi bi-magic template-icon mb-0" style="font-size: 1.5rem;"></i>
+                    <div class="text-start">
+                        <h5 class="fw-bold mb-0">✨ Özel Bir Şey Tasarla</h5>
+                        <small class="text-muted">Kendi hayalindeki sayfayı tarif et</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÖZEL GİRİŞ ALANI -->
+        <div id="customPromptArea" class="card shadow-sm border-0 p-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Sayfa Adı</label>
+                    <input type="text" id="customName" class="form-control" placeholder="Örn: Kampanyalar">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">URL (Slug)</label>
+                    <input type="text" id="customSlug" class="form-control" placeholder="Örn: /kampanyalar">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold">Tarif Et (Prompt)</label>
+                    <textarea id="customText" class="form-control" rows="4"
+                        placeholder="Nasıl bir sayfa istiyorsun?"></textarea>
+                </div>
+                <div class="col-12">
+                    <button type="button" onclick="submitCustom()" class="btn btn-primary w-100 py-3 fw-bold">
+                        🤖 Özel Sayfayı Oluştur
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="@Url.Action("Index", "Page", new { siteId = site?.Id ?? 0 })"
+            class="text-decoration-none text-muted">İptal ve Geri Dön</a>
+    </div>
+</div>
+
+<!-- Yükleniyor Ekranı -->
+<div id="loadingOverlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:9999; align-items:center; justify-content:center; flex-direction:column;">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+    <h4 class="mt-3 fw-bold text-dark">Yapay Zeka Tasarlıyor...</h4>
+    <p class="text-muted">Lütfen bekleyin, sayfayı oluşturuyoruz.</p>
+</div>
+
+<script>
+    function selectTemplate(name, slug, prompt) {
+        document.getElementById('inputPageName').value = name;
+        document.getElementById('inputSlug').value = slug;
+        document.getElementById('inputPrompt').value = prompt;
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        document.getElementById('pageForm').submit();
+    }
+
+    function showCustomInput() {
+        document.getElementById('customPromptArea').style.display = 'block';
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function submitCustom() {
+        const name = document.getElementById('customName').value;
+        const slug = document.getElementById('customSlug').value;
+        const promptText = document.getElementById('customText').value;
+
+        if (!name || !promptText) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Uyarı',
+                text: 'Lütfen tüm alanları doldurun.'
+            });
+            return;
+        }
+
+        const finalPrompt = `
+                Sen profesyonel bir web geliştiricisisin.
+                GÖREV: '${name}' isminde HTML sayfası yap.
+                Kullanıcı Tarifi: ${promptText}.
+                Tailwind CSS kullan. Sadece HTML ver.
+            `;
+
+        selectTemplate(name, slug, finalPrompt);
+    }
+</script>
+

@@ -1,0 +1,189 @@
+@model YDeveloper.Models.Site
+@{
+    ViewData["Title"] = "Site Ayarları";
+    Layout = "_Layout";
+}
+
+<style>
+    body {
+        background: #f8f9fa;
+    }
+
+    .settings-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .settings-card h5 {
+        border-bottom: 2px solid #f1f3f5;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+</style>
+}
+
+<div class="settings-header">
+    <div class="container">
+        <div class="d-flex align-items-center">
+            <a href="/Dashboard" class="btn btn-light btn-sm me-3">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div>
+                <h6 class="text-white-50 mb-1">Site Ayarları</h6>
+                <h2 class="mb-0 fw-bold">@(Model.Subdomain ?? Model.Domain ?? "Site")</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Genel Bilgiler -->
+            <div class="settings-card">
+                <h5 class="fw-bold">
+                    <i class="bi bi-info-circle me-2 text-primary"></i>Genel Bilgiler
+                </h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Site Adı</label>
+                        <input type="text" class="form-control" value="@(Model.Subdomain ?? Model.Domain)" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Domain</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control"
+                                value="@(Model.IsCustomDomain ? Model.Domain : Model.Subdomain + ".ydeveloper.com")"
+                                readonly>
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">Durum</label>
+                        <div>
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Aktif
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-pause-circle me-1"></i>Pasif
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Ayarları -->
+            <div class="settings-card">
+                <h5 class="fw-bold">
+                    <i class="bi bi-search me-2 text-success"></i>SEO Ayarları
+                </h5>
+                <form method="post" action="/Dashboard/UpdateSiteSettings">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="siteId" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Meta Description</label>
+                        <textarea class="form-control" name="metaDescription" rows="3"
+                            placeholder="Sitenizin kısa açıklaması..."></textarea>
+                        <small class="text-muted">Google'da gösterilecek açıklama</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Meta Keywords</label>
+                        <input type="text" class="form-control" name="metaKeywords"
+                            placeholder="kelime1, kelime2, kelime3">
+                        <small class="text-muted">Virgülle ayrılmış anahtar kelimeler</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Google Analytics ID (Opsiyonel)</label>
+                        <input type="text" class="form-control" name="googleAnalyticsId" placeholder="G-XXXXXXXXXX">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save me-2"></i>Kaydet
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tehlikeli Alan -->
+            <div class="settings-card border-danger">
+                <h5 class="fw-bold text-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Tehlikeli Alan
+                </h5>
+                <p class="text-muted">Bu işlemler geri alınamaz. Dikkatli olun!</p>
+                <button class="btn btn-outline-danger" onclick="confirmDelete()">
+                    <i class="bi bi-trash me-2"></i>Siteyi Sil
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar - Quick Info -->
+        <div class="col-lg-4">
+            <div class="settings-card">
+                <h6 class="fw-bold mb-3">Hızlı Bilgiler</h6>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Oluşturulma Tarihi:</span>
+                    <span class="fw-semibold">@Model.CreatedAt.ToString("dd MMM yyyy")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Paket Türü:</span>
+                    <span class="badge bg-primary">@Model.PackageType</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Abonelik Bitişi:</span>
+                    <span class="fw-semibold">@Model.SubscriptionEndDate.ToString("dd MMM yyyy")</span>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <h6 class="fw-bold mb-3">Yardım</h6>
+                <a href="/Home/Contact" class="btn btn-outline-secondary w-100 mb-2">
+                    <i class="bi bi-question-circle me-2"></i>Destek Al
+                </a>
+                <a href="#" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-book me-2"></i>Dokümantasyon
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete() {
+        Swal.fire({
+            title: 'Siteyi Silmek İstediğinize Emin Misiniz?',
+            text: 'Bu işlem geri alınamaz! Tüm sayfalar ve veriler silinecek.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Site silme işlemi
+                Swal.fire('Bilgi', 'Site silme özelliği yakında eklenecek.', 'info');
+            }
+        });
+    }
+</script>

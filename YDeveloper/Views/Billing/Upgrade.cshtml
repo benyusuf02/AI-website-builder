@@ -1,0 +1,49 @@
+@model YDeveloper.Services.UpgradeResult
+@{
+    ViewData["Title"] = "Paket Yükseltme";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <h2 class="h4 fw-bold mb-4">Paket Değişikliği: @ViewBag.PackageName</h2>
+
+                    <div class="list-group mb-4">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Yeni Paket Fiyatı</span>
+                            <span class="fw-bold">@Model.NewPlanCost.ToString("C")</span>
+                        </div>
+                        <div
+                            class="list-group-item d-flex justify-content-between align-items-center text-success bg-light">
+                            <span class="text-muted">Mevcut Paket Kalan Değer</span>
+                            <span class="fw-bold">-@Model.OldPlanRemainingValue.ToString("N2") ₺</span>
+                        </div>
+                        <div
+                            class="list-group-item d-flex justify-content-between align-items-center border-top border-2">
+                            <span class="fw-bold">Ödenecek Tutar</span>
+                            <span class="fw-bold fs-4 text-primary">@Model.AmountDue.ToString("C")</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Paketiniz hemen güncellenecek ve yeni fatura döneminiz bugün başlayacaktır.
+                    </div>
+
+                    <form asp-action="ConfirmUpgrade" method="post">
+                        <input type="hidden" name="id" value="@ViewBag.PackageId" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                @Model.AmountDue.ToString("C") Öde ve Yükselt
+                            </button>
+                            <a href="/" class="btn btn-link text-muted">Vazgeç</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

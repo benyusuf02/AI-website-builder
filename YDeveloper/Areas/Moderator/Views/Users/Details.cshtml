@@ -1,0 +1,119 @@
+@model YDeveloper.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Kullanıcı Detayı";
+    Layout = "_Layout";
+    var notes = ViewBag.Notes as List<YDeveloper.Models.UserNote>;
+    var tickets = ViewBag.Tickets as List<YDeveloper.Models.Ticket>;
+}
+
+<div class="container py-4">
+    <a asp-action="Index" class="btn btn-outline-secondary mb-3"><i class="bi bi-arrow-left"></i> Listeye Dön</a>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="row g-4">
+        <!-- User Info -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header fw-bold">Profil Bilgileri</div>
+                <div class="card-body">
+                    <h5 class="card-title">@Model.FullName</h5>
+                    <p class="text-muted mb-1">@Model.Email</p>
+                    <hr>
+                    <p><strong>İşletme:</strong> @Model.BusinessName</p>
+                    <p><strong>Telefon:</strong> @Model.PhoneNumber</p>
+                    <p><strong>Kayıt Tarihi:</strong> @Model.CreatedAt.ToShortDateString()</p>
+                </div>
+            </div>
+
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white fw-bold">Hassas İşlemler</div>
+                <div class="card-body">
+                    <form asp-action="ResetPassword" method="post" onsubmit="return confirm('Emin misiniz?');">
+                        <input type="hidden" name="userId" value="@Model.Id" />
+                        <label class="form-label small">Yeni Şifre Belirle</label>
+                        <div class="input-group mb-3">
+                            <input type="text" name="newPassword" class="form-control" required minlength="6">
+                            <button class="btn btn-danger" type="submit">Sıfırla</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRM & History -->
+        <div class="col-lg-8">
+            <!-- Internal Notes -->
+            <div class="card mb-4 bg-light border-warning">
+                <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between">
+                    <span><i class="bi bi-sticky"></i> Gizli Müşteri Notları</span>
+                    <small>Sadece Personel Görebilir</small>
+                </div>
+                <div class="card-body">
+                    <div class="notes-list mb-3" style="max-height: 200px; overflow-y: auto;">
+                        @if (notes != null && notes.Any())
+                        {
+                            foreach (var note in notes)
+                            {
+                                <div class="card mb-2">
+                                    <div class="card-body p-2 small">
+                                        <div class="text-muted mb-1" style="font-size: 0.75rem">
+                                            @note.CreatedAt.ToString("g") - @(note.AuthorId == Model.Id ? "Kendisi" :
+                                    "Personel")
+                                        </div>
+                                        @note.Note
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted small text-center">Henüz not eklenmemiş.</p>
+                        }
+                    </div>
+
+                    <form asp-action="AddNote" method="post">
+                        <input type="hidden" name="targetUserId" value="@Model.Id" />
+                        <div class="input-group">
+                            <input type="text" name="noteContent" class="form-control"
+                                placeholder="Not ekle (Örn: İade istedi, agresif müşteri vb.)" required>
+                            <button class="btn btn-warning" type="submit">Ekle</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Tickets -->
+            <div class="card">
+                <div class="card-header fw-bold">Son Destek Talepleri</div>
+                <div class="list-group list-group-flush">
+                    @if (tickets != null && tickets.Any())
+                    {
+                        foreach (var t in tickets)
+                        {
+                            <a asp-action="TicketDetails" asp-controller="Support" asp-route-id="@t.Id"
+                                class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">@t.Subject</h6>
+                                    <small>@t.CreatedAt.ToShortDateString()</small>
+                                </div>
+                                <small class="text-muted">Durum: @t.Status</small>
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <div class="p-3 text-center text-muted">Destek talebi bulunmuyor.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

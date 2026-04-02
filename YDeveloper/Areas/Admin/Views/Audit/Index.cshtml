@@ -1,0 +1,68 @@
+@model List<YDeveloper.Models.AuditLog>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Denetim Kayıtları";
+}
+
+<div class="mb-4">
+    <h2 class="h4 fw-bold mb-0">Denetim Kayıtları (Audit Logs)</h2>
+    <p class="text-muted small">Sistemdeki tüm kritik yönetici işlemlerinin kaydı.</p>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 py-3">Tarih</th>
+                    <th>İşlem Yapan</th>
+                    <th>Eylem</th>
+                    <th>Detaylar</th>
+                    <th>Hedef Kullanıcı</th>
+                    <th>IP Adresi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model)
+                {
+                    <tr>
+                        <td class="ps-4 text-nowrap text-muted small">
+                            @log.Timestamp.ToString("dd.MM.yyyy HH:mm")
+                        </td>
+                        <td class="fw-medium">
+                            @if (!string.IsNullOrEmpty(log.PerformerUserId))
+                            {
+                                <span class="d-inline-block text-truncate" style="max-width: 150px;"
+                                    title="@log.PerformerUserId">
+                                    <i class="bi bi-person me-1"></i> @log.PerformerUserId.Substring(0, Math.Min(8,
+                            log.PerformerUserId.Length))...
+                                </span>
+                            }
+                            else
+                            {
+                                <span>System</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary rounded-pill fw-normal">@log.Action</span>
+                        </td>
+                        <td>
+                            <span class="text-dark">@log.Details</span>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(log.TargetUserId))
+                            {
+                                <span class="small font-monospace text-muted">@log.TargetUserId</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td class="text-muted small">@log.IpAddress</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

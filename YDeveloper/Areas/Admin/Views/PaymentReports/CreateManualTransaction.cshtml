@@ -1,0 +1,54 @@
+@model YDeveloper.Models.PaymentTransaction
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Manuel Ödeme Oluştur";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-credit-card-2-back me-2 text-primary"></i> Manuel Ödeme Girişi
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                    </div>
+                }
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Kullanıcı E-posta</label>
+                        <input type="email" name="email" class="form-control" required
+                            placeholder="ornek@musteri.com" />
+                        <div class="form-text">Ödemeyi yapan kayıtlı kullanıcının e-posta adresi.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tutar (₺)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₺</span>
+                            <input type="number" name="amount" class="form-control" required min="1" step="0.01" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Açıklama / Not</label>
+                        <textarea name="note" class="form-control" rows="3" required
+                            placeholder="Havale/EFT Bilgisi, Fatura No vb."></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary fw-bold">
+                            <i class="bi bi-check-lg me-2"></i> Ödemeyi Kaydet
+                        </button>
+                        <a href="/Admin/PaymentReports" class="btn btn-light border">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

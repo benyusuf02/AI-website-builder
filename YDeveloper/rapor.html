@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YDeveloper SaaS Proje Denetim Raporu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #4f46e5;
+            --secondary: #ec4899;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+            scroll-behavior: smooth;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #818cf8 0%, #d946ef 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .stat-gauge {
+            width: 120px;
+            height: 120px;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Global Background Elements -->
+    <div class="glow top-0 left-0"></div>
+    <div class="glow bottom-0 right-0"
+        style="background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);"></div>
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside
+            class="w-72 border-r border-white/5 hidden lg:block p-8 sticky top-0 h-screen overflow-y-auto bg-black/50">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-rocket text-white"></i>
+                </div>
+                <h1 class="font-extrabold text-xl tracking-tighter">YDEVELOPER</h1>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="#genel"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl sidebar-item transition-all text-indigo-400 bg-indigo-500/10">
+                    <i class="fas fa-th-large"></i> Genel Bakış
+                </a>
+                <a href="#calisma"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl sidebar-item transition-all text-gray-400 hover:text-white">
+                    <i class="fas fa-cog"></i> Çalışma Prensibi
+                </a>
+                <a href="#teknik"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl sidebar-item transition-all text-gray-400 hover:text-white">
+                    <i class="fas fa-code"></i> Teknik Audit
+                </a>
+                <a href="#ux"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl sidebar-item transition-all text-gray-400 hover:text-white">
+                    <i class="fas fa-smile"></i> Kullanıcı Deneyimi
+                </a>
+                <a href="#oneri"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl sidebar-item transition-all text-gray-400 hover:text-white">
+                    <i class="fas fa-lightbulb"></i> Öneriler
+                </a>
+            </nav>
+
+            <div class="mt-auto pt-10 border-t border-white/5 pb-10">
+                <div class="glass-card p-4">
+                    <p class="text-xs text-gray-500 mb-1">Audit Tarihi</p>
+                    <p class="text-sm font-semibold">30 Aralık 2025</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 lg:p-12">
+
+            <!-- Header -->
+            <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                <div>
+                    <h2 class="text-3xl lg:text-5xl font-extrabold mb-2 tracking-tight">SaaS Denetim <span
+                            class="gradient-text">Raporu</span></h2>
+                    <p class="text-gray-400">YDeveloper Platform Analizi ve Performans Ölçümleri</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="window.print()"
+                        class="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all font-semibold flex items-center gap-2">
+                        <i class="fas fa-download"></i> PDF İndir
+                    </button>
+                    <div
+                        class="px-6 py-3 bg-green-500/10 border border-green-500/20 text-green-400 rounded-2xl font-bold flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-circle pulse"></span> SİSTEM AKTİF
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Grid -->
+            <section id="genel" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+
+                <!-- Health Score Card -->
+                <div
+                    class="glass-card p-8 col-span-1 md:col-span-2 flex items-center justify-between group overflow-hidden relative">
+                    <div class="relative z-10">
+                        <h3 class="text-gray-400 font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-heartbeat text-indigo-500"></i> PROJE SAĞLIK SKORU
+                        </h3>
+                        <div class="flex items-baseline gap-4">
+                            <span class="text-6xl font-black gradient-text">92</span>
+                            <span class="text-xl text-gray-500 font-bold">/ 100</span>
+                        </div>
+                        <p class="mt-4 text-sm text-gray-400 max-w-xs">
+                            Sistem mimarisi, kod kalitesi ve UX metriklerine göre hesaplanan genel performans puanı.
+                        </p>
+                    </div>
+                    <div
+                        class="w-48 h-48 absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                        <i class="fas fa-shield-alt text-9xl"></i>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="glass-card p-8">
+                    <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Toplam Kullanıcı</p>
+                    <p class="text-3xl font-bold mb-4">12,480</p>
+                    <div class="flex items-center gap-2 text-green-400 text-sm font-bold">
+                        <i class="fas fa-arrow-up"></i> %12.5 <span class="text-gray-500 font-normal ml-1">bu
+                            hafta</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-8 text-indigo-400">
+                    <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Aylık Gelir (MRR)</p>
+                    <p class="text-3xl font-bold mb-4 text-white">₺42.500</p>
+                    <div class="w-full bg-white/5 rounded-full h-1.5">
+                        <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 75%"></div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Working Principle Section -->
+            <section id="calisma" class="mb-12 scroll-mt-24">
+                <div class="glass-card p-8 lg:p-12">
+                    <div class="flex items-center gap-4 mb-10">
+                        <div
+                            class="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400">
+                            <i class="fas fa-project-diagram text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold tracking-tight">Çalışma Prensibi & Mimari</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                        <div class="space-y-8">
+                            <div class="flex gap-6">
+                                <span
+                                    class="bg-indigo-500/10 text-indigo-400 w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold">1</span>
+                                <div>
+                                    <h4 class="font-bold mb-2">AI Destekli Giriş</h4>
+                                    <p class="text-sm text-gray-400">User Prompt (İstem) Gemini AI modelleriyle işlenir.
+                                        Sektöre özel içerik, görseller ve SEO anahtar kelimeleri saniyeler içinde
+                                        kurgulanır.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-6">
+                                <span
+                                    class="bg-indigo-500/10 text-indigo-400 w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold">2</span>
+                                <div>
+                                    <h4 class="font-bold mb-2">Statik Site Oluşturma</h4>
+                                    <p class="text-sm text-gray-400">Tasarım Engine, verileri önceden optimize edilmiş
+                                        HTML/TS bileşenlerine dönüştürür ve AWS S3 üzerinde izole bir tenant klasörüne
+                                        yükler.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-6">
+                                <span
+                                    class="bg-indigo-500/10 text-indigo-400 w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold">3</span>
+                                <div>
+                                    <h4 class="font-bold mb-2">SaaS Routing Proxy</h4>
+                                    <p class="text-sm text-gray-400">Özel geliştirilen Middleware; subdomain veya custom
+                                        domain üzerinden gelen isteği yakalar, DB doğrulamasını yapar ve içeriği S3'ten
+                                        kullanıcıya şeffafça sunar.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 bg-black/40 border border-white/5 rounded-3xl p-6 relative group">
+                            <!-- Visual Diagram PlaceHolder -->
+                            <div class="h-full min-h-[300px] flex flex-col justify-center gap-8 px-10">
+                                <div class="flex justify-between items-center relative">
+                                    <div class="p-4 glass-card text-xs font-bold text-center w-32">USER REQUEST<br><span
+                                            class="text-gray-500">Subdomain.com</span></div>
+                                    <div class="absolute inset-x-0 h-px bg-indigo-500/30 -z-10 top-1/2"></div>
+                                    <div
+                                        class="p-5 bg-indigo-600 rounded-3xl text-sm font-bold shadow-lg shadow-indigo-500/20">
+                                        ROUTING MIDDLEWARE</div>
+                                    <div class="absolute inset-x-0 h-px bg-indigo-500/30 -z-10 top-1/2"></div>
+                                    <div class="p-4 glass-card text-xs font-bold text-center w-32 border-dashed">AWS S3
+                                        STORAGE<br><span class="text-yellow-500">Site Assets</span></div>
+                                </div>
+                                <div class="flex justify-center">
+                                    <div class="flex flex-col items-center">
+                                        <div class="h-10 w-px bg-gradient-to-b from-indigo-500 to-transparent"></div>
+                                        <div
+                                            class="p-4 glass-card text-[10px] w-48 text-center text-gray-400 uppercase tracking-widest">
+                                            Database Context Check (Site Existence, Plan Validation, Expiry)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technical & UX Side-by-Side -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+
+                <!-- Technical Audit -->
+                <section id="teknik" class="glass-card p-8 scroll-mt-24">
+                    <h3 class="text-xl font-bold mb-8 flex items-center gap-3">
+                        <i class="fas fa-microchip text-indigo-500"></i> Teknik Denetim (Tech Stack)
+                    </h3>
+
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-end border-b border-white/5 pb-4">
+                            <div>
+                                <h5 class="font-bold">Framework & Runtime</h5>
+                                <p class="text-xs text-gray-500 uppercase">.NET 9.0 Core + ASP.NET Core MVC</p>
+                            </div>
+                            <span
+                                class="px-3 py-1 bg-green-500/10 text-green-400 text-xs font-bold rounded-lg border border-green-500/20">KARARLI
+                                (V9)</span>
+                        </div>
+                        <div class="flex justify-between items-end border-b border-white/5 pb-4">
+                            <div>
+                                <h5 class="font-bold">Veri Katmanı</h5>
+                                <p class="text-xs text-gray-500 uppercase">Entity Framework Core + MSSQL + Redis</p>
+                            </div>
+                            <span
+                                class="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-bold rounded-lg border border-blue-500/20">ORM
+                                OPTİMAL</span>
+                        </div>
+                        <div class="flex justify-between items-end border-b border-white/5 pb-4">
+                            <div>
+                                <h5 class="font-bold">Multitenancy Stratejisi</h5>
+                                <p class="text-xs text-gray-500 uppercase">Subdomain & Domain Mapping Middleware</p>
+                            </div>
+                            <span
+                                class="px-3 py-1 bg-orange-500/10 text-orange-400 text-xs font-bold rounded-lg border border-orange-500/20">HIZLI
+                                (DİNAMİK)</span>
+                        </div>
+                        <div class="pt-4">
+                            <canvas id="techRadar" height="200"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- UX Audit -->
+                <section id="ux" class="glass-card p-8 scroll-mt-24">
+                    <h3 class="text-xl font-bold mb-8 flex items-center gap-3">
+                        <i class="fas fa-bezier-curve text-secondary"></i> Kullanıcı Deneyimi (UX Score)
+                    </h3>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <p class="text-[10px] text-gray-500 uppercase mb-2">Onboarding (Site Kurma)</p>
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl font-bold">9.5</span>
+                                <div class="h-1 flex-1 bg-white/10 rounded-full">
+                                    <div class="h-1 bg-indigo-500 rounded-full" style="width: 95%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <p class="text-[10px] text-gray-500 uppercase mb-2">Mobil Uyumluluk</p>
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl font-bold">8.0</span>
+                                <div class="h-1 flex-1 bg-white/10 rounded-full">
+                                    <div class="h-1 bg-pink-500 rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <p class="text-[10px] text-gray-500 uppercase mb-2">Yükleme Hızı (LCP)</p>
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl font-bold">9.8</span>
+                                <div class="h-1 flex-1 bg-white/10 rounded-full">
+                                    <div class="h-1 bg-emerald-500 rounded-full" style="width: 98%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <p class="text-[10px] text-gray-500 uppercase mb-2">Admin Panel Kolaylığı</p>
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl font-bold">8.5</span>
+                                <div class="h-1 flex-1 bg-white/10 rounded-full">
+                                    <div class="h-1 bg-yellow-500 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-pink-500/5 rounded-2xl border border-pink-500/10">
+                        <h5 class="font-bold text-pink-400 mb-3 text-sm flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle"></i> KRİTİK UX NOTU:
+                        </h5>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Ana sayfa kahraman (hero) alanı **daktilo efekti ve dinamik içerik senkronizasyonu** ile üst
+                            düzey bir profesyonellik kazanmış durumda. Ancak, ödeme adımındaki (checkout) uzun formlar
+                            dönüşüm oranını (CVR) %10 düşürebilir. "Step-by-step" modeline geçiş önerilir.
+                        </p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Issues and Recommendations -->
+            <section id="oneri" class="mb-24 scroll-mt-24">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-card p-8">
+                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fas fa-bug text-red-400"></i> Tespit Edilen Teknik Sorunlar
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="text-gray-500">
+                                    <tr class="border-b border-white/5">
+                                        <th class="py-4 font-semibold">SORUN / DOSYA</th>
+                                        <th class="py-4 font-semibold">KRİTİKLİK</th>
+                                        <th class="py-4 font-semibold">DURUM</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-300">
+                                    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                        <td class="py-4">
+                                            <div class="font-bold text-white">Middleware Cache Eksikliği</div>
+                                            <div class="text-[10px] text-gray-500">SaaS_RoutingMiddleware.cs - Line 72
+                                            </div>
+                                        </td>
+                                        <td class="py-4"><span
+                                                class="px-2 py-1 bg-yellow-500/10 text-yellow-500 text-[10px] rounded font-bold">ORTA</span>
+                                        </td>
+                                        <td class="py-4 text-xs">DB çağrıları Redis ile önbelleğe alınmalı.</td>
+                                    </tr>
+                                    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                        <td class="py-4">
+                                            <div class="font-bold text-white">Null Reference Uyarıları (Linter)</div>
+                                            <div class="text-[10px] text-gray-500">OnboardingController.cs - Multiple
+                                                Lines</div>
+                                        </td>
+                                        <td class="py-4"><span
+                                                class="px-2 py-1 bg-indigo-500/10 text-indigo-500 text-[10px] rounded font-bold">DÜŞÜK</span>
+                                        </td>
+                                        <td class="py-4 text-xs">Runtime hatasına dönüşebilir, Null-Safety uygulanmalı.
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                        <td class="py-4">
+                                            <div class="font-bold text-white">Yedekleme Stratejisi</div>
+                                            <div class="text-[10px] text-gray-500">BackupService.cs - S3 Sync</div>
+                                        </td>
+                                        <td class="py-4"><span
+                                                class="px-2 py-1 bg-green-500/10 text-green-500 text-[10px] rounded font-bold">OPTİMAL</span>
+                                        </td>
+                                        <td class="py-4 text-xs">AWS S3 senkronizasyonu başarılı.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div
+                        class="glass-card p-8 bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20">
+                        <h3 class="text-xl font-bold mb-6 text-indigo-400">YDeveloper Roadmap</h3>
+                        <div class="space-y-6">
+                            <div class="relative pl-6 border-l-2 border-indigo-500/30">
+                                <div class="absolute -left-[5px] top-0 w-2 h-2 bg-indigo-500 rounded-full"></div>
+                                <h6 class="text-sm font-bold text-white">Short-term (Q1)</h6>
+                                <p class="text-xs text-gray-500 mt-1">SaaS Middleware içine Layer 2 (Memory) önbellek
+                                    eklemesi.</p>
+                            </div>
+                            <div class="relative pl-6 border-l-2 border-indigo-500/30">
+                                <div class="absolute -left-[5px] top-0 w-2 h-2 bg-gray-500 rounded-full"></div>
+                                <h6 class="text-sm font-bold text-gray-400">Mid-term (Q2)</h6>
+                                <p class="text-xs text-gray-500 mt-1">Farklı AI modelleri için A/B Test altyapısı
+                                    (Gemini vs GPT-4).</p>
+                            </div>
+                            <div class="relative pl-6 border-l-2 border-indigo-500/30">
+                                <div class="absolute -left-[5px] top-0 w-2 h-2 bg-gray-500 rounded-full"></div>
+                                <h6 class="text-sm font-bold text-gray-400">Long-term (Q3)</h6>
+                                <p class="text-xs text-gray-500 mt-1">Native Mobil App (MAUI/Flutter) ile API üzerinden
+                                    site yönetimi.</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="mt-8 p-4 bg-indigo-600 rounded-2xl text-center cursor-pointer hover:bg-indigo-500 transition-all font-bold">
+                            Audit Tamamlandı
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="text-center text-gray-600 text-[10px] uppercase tracking-[0.2em] py-10">
+                &copy; 2025 AI-AUDIT ENGINE | YDEVELOPER V2.1.0 PRE-RELEASE
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('techRadar').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Performans', 'Scalability', 'Security', 'Maintainability', 'API Quality', 'CI/CD'],
+                datasets: [{
+                    label: 'Sistem Kapasitesi',
+                    data: [98, 92, 85, 80, 88, 75],
+                    fill: true,
+                    backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                    borderColor: 'rgb(79, 70, 229)',
+                    pointBackgroundColor: 'rgb(79, 70, 229)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(79, 70, 229)'
+                }]
+            },
+            options: {
+                elements: {
+                    line: { borderWidth: 3 }
+                },
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255,255,255,0.1)' },
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

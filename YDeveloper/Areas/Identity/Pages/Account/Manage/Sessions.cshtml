@@ -1,0 +1,56 @@
+@page
+@model YDeveloper.Areas.Identity.Pages.Account.Manage.SessionsModel
+@inject YDeveloper.Data.YDeveloperContext Context
+@{
+    ViewData["Title"] = "Aktif Oturumlar";
+    ViewData["ActivePage"] = ManageNavPages.Sessions;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-md-12">
+        <p>Hesabınıza yapılan son giriş işlemlerini aşağıda görebilirsiniz.</p>
+        
+        @if (Model.UserDevices != null && Model.UserDevices.Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Cihaz / Tarayıcı</th>
+                            <th>IP Adresi</th>
+                            <th>Son Aktivite</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var device in Model.UserDevices)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@device.DeviceName</strong><br />
+                                    <small class="text-muted">@device.UserAgent</small>
+                                </td>
+                                <td>@device.IpAddress</td>
+                                <td>@device.LastActive.ToString("g")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="alert alert-warning mt-3">
+                <strong>Güvenlik Uyarısı:</strong> Eğer tanımadığınız bir cihaz görürseniz veya hesabınızın tehlikede olduğunu düşünüyorsanız, aşağıdaki butonu kullanarak tüm cihazlardan çıkış yapabilirsiniz. Bu işlem mevcut oturumunuzu da kapatacaktır.
+            </div>
+
+            <form method="post" asp-page-handler="SignOutAll">
+                <button type="submit" class="btn btn-danger">Tüm Cihazlardan Çıkış Yap</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info">Henüz kaydedilmiş bir oturum bilgisi bulunmuyor.</div>
+        }
+    </div>
+</div>

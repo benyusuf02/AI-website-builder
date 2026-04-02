@@ -1,0 +1,60 @@
+@model List<YDeveloper.Models.Site>
+@{
+    ViewData["Title"] = "Domains Management";
+}
+
+<div class="card">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">All Domains</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Domain</th>
+                        <th>Package</th>
+                        <th>Pages</th>
+                        <th>Status</th>
+                        <th>Expires</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var site in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <strong>@site.Domain</strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">@site.PackageType</span>
+                            </td>
+                            <td>
+                                @site.Pages.Count pages
+                            </td>
+                            <td>
+                                @if (site.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                @site.SubscriptionEndDate.ToString("yyyy-MM-dd")
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="http://@site.Domain" target="_blank" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

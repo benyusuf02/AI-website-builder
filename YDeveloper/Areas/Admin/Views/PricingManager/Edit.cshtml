@@ -1,0 +1,85 @@
+@model YDeveloper.Models.PricingPackage
+
+@{
+    ViewData["Title"] = "Paket Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4">
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Paket Düzenle: @Model.Name</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Name" class="form-label">Paket Adı</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Price" class="form-label">Fiyat (TL)</label>
+                        <input asp-for="Price" class="form-control" type="number" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BillingPeriod" class="form-label">Faturalama Dönemi</label>
+                        <select asp-for="BillingPeriod" class="form-select">
+                            <option value="Aylık">Aylık</option>
+                            <option value="Yıllık">Yıllık</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ButtonText" class="form-label">Buton Metni</label>
+                        <input asp-for="ButtonText" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Kısa Açıklama</label>
+                    <textarea asp-for="Description" class="form-control" rows="2" placeholder="Paket hakkında kısa bilgi."></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Features" class="form-label">Paket Özellikleri (Her satıra bir özellik)</label>
+                    <textarea asp-for="Features" class="form-control" rows="6" placeholder="Örn:&#10;Sınırsız Site&#10;Ücretsiz SSL&#10;7/24 Destek"></textarea>
+                    <small class="text-muted">Her özelliği yeni bir satıra yazınız.</small>
+                    <span asp-validation-for="Features" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="WebsiteLimit" class="form-label font-weight-bold">Site Limiti</label>
+                    <input asp-for="WebsiteLimit" class="form-control" type="number" min="1" />
+                    <small class="text-muted">Bu pakete sahip bir kullanıcının toplam kaç site oluşturabileceğini
+                        belirler.</small>
+                    <span asp-validation-for="WebsiteLimit" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input class="form-check-input" asp-for="IsPopular" />
+                    <label class="form-check-label" asp-for="IsPopular">
+                        Popüler Olarak İşaretle ("En Çok Tercih Edilen" etiketi ekler)
+                    </label>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input class="form-check-input" asp-for="IsActive" />
+                    <label class="form-check-label" asp-for="IsActive">
+                        Aktif mi?
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+                <a asp-action="Index" class="btn btn-secondary">İptal</a>
+            </form>
+        </div>
+    </div>
+</div>

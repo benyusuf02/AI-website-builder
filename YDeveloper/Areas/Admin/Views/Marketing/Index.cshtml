@@ -1,0 +1,57 @@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Toplu E-posta (Marketing)";
+}
+
+<div class="mb-4">
+    <h2 class="h4 fw-bold mb-0">Marketing Merkezi</h2>
+    <p class="text-muted small">Kullanıcılara duyuru ve bülten gönderimi yapın.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="admin-card p-4">
+            <form action="/Admin/Marketing/SendBulkEmail" method="post" onsubmit="return confirm('Bu e-postayı göndermek istediğinize emin misiniz?');">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Alıcı Grubu (Segment)</label>
+                    <select name="segment" class="form-select">
+                        <option value="All">Tüm Kullanıcılar (@ViewBag.TotalUsers)</option>
+                        <option value="Paid">Sadece Ücretli Paket Üyeleri (@ViewBag.PaidUsers)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Konu Başlığı</label>
+                    <input type="text" name="subject" class="form-control" required placeholder="Örn: Yeni Özellikler Yayında!">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">İçerik</label>
+                    <textarea name="body" class="form-control" rows="10" required placeholder="HTML desteği mevcuttur. {Name} kullanarak kişiye özel hitap ekleyebilirsiniz."></textarea>
+                    <div class="form-text text-muted">İpucu: Metin içinde <code>{Name}</code> kullanırsanız, gönderilen kişinin ismiyle değiştirilir.</div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-send-fill me-2"></i> Gönderimi Başlat
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="admin-card p-4 h-100 bg-light">
+            <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i> Bilgilendirme</h5>
+            <p class="small text-muted">
+                Toplu e-posta gönderimi arka planda sıraya alınır ve sunucu yoğunluğuna göre parça parça gönderilir.
+            </p>
+            <hr>
+            <h6 class="fw-bold small">Öneriler</h6>
+            <ul class="small text-muted ps-3">
+                <li>Konu başlığını kısa ve etkileyici tutun.</li>
+                <li>Çok fazla görsel kullanmaktan kaçının.</li>
+                <li>Gönderim yapmadan önce içeriği kontrol edin.</li>
+            </ul>
+        </div>
+    </div>
+</div>

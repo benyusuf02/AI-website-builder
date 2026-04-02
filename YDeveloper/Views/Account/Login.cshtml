@@ -1,0 +1,279 @@
+@model YDeveloper.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - YDeveloper</title>
+    <link rel="stylesheet" href="~/css/design-system.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: var(--font-primary);
+            overflow-x: hidden;
+        }
+        
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+        
+        .auth-left {
+            background: var(--gradient-hero);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8);
+            color: white;
+        }
+        
+        .auth-left::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .auth-content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+        }
+        
+        .auth-content h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: var(--space-4);
+        }
+        
+        .auth-content p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+        }
+        
+        .auth-right {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8);
+        }
+        
+        .auth-form-container {
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .auth-form-container h2 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+        }
+        
+        .auth-subtitle {
+            color: var(--gray-600);
+            margin-bottom: var(--space-8);
+        }
+        
+        .form-group {
+            margin-bottom: var(--space-5);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-2);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: var(--space-4);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: all var(--transition-base);
+            font-family: var(--font-primary);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+        
+        .form-checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .form-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color var(--transition-fast);
+        }
+        
+        .forgot-password:hover {
+            color: var(--primary-dark);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: var(--space-6) 0;
+            color: var(--gray-500);
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--gray-200);
+        }
+        
+        .divider::before {
+            margin-right: var(--space-4);
+        }
+        
+        .divider::after {
+            margin-left: var(--space-4);
+        }
+        
+        .social-login {
+            display: grid;
+            gap: var(--space-3);
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            background: white;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-weight: 600;
+        }
+        
+        .social-btn:hover {
+            border-color: var(--gray-300);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: var(--space-6);
+            color: var(--gray-600);
+        }
+        
+        .signup-link a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @@media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-left {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-content">
+                <h1>Tekrar Hoş Geldiniz!</h1>
+                <p>Web sitenizi yönetmeye devam edin. AI destekli platformumuzla içeriklerinizi kolayca güncelleyin.</p>
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2>Giriş Yap</h2>
+                <p class="auth-subtitle">Hesabınıza giriş yapın</p>
+                
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="All" class="text-danger" style="margin-bottom: var(--space-4);"></div>
+                    
+                    <div class="form-group">
+                        <label asp-for="Email" class="form-label">E-posta</label>
+                        <input asp-for="Email" class="form-input" type="email" placeholder="ornek@email.com" required />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="Password" class="form-label">Şifre</label>
+                        <input asp-for="Password" class="form-input" type="password" placeholder="••••••••" required />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="form-checkbox-group">
+                            <input asp-for="RememberMe" class="form-checkbox" type="checkbox" />
+                            <label asp-for="RememberMe">Beni Hatırla</label>
+                        </div>
+                        <a href="/Account/ForgotPassword" class="forgot-password">Şifremi Unuttum?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: var(--space-4); padding: var(--space-4);">
+                        Giriş Yap
+                    </button>
+                </form>
+                
+                <div class="divider">veya</div>
+                
+                <div class="social-login">
+                    <button class="social-btn">
+                        <span>🔵</span>
+                        <span>Google ile Giriş Yap</span>
+                    </button>
+                </div>
+                
+                <div class="signup-link">
+                    Hesabınız yok mu? <a href="/Account/Register">Kayıt Ol</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

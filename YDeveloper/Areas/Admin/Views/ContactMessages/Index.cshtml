@@ -1,0 +1,83 @@
+@model IEnumerable<YDeveloper.Models.ContactMessage>
+
+@{
+    ViewData["Title"] = "İletişim Mesajları";
+    Layout = "_AdminLayout";
+    var unreadOnly = ViewBag.UnreadOnly;
+    var unreadCount = ViewBag.UnreadCount;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 style="font-size: 2rem; font-weight: 800;">
+        İletişim Mesajları
+        @if (unreadCount > 0)
+        {
+            <span class="admin-badge admin-badge-danger">@unreadCount</span>
+        }
+    </h1>
+    <div>
+        <a href="?unreadOnly=false" class="admin-btn @(!unreadOnly ? "admin-btn-primary" : "admin-btn-secondary")"
+            style="padding: 0.5rem 1rem;">Tümü</a>
+        <a href="?unreadOnly=true" class="admin-btn @(unreadOnly ? "admin-btn-primary" : "admin-btn-secondary")"
+            style="padding: 0.5rem 1rem;">Okunmamış</a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show admin-card"
+        style="background: var(--admin-success); color: white; margin-bottom: 1.5rem;">
+        <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="admin-card">
+    <div class="admin-table">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;"></th>
+                    <th>İsim</th>
+                    <th>E-posta</th>
+                    <th>Konu</th>
+                    <th>Tarih</th>
+                    <th style="width: 150px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var message in Model)
+                {
+                    <tr style="@(!message.IsRead ? "background: rgba(124, 58, 237, 0.1);" : "")">
+                        <td>
+                            @if (!message.IsRead)
+                            {
+                                <span class="admin-badge admin-badge-primary">Yeni</span>
+                            }
+                        </td>
+                        <td><strong>@message.Name</strong></td>
+                        <td>@message.Email</td>
+                        <td>@message.Subject</td>
+                        <td style="color: var(--admin-text-muted); font-size: 0.875rem;">
+                            @message.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Details", new { id = message.Id })" class="admin-btn admin-btn-primary"
+                                style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                <i class="bi bi-eye"></i> Görüntüle
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 4rem 0;">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: var(--admin-text-muted); opacity: 0.3;"></i>
+            <p style="color: var(--admin-text-muted); margin-top: 1rem; font-size: 1.125rem;">Henüz mesaj yok</p>
+        </div>
+    }
+</div>

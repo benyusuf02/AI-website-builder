@@ -1,0 +1,68 @@
+@model int
+
+<div class="container mb-5">
+    <div class="position-relative d-flex justify-content-between align-items-center"
+        style="max-width: 600px; margin: 0 auto; z-index: 1;">
+
+        <!-- Progress Line (Background) -->
+        <div class="position-absolute top-50 start-0 w-100 translate-middle-y bg-light rounded-pill"
+            style="height: 4px; z-index: -1;"></div>
+        <!-- Progress Line (Active) -->
+        @{
+            var progressWidth = (Model - 1) * 33.33;
+        }
+        <div class="position-absolute top-50 start-0 translate-middle-y bg-primary rounded-pill transition-width"
+            style="height: 4px; width: @progressWidth%; z-index: -1; transition: width 0.5s ease;"></div>
+
+        <!-- Steps -->
+        @for (int i = 1; i <= 4; i++)
+        {
+            var isActive = i <= Model;
+            var isCurrent = i == Model;
+            var bgClass = isActive ? "bg-primary text-white" : "bg-light text-muted border";
+            var shadow = isCurrent ? "shadow-lg scale-110 step-pulse" : "";
+
+            <div class="d-flex flex-column align-items-center" style="width: 40px;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold @bgClass @shadow"
+                    style="width: 40px; height: 40px; transition: all 0.3s ease;">
+                    @if (isActive && !isCurrent)
+                    {
+                        <i class="bi bi-check-lg"></i>
+                    }
+                    else
+                    {
+                        @i
+                    }
+                </div>
+                <!-- Optional labels hidden on mobile -->
+                <small class="mt-2 text-muted fw-bold d-none d-md-block" style="font-size: 0.75rem;">
+                    @switch (i)
+                    {
+                        case 1:
+                            <text>İşletme</text>
+                            ; break;
+                        case 2:
+                            <text>Domain</text>
+                            ; break;
+                        case 3:
+                            <text>Paket</text>
+                            ; break;
+                        case 4:
+                            <text>Ödeme</text>
+                            ; break;
+                    }
+                </small>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .scale-110 {
+        transform: scale(1.2);
+    }
+
+    .transition-width {
+        transition: width 0.6s ease-in-out;
+    }
+</style>

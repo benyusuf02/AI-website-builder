@@ -1,0 +1,189 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Yeni Hesap Oluştur";
+    Layout = "/Views/Shared/_Layout.cshtml"; // Ensure layout is used but we will override container
+    ViewData["HideContainer"] = true; // Tell layout to not wrap in container
+}
+
+<div class="row g-0 min-vh-100 overflow-hidden">
+    <!-- Left Side: Branding (Desktop Only) -->
+    <div
+        class="col-lg-5 d-none d-lg-flex flex-column justify-content-center align-items-center bg-dark text-white position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 w-100 h-100"
+            style="background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%); opacity: 0.9; z-index: 1;">
+        </div>
+        <!-- Decorative Circle -->
+        <div class="position-absolute rounded-circle bg-white"
+            style="width: 400px; height: 400px; opacity: 0.1; top: -100px; right: -100px;"></div>
+        <div class="position-absolute rounded-circle bg-white"
+            style="width: 300px; height: 300px; opacity: 0.1; bottom: 50px; left: -50px;"></div>
+
+        <div class="position-relative text-center px-5" style="z-index: 2;">
+            <div class="mb-4 bg-white bg-opacity-25 p-3 rounded-circle d-inline-flex mx-auto animate-fade-in">
+                <i class="bi bi-rocket-takeoff-fill fs-1 text-white"></i>
+            </div>
+            <h2 class="display-6 fw-bold mb-3 animate-fade-in" style="animation-delay: 0.1s;">Geleceği İnşa Et</h2>
+            <p class="lead text-white-50 animate-fade-in" style="animation-delay: 0.2s;">
+                "yaptık.com ile işletmenizi dakikalar içinde dijital dünyaya taşıyın. Kodlama yok, sınır yok."
+            </p>
+            <div class="mt-5 pt-4 border-top border-white border-opacity-25 animate-fade-in"
+                style="animation-delay: 0.3s;">
+                <div class="d-flex justify-content-center gap-3">
+                    <div class="text-center">
+                        <h4 class="fw-bold mb-0">10k+</h4>
+                        <small class="text-white-50">Mutlu Müşteri</small>
+                    </div>
+                    <div class="vr bg-white opacity-50"></div>
+                    <div class="text-center">
+                        <h4 class="fw-bold mb-0">%99.9</h4>
+                        <small class="text-white-50">Uptime</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side: Form -->
+    <div class="col-lg-7 d-flex align-items-center justify-content-center bg-white py-5">
+        <div class="w-100 px-4" style="max-width: 500px;">
+
+            <div class="text-center mb-5 d-lg-none">
+                <i class="bi bi-rocket-takeoff-fill text-primary fs-1"></i>
+                <h3 class="fw-bold mt-2">yaptık.com</h3>
+            </div>
+
+            <div class="mb-4">
+                <h2 class="fw-bold mb-2">Hemen Başla 🚀</h2>
+                <p class="text-muted">30 saniyede ücretsiz hesabını oluştur.</p>
+            </div>
+
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="needs-validation">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm border-0 mb-4" role="alert">
+                </div>
+
+                <!-- Email -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control bg-light border-0" autocomplete="username"
+                        aria-required="true" placeholder="name@example.com" style="border-radius: var(--radius-md);" />
+                    <label asp-for="Input.Email" class="text-muted ps-4"><i class="bi bi-envelope me-2"></i>E-posta
+                        Adresi</label>
+                    <span asp-validation-for="Input.Email" class="text-danger small ms-1"></span>
+                </div>
+
+                <!-- Password Group -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <div class="form-floating position-relative">
+                            <input asp-for="Input.Password" class="form-control bg-light border-0"
+                                autocomplete="new-password" aria-required="true" placeholder="password" id="passInput"
+                                style="border-radius: var(--radius-md);" />
+                            <label asp-for="Input.Password" class="text-muted"><i
+                                    class="bi bi-lock me-2"></i>Şifre</label>
+                            <button type="button"
+                                class="btn btn-link text-muted position-absolute top-50 end-0 translate-middle-y me-2 text-decoration-none">
+                                <i class="bi bi-eye password-toggle"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger small ms-1"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating position-relative">
+                            <input asp-for="Input.ConfirmPassword" class="form-control bg-light border-0"
+                                autocomplete="new-password" aria-required="true" placeholder="password"
+                                id="confPassInput" style="border-radius: var(--radius-md);" />
+                            <label asp-for="Input.ConfirmPassword" class="text-muted"><i
+                                    class="bi bi-check-circle me-2"></i>Tekrar</label>
+                            <button type="button"
+                                class="btn btn-link text-muted position-absolute top-50 end-0 translate-middle-y me-2 text-decoration-none">
+                                <i class="bi bi-eye password-toggle"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger small ms-1"></span>
+                    </div>
+                </div>
+
+                <!-- Terms -->
+                <div class="form-check mb-4 ps-3">
+                    <input asp-for="Input.AgreeToTerms" class="form-check-input"
+                        style="cursor: pointer; transform: scale(1.1); margin-top: 0.25em;" />
+                    <label asp-for="Input.AgreeToTerms" class="form-check-label ms-2 small text-muted text-start lh-sm">
+                        <a href="/Home/Privacy" target="_blank"
+                            class="fw-bold text-decoration-none text-primary">Kullanıcı Sözleşmesi</a>'ni ve <a
+                            href="/Home/Privacy" target="_blank"
+                            class="fw-bold text-decoration-none text-primary">Gizlilik Politikası</a>'nı okudum, kabul
+                        ediyorum.
+                    </label>
+                    <span asp-validation-for="Input.AgreeToTerms" class="text-danger d-block small"></span>
+                </div>
+
+                <input type="hidden" asp-for="Input.ReCaptchaToken" id="ReCaptchaToken" />
+
+                <button id="registerSubmit" type="submit"
+                    class="w-100 btn btn-primary btn-lg shadow-sm mb-4 position-relative overflow-hidden group">
+                    <span class="position-relative z-1">Hesap Oluştur</span>
+                    <i class="bi bi-arrow-right ms-2 position-relative z-1"></i>
+                </button>
+
+                <div class="text-center">
+                    <p class="text-muted small">Zaten hesabın var mı? <a asp-page="./Login"
+                            asp-route-returnUrl="@Model.ReturnUrl"
+                            class="fw-bold text-primary text-decoration-none">Giriş Yap</a></p>
+                </div>
+
+                <!-- Divider -->
+                <div class="position-relative my-4">
+                    <hr class="text-muted opacity-25">
+                    <span
+                        class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small text-uppercase">veya</span>
+                </div>
+
+                <!-- Social Login -->
+                @{
+                    if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                    {
+                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl"
+                            method="post" class="d-grid gap-2">
+                            @foreach (var provider in Model.ExternalLogins!)
+                            {
+                                var iconClass = provider.Name.ToLower() == "google" ? "bi-google" : "bi-box-arrow-in-right";
+                                var btnClass = provider.Name.ToLower() == "google" ? "btn-outline-danger" : "btn-outline-secondary";
+                                <button type="submit" class="btn btn-lg @btnClass border-opacity-25 shadow-sm" name="provider"
+                                    value="@provider.Name">
+                                    <i class="bi @iconClass me-2"></i> @provider.DisplayName ile Devam Et
+                                </button>
+                            }
+                        </form>
+                    }
+                }
+            </form>
+
+            <div class="mt-5 text-center">
+                <small class="text-muted opacity-50">&copy; 2025 yaptık.com - Tüm hakları saklıdır.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://www.google.com/recaptcha/api.js?render=@ViewData["ReCaptchaSiteKey"]"></script>
+    <script src="~/js/auth-ux.js" asp-append-version="true"></script>
+    <script>
+        // Use global ui-polish for password toggle if class 'password-toggle' is used.
+        // But here we might need to manually call reCaptcha on submit.
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = this;
+            const btn = document.getElementById('registerSubmit');
+
+            // ReCaptcha
+            grecaptcha.ready(function () {
+                grecaptcha.execute('@ViewData["ReCaptchaSiteKey"]', { action: 'register' }).then(function (token) {
+                    document.getElementById('ReCaptchaToken').value = token;
+                    form.submit();
+                });
+            });
+        });
+    </script>
+}

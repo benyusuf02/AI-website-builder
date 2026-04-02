@@ -1,0 +1,116 @@
+@model IEnumerable<YDeveloper.Models.Ticket>
+@{
+    ViewData["Title"] = "Destek Talepleri";
+    Layout = "_AdminLayout";
+    var status = ViewBag.CurrentStatus as string;
+}
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h1 class="h3 mb-0 fw-bold">Destek Talepleri</h1>
+    </div>
+    <div class="col-md-6 text-md-end">
+        <div class="btn-group">
+            <a href="?status=Open" class="btn @(status == "Open" ? "btn-primary" : "btn-outline-secondary")">Açık</a>
+            <a href="?status=Resolved"
+                class="btn @(status == "Resolved" ? "btn-primary" : "btn-outline-secondary")">Çözüldü</a>
+            <a href="?status=All" class="btn @(status == "All" ? "btn-primary" : "btn-outline-secondary")">Tümü</a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">#ID</th>
+                        <th>Konu</th>
+                        <th>Gönderen</th>
+                        <th>Durum</th>
+                        <th>Öncelik</th>
+                        <th>Tarih</th>
+                        <th class="text-end pe-4">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var ticket in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 text-muted">#@ticket.Id</td>
+                                <td class="fw-bold text-dark">@ticket.Subject</td>
+                                <td>
+                                    @if (ticket.Creator != null)
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle bg-light text-primary d-flex align-items-center justify-content-center fw-bold me-2"
+                                                style="width:32px;height:32px;">
+                                                @ticket.Creator.Email.Substring(0,1).ToUpper()
+                                            </div>
+                                            <div>
+                                                <div class="small fw-bold">@ticket.Creator.FullName</div>
+                                                <div class="small text-muted">@ticket.Creator.Email</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Bilinmiyor</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (ticket.Status == YDeveloper.Models.TicketStatus.Open)
+                                    {
+                                        <span
+                                            class="badge bg-danger">Açık</span>
+                                    }
+                                    else if (ticket.Status == YDeveloper.Models.TicketStatus.Resolved)
+                                    {
+                                        <span
+                                            class="badge bg-success">Çözüldü</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@ticket.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (ticket.Priority == YDeveloper.Models.TicketPriority.Critical)
+                                    {
+                                        <span
+                                            class="text-danger fw-bold"><i class="bi bi-fire"></i> Kritik</span>
+                                    }
+                                    else if (ticket.Priority == YDeveloper.Models.TicketPriority.High)
+                                    {
+                                        <span
+                                            class="text-warning fw-bold">Yüksek</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Normal</span>
+                                    }
+                                </td>
+                                <td class="small text-muted">@ticket.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td class="text-end pe-4">
+                                    <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-sm btn-primary">İncele</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                Talep bulunamadı.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

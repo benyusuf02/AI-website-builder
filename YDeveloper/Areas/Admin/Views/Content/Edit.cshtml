@@ -1,0 +1,108 @@
+@model YDeveloper.Models.ContentItem
+
+@{
+    ViewData["Title"] = "İçerik Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a href="@Url.Action("Index", new { section = Model.Section })" class="admin-btn admin-btn-secondary"
+        style="padding: 0.5rem 1rem;">
+        <i class="bi bi-arrow-left"></i> Geri
+    </a>
+</div>
+
+<div class="admin-grid admin-grid-3">
+    <!-- Edit Form -->
+    <div style="grid-column: span 2;">
+        <div class="admin-card">
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem;">İçerik Düzenleme</h2>
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Key" />
+                <input type="hidden" asp-for="Section" />
+                <input type="hidden" asp-for="Category" />
+                <input type="hidden" asp-for="IsEditable" />
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: 0.5rem;">Bölüm</label>
+                    <input type="text" class="form-control" value="@Model.Section" readonly
+                        style="background: var(--admin-bg); border: 1px solid var(--admin-border); color: var(--admin-text); border-radius: 0.75rem; padding: 0.75rem;" />
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: 0.5rem;">Anahtar</label>
+                    <input type="text" class="form-control" value="@Model.Key" readonly
+                        style="background: var(--admin-bg); border: 1px solid var(--admin-border); color: var(--admin-text); border-radius: 0.75rem; padding: 0.75rem;" />
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label asp-for="Description" class="form-label"
+                        style="font-weight: 600; margin-bottom: 0.5rem;"></label>
+                    <input asp-for="Description" class="form-control" readonly
+                        style="background: var(--admin-bg); border: 1px solid var(--admin-border); color: var(--admin-text); border-radius: 0.75rem; padding: 0.75rem;" />
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <label asp-for="Value" class="form-label" style="font-weight: 600; margin-bottom: 0.5rem;">Değer
+                        *</label>
+                    @if (Model.Category == "text" && Model.Value.Length < 100)
+                    {
+                        <input asp-for="Value" class="form-control" required
+                            style="background: var(--admin-bg); border: 1px solid var(--admin-border); color: var(--admin-text); border-radius: 0.75rem; padding: 0.75rem;" />
+                    }
+                    else
+                    {
+                        <textarea asp-for="Value" class="form-control" rows="6" required
+                            style="background: var(--admin-bg); border: 1px solid var(--admin-border); color: var(--admin-text); border-radius: 0.75rem; padding: 0.75rem; font-family: monospace;"></textarea>
+                    }
+                    <span asp-validation-for="Value" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="admin-btn admin-btn-primary">
+                        <i class="bi bi-check-circle"></i> Kaydet
+                    </button>
+                    <a href="@Url.Action("Index", new { section = Model.Section })"
+                        class="admin-btn admin-btn-secondary">
+                        <i class="bi bi-x-circle"></i> İptal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div>
+        <div class="admin-card">
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1.5rem;">Bilgi</h3>
+
+            <div style="margin-bottom: 1.5rem;">
+                <div style="color: var(--admin-text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">Kategori</div>
+                <div><span class="admin-badge admin-badge-success">@Model.Category</span></div>
+            </div>
+
+            <div>
+                <div style="color: var(--admin-text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">Son Güncelleme
+                </div>
+                <div>@Model.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+            </div>
+        </div>
+
+        <div class="admin-card"
+            style="margin-top: 1.5rem; background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.05)); border: 1px solid rgba(124, 58, 237, 0.3);">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <i class="bi bi-info-circle" style="color: var(--admin-primary);"></i>
+                <h4 style="font-weight: 600; margin: 0;">Not</h4>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--admin-text-muted); margin: 0; line-height: 1.6;">
+                Bu içerik @Model.Section sayfasında gösterilir. Değişiklikler anında yayına alınır.
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

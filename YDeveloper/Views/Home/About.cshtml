@@ -1,0 +1,161 @@
+@{
+    ViewData["Title"] = "Geleceğin Hikayesi - Hakkımızda";
+    var content = ViewBag.Content as Dictionary<string, string>;
+}
+
+<link rel="stylesheet" href="~/css/homepage-ultra.css" asp-append-version="true" />
+
+<div class="ultra-body">
+    <!-- Nebula Background -->
+    <div class="nebula-canvas" id="nebulaCanvas"></div>
+
+    <!-- About Hero -->
+    <section class="hero-ultra">
+        <div class="hero-shield"></div>
+        <div class="hero-tag">
+            <i class="bi bi-info-circle"></i> @(content?.GetValueOrDefault("about_hero_tag", "Vizyonumuz"))
+        </div>
+
+        <h1 class="hero-title-ultra">
+            @(content?.GetValueOrDefault("about_hero_title", "Geleceği"))
+        </h1>
+
+        <p class="hero-subtitle-ultra">
+            @(content?.GetValueOrDefault("about_hero_desc", "YDeveloper, web tasarımının sınırlarını yapay zeka ile zorlayan, teknoloji ve estetiği buluşturan bir inovasyon merkezidir."))
+        </p>
+    </section>
+
+    <!-- Mission & Vision Glass Cards -->
+    <div class="container mb-5">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="bento-item h-100">
+                    <div class="bento-icon"><i class="bi bi-target"></i></div>
+                    <h3 class="bento-title">@(content?.GetValueOrDefault("about_mission_title", "Misyonumuz"))</h3>
+                    <p class="bento-text">@(content?.GetValueOrDefault("about_mission_desc", "Web sitesi oluşturmayı teknik bir engel olmaktan çıkarıp, herkes için yaratıcı bir sürece dönüştürmek."))</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="bento-item h-100">
+                    <div class="bento-icon"><i class="bi bi-eye"></i></div>
+                    <h3 class="bento-title">@(content?.GetValueOrDefault("about_vision_title", "Vizyonumuz"))</h3>
+                    <p class="bento-text">@(content?.GetValueOrDefault("about_vision_desc", "Dünyanın en akıllı ve en estetik AI tasarım platformu olmak."))</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Değerlerimiz Bento Grid -->
+    <div class="bento-container" style="padding-top: 2rem;">
+        <div class="bento-item bento-wide">
+            <div class="bento-icon"><i class="bi bi-lightbulb"></i></div>
+            <h3 class="bento-title">İnovasyon Liderliği</h3>
+            <p class="bento-text">En yeni AI algoritmalarını ve modern tasarım trendlerini sistemimize entegre ederek
+                her zaman bir adım öndeyiz.</p>
+        </div>
+        <div class="bento-item">
+            <div class="bento-icon"><i class="bi bi-heart"></i></div>
+            <h3 class="bento-title">Kullanıcı Aşkı</h3>
+            <p class="bento-text">Her özelliğimizi kullanıcılarımızın işlerini kolaylaştırmak ve onları "wow" ettirmek
+                için tasarlıyoruz.</p>
+        </div>
+        <div class="bento-item">
+            <div class="bento-icon"><i class="bi bi-shield-lock"></i></div>
+            <h3 class="bento-title">Güven & Şeffaflık</h3>
+            <p class="bento-text">Verileriniz bizimle güvende. Şeffaf fiyatlandırma ve dürüst hizmet anlayışımızdan ödün
+                vermiyoruz.</p>
+        </div>
+        <div class="bento-item bento-tall">
+            <div class="bento-icon"><i class="bi bi-lightning"></i></div>
+            <h3 class="bento-title">Sürekli Gelişim</h3>
+            <p class="bento-text">YDeveloper asla yerinde saymaz. Her gün yeni bir özellik, her gün daha hızlı bir
+                sistem için kodluyoruz.</p>
+            <div class="glass-orb"></div>
+        </div>
+        <div class="bento-item bento-wide">
+            <div class="bento-icon"><i class="bi bi-people"></i></div>
+            <h3 class="bento-title">Küresel Topluluk</h3>
+            <p class="bento-text">Binlerce işletmeyi dijital dünyada başarıya taşıyan dev bir topluluğun parçasıyız.</p>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="cta-ultra">
+        <div class="cta-content">
+            <h2>Bu serüvene katılmaya hazır mısın?</h2>
+            <p>Geleceği inşa edenler arasında yerinizi alın.</p>
+            <a href="/Account/Register" class="btn-nb btn-glow">Hikayeni Başlat</a>
+        </div>
+    </section>
+</div>
+
+<style>
+    .text-glow {
+        color: white;
+        text-shadow: 0 0 20px var(--nb-primary-glow);
+    }
+
+    .glass-orb {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, var(--nb-primary-glow), transparent);
+        bottom: -50px;
+        right: -50px;
+        border-radius: 50%;
+        filter: blur(30px);
+    }
+
+    .cta-ultra {
+        padding: 8rem 2rem;
+        text-align: center;
+        background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1), transparent);
+    }
+</style>
+
+<script>
+    // Nebula Background Initialization (Shared Logic)
+    function initNebula() {
+        const canvas = document.getElementById('nebulaCanvas');
+        if (!canvas) return;
+
+        const layers = [
+            { count: 100, class: '', sizeRange: [1, 3], speedRange: [2, 6] },
+            { count: 50, class: 'layer-2', sizeRange: [3, 5], speedRange: [5, 10] },
+            { count: 20, class: 'layer-3', sizeRange: [5, 8], speedRange: [10, 20] }
+        ];
+
+        layers.forEach(layer => {
+            for (let i = 0; i < layer.count; i++) {
+                const star = document.createElement('div');
+                star.className = `nebula-star ${layer.class}`;
+
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * (layer.sizeRange[1] - layer.sizeRange[0]) + layer.sizeRange[0];
+                const duration = Math.random() * (layer.speedRange[1] - layer.speedRange[0]) + layer.speedRange[0];
+
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+
+                canvas.appendChild(star);
+            }
+        });
+    }
+
+    // Parallax Effect for Bento Items
+    document.addEventListener('mousemove', (e) => {
+        const bentoItems = document.querySelectorAll('.bento-item');
+        const x = (window.innerWidth - e.pageX * 2) / 100;
+        const y = (window.innerHeight - e.pageY * 2) / 100;
+
+        bentoItems.forEach(item => {
+            item.style.transform = `translateX(${x}px) translateY(${y}px)`;
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', initNebula);
+</script>

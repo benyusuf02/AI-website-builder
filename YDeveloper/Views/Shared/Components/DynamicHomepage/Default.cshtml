@@ -1,0 +1,310 @@
+@{
+    var content = ViewBag.Content as Dictionary<string, string>;
+    var features = ViewBag.Features as List<YDeveloper.Models.ContentItem>;
+    var packages = ViewBag.PricingPackages as List<YDeveloper.Models.PricingPackage>;
+}
+
+<link rel="stylesheet" href="~/css/homepage-ultra.css" asp-append-version="true" />
+
+<div class="ultra-body">
+    <!-- Nebula Background -->
+    <div class="nebula-canvas" id="nebulaCanvas"></div>
+    <div class="nebula-fog fog-1"></div>
+    <div class="nebula-fog fog-2"></div>
+
+    <!-- Hero Section v3 -->
+    <section class="hero-ultra">
+        <div class="hero-shield"></div>
+        <div class="hero-tag">
+            <i class="bi bi-rocket-takeoff"></i> @(content?.GetValueOrDefault("hero_badge", "Google Gemini AI Destekli Platform"))
+        </div>
+        
+        <h1 class="hero-title-ultra">
+            @(content?.GetValueOrDefault("hero_title_1", "Yapay Zeka ile"))<br>
+            <span class="text-glow">@(content?.GetValueOrDefault("hero_title_2", "Geleceği İnşa Et"))</span>
+        </h1>
+        
+        <p class="hero-subtitle-ultra">
+            @(content?.GetValueOrDefault("hero_subtitle", "Kod yazmadan, saniyeler içinde dünya standartlarında bir web sitesine sahip olun."))
+        </p>
+        
+        <div class="hero-actions">
+            <a href="/Account/Register" class="btn-nb">
+                <span>Ücretsiz Başla</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Bento Core Features -->
+    <div class="bento-container">
+        @if (features != null && features.Count >= 1)
+        {
+            var f1 = features[0];
+            <div class="bento-item bento-large">
+                <div class="bento-icon"><i class="bi bi-@(f1.Icon ?? "cpu")"></i></div>
+                <div>
+                    <h3 class="bento-title">@f1.Title</h3>
+                    <p class="bento-text">@f1.Description</p>
+                </div>
+                <div class="bento-badge">AI Core</div>
+            </div>
+        }
+
+        @if (features != null && features.Count >= 2)
+        {
+            var f2 = features[1];
+            <div class="bento-item">
+                <div class="bento-icon"><i class="bi bi-@(f2.Icon ?? "lightning-charge")"></i></div>
+                <div>
+                    <h3 class="bento-title">@f2.Title</h3>
+                    <p class="bento-text">@f2.Description</p>
+                </div>
+            </div>
+        }
+
+        @if (features != null && features.Count >= 3)
+        {
+            var f3 = features[2];
+            <div class="bento-item bento-tall">
+                <div class="bento-icon"><i class="bi bi-@(f3.Icon ?? "shield-check")"></i></div>
+                <div>
+                    <h3 class="bento-title">@f3.Title</h3>
+                    <p class="bento-text">@f3.Description</p>
+                </div>
+                <div class="glass-orb"></div>
+            </div>
+        }
+
+        <div class="bento-item bento-wide">
+            <div class="bento-icon"><i class="bi bi-graph-up"></i></div>
+            <div>
+                <h3 class="bento-title">Sınırsız Büyüme</h3>
+                <p class="bento-text">İşletmenizi dijital dünyada yapay zeka hızıyla ölçeklendirin.</p>
+            </div>
+        </div>
+
+        @if (features != null && features.Count >= 4)
+        {
+            var f4 = features[3];
+            <div class="bento-item">
+                <div class="bento-icon"><i class="bi bi-@(f4.Icon ?? "palette")"></i></div>
+                <div>
+                    <h3 class="bento-title">@f4.Title</h3>
+                    <p class="bento-text">@f4.Description</p>
+                </div>
+            </div>
+        }
+    </div>
+        
+    <!-- Extended Bento Grid (New Section) -->
+    <div class="bento-container pt-0">
+        @if (features != null && features.Count >= 5)
+        {
+            var f5 = features[4];
+            <div class="bento-item">
+                <div class="bento-icon"><i class="bi bi-@(f5.Icon ?? "shield-lock")"></i></div>
+                <div>
+                    <h3 class="bento-title">@f5.Title</h3>
+                    <p class="bento-text">@f5.Description</p>
+                </div>
+            </div>
+        }
+
+        @if (features != null && features.Count >= 6)
+        {
+            var f6 = features[5];
+            <div class="bento-item bento-wide">
+                <div class="bento-icon"><i class="bi bi-@(f6.Icon ?? "activity")"></i></div>
+                <div>
+                    <h3 class="bento-title">@f6.Title</h3>
+                    <p class="bento-text">@f6.Description</p>
+                </div>
+                <!-- Mini Chart Visual -->
+                <div class="d-flex align-items-end gap-1 mt-3 opacity-50" style="height: 40px;">
+                    <div class="bg-primary rounded-top" style="width: 10px; height: 40%;"></div>
+                    <div class="bg-primary rounded-top" style="width: 10px; height: 70%;"></div>
+                    <div class="bg-primary rounded-top" style="width: 10px; height: 50%;"></div>
+                    <div class="bg-accent rounded-top" style="width: 10px; height: 90%;"></div>
+                    <div class="bg-primary rounded-top" style="width: 10px; height: 60%;"></div>
+                </div>
+            </div>
+        }
+
+        @if (features != null && features.Count >= 7)
+        {
+            var f7 = features[6];
+            <div class="bento-item">
+                <div class="bento-icon"><i class="bi bi-@(f7.Icon ?? "search")"></i></div>
+                <div>
+                    <h3 class="bento-title">@f7.Title</h3>
+                    <p class="bento-text">@f7.Description</p>
+                </div>
+            </div>
+        }
+
+        @if (features != null && features.Count >= 8)
+        {
+            var f8 = features[7];
+            <div class="bento-item bento-large">
+                <div class="bento-icon"><i class="bi bi-@(f8.Icon ?? "share")"></i></div>
+                <div>
+                    <h3 class="bento-title">@f8.Title</h3>
+                    <p class="bento-text">@f8.Description</p>
+                </div>
+                <div class="nebula-star layer-2" style="position: relative; width: 100px; height: 100px; opacity: 0.8; filter: blur(20px); background: var(--nb-accent);"></div>
+            </div>
+        }
+    </div>
+
+    <!-- Pricing (Futuristic Mini Cards) -->
+    <section class="pricing-ultra">
+        <div class="container text-center mb-5">
+            <h2 class="display-4 fw-bold">Planını Seç</h2>
+            <p class="text-muted">Geleceğin teknolojisi tek tıkla elinizde.</p>
+        </div>
+        
+        <div class="pricing-grid-ultra">
+            @if (packages != null)
+            {
+                foreach (var pkg in packages)
+                {
+                    <div class="pkg-card @(pkg.IsPopular ? "pkg-popular" : "")">
+                        <div class="pkg-header">
+                            <h4>@pkg.Name</h4>
+                            <div class="pkg-price">₺@pkg.MonthlyFee.ToString("N0")<span>/ay</span></div>
+                        </div>
+                        <ul class="pkg-features">
+                            <li><i class="bi bi-check2"></i> @pkg.MaxSites Web Sitesi</li>
+                            <li><i class="bi bi-check2"></i> AI İçerik Üretimi</li>
+                            @foreach(var feat in pkg.Features.Split(',').Take(3)) {
+                                <li><i class="bi bi-check2"></i> @feat.Trim()</li>
+                            }
+                        </ul>
+                        <a href="/Account/Register" class="btn-pkg">Seç ve Başla</a>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-ultra">
+        <div class="cta-content">
+            <h2>Hala bekliyor musun?</h2>
+            <p>Gelecek burada başlıyor. Şimdi katıl.</p>
+            <a href="/Account/Register" class="btn-nb btn-glow">Hemen Oluştur</a>
+        </div>
+    </section>
+</div>
+
+<style>
+    /* Inline additions for Default.cshtml specifically */
+    .pricing-grid-ultra {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto 6rem;
+        padding: 0 2rem;
+    }
+    .pkg-card {
+        background: var(--nb-glass);
+        border: 1px solid var(--nb-glass-border);
+        border-radius: 2rem;
+        padding: 2.5rem;
+        backdrop-filter: blur(20px);
+        transition: 0.3s;
+    }
+    .pkg-popular {
+        border-color: var(--nb-primary);
+        box-shadow: 0 0 40px var(--nb-primary-glow);
+        transform: scale(1.05);
+    }
+    .text-glow {
+        color: white;
+        text-shadow: 0 0 20px var(--nb-primary-glow);
+    }
+    .glass-orb {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, var(--nb-primary-glow), transparent);
+        bottom: -50px;
+        right: -50px;
+        border-radius: 50%;
+        filter: blur(30px);
+    }
+    .cta-ultra {
+        padding: 10rem 2rem;
+        text-align: center;
+        background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1), transparent);
+    }
+</style>
+
+<script>
+<script>
+    // Nebula Background Initialization
+    function initNebula() {
+        const canvas = document.getElementById('nebulaCanvas');
+        const layers = [
+            { count: 100, class: 'layer-1', sizeRange: [1, 2], speedRange: [2, 6] },
+            { count: 50, class: 'layer-2', sizeRange: [2, 4], speedRange: [5, 10] },
+            { count: 20, class: 'layer-3', sizeRange: [4, 6], speedRange: [10, 20] }
+        ];
+        
+        layers.forEach(layer => {
+            for (let i = 0; i < layer.count; i++) {
+                const star = document.createElement('div');
+                star.className = `nebula-star ${layer.class}`;
+                
+                // Random Grid Positioning for better coverage
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * (layer.sizeRange[1] - layer.sizeRange[0]) + layer.sizeRange[0];
+                const duration = Math.random() * (layer.speedRange[1] - layer.speedRange[0]) + layer.speedRange[0];
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                
+                canvas.appendChild(star);
+            }
+        });
+    }
+
+    // Infinite Depth Parallax
+    document.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth / 2 - e.pageX) / 100;
+        const y = (window.innerHeight / 2 - e.pageY) / 100;
+
+        // Layer 1: Stars (Background - Very Slow)
+        document.querySelectorAll('.layer-1').forEach(el => {
+            el.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
+        });
+
+        // Layer 2: Stars (Mid - Slow)
+        document.querySelectorAll('.layer-2').forEach(el => {
+            el.style.transform = `translate(${x * 1.5}px, ${y * 1.5}px)`;
+        });
+
+        // Layer 3: Stars (Foreground - Fast)
+        document.querySelectorAll('.layer-3').forEach(el => {
+            el.style.transform = `translate(${x * 3}px, ${y * 3}px)`;
+        });
+
+        // Hero Text (Opposite Direction for 3D feel)
+        const heroTitle = document.querySelector('.hero-title-ultra');
+        if(heroTitle) heroTitle.style.transform = `translate(${-x * 2}px, ${-y * 2}px)`;
+
+        // Fog Layers (Subtle Movement)
+        const fog1 = document.querySelector('.fog-1');
+        const fog2 = document.querySelector('.fog-2');
+        if(fog1) fog1.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
+        if(fog2) fog2.style.transform = `translate(${-x}px, ${-y}px) rotate(${-x}deg)`;
+    });
+
+    document.addEventListener('DOMContentLoaded', initNebula);
+</script>

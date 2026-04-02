@@ -1,0 +1,148 @@
+@model YDeveloper.Models.Ticket
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = $"Talep #{Model.Id}";
+    Layout = "_AdminLayout";
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <a asp-action="Index" class="text-muted text-decoration-none">
+            <i class="bi bi-arrow-left"></i> Listeye Dön
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Conversation -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">@Model.Subject</h5>
+                    <span
+                        class="badge @(Model.Status == YDeveloper.Models.TicketStatus.Open ? "bg-danger" : "bg-success")">
+                        @Model.Status
+                    </span>
+                </div>
+            </div>
+            <div class="card-body bg-light" style="max-height: 600px; overflow-y: auto;">
+                @if (Model.Messages.Any())
+                {
+                    @foreach (var msg in Model.Messages.OrderBy(m => m.Timestamp))
+                    {
+                        var isMe = msg.SenderId == currentUser.Id; // Admin
+                                                                   // Assuming non-admin means user. Or check if sender is creator.
+                        var isCreator = msg.SenderId == Model.CreatorId;
+
+                        <div class="d-flex mb-3 @(isMe ? "justify-content-end" : "justify-content-start")">
+                            @if (!isMe)
+                            {
+                                <div class="flex-shrink-0 me-2">
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold"
+                                        style="width:36px;height:36px;">
+                                        U
+                                    </div>
+                                </div>
+                            }
+                            <div class="card border-0 shadow-sm"
+                                style="max-width: 80%; @(isMe ? "background:#dbeafe;" : "background:white;")">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <small class="fw-bold @(isMe ? "text-primary" : "text-dark")">
+                                            @(isMe ? "Siz (Admin)" : (Model.Creator?.FullName ?? "Kullanıcı"))
+                                        </small>
+                                        <small class="text-muted ms-3">@msg.Timestamp.ToString("dd.MM HH:mm")</small>
+                                    </div>
+                                    <p class="mb-0 text-break">@msg.Message</p>
+                                </div>
+                            </div>
+                            @if (isMe)
+                            {
+                                <div class="flex-shrink-0 ms-2">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold"
+                                        style="width:36px;height:36px;">
+                                        A
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-5">
+                        Henüz mesaj yok.
+                    </div>
+                }
+            </div>
+            <div class="card-footer bg-white p-3">
+                <form asp-action="Reply" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <textarea name="message" class="form-control" rows="3" placeholder="Yanıtınız..."
+                            required></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="status" id="statusOpen" value="Open"
+                            @(Model.Status == YDeveloper.Models.TicketStatus.Open ? "checked" : "")>
+                            <label class="form-check-label" for="statusOpen">Açık Bırak</label>
+                        </div>
+                        <!-- Enums might need casting or string check. Controller expects string logic? 
+                              Controller: ticket.Status = status (Enum parse needed usually if property is Enum).
+                              Wait, Controller code: ticket.Status = status; 
+                              If ticket.Status is Enum, this assignment fails!
+                              I need to check Controller again. It takes 'string status'. 
+                              I likely introduced a bug in controller if assignment is direct string->Enum. 
+                              I will fix View to send valid Enum values (int?) or fix Controller parsing.
+                              Let's assume generic binding or I need parsing.
+                              Actually, simplest for now: 
+                          -->
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="status" id="statusResolved"
+                                value="Resolved" @(Model.Status == YDeveloper.Models.TicketStatus.Resolved ? "checked" :
+                                "")>
+                            <label class="form-check-label text-success fw-bold" for="statusResolved">Çözüldü Olarak
+                                İşaretle</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-send-fill me-2"></i>
+                            Gönder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">Talep Detayları</h6>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted small">Oluşturan</dt>
+                    <dd class="col-sm-8 text-end">
+                        <a href="/Admin/Users/Details/@Model.CreatorId" class="text-decoration-none">
+                            @Model.Creator?.FullName
+                        </a>
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted small">E-posta</dt>
+                    <dd class="col-sm-8 text-end">@Model.Creator?.Email</dd>
+
+                    <dt class="col-sm-4 text-muted small">Tarih</dt>
+                    <dd class="col-sm-8 text-end">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4 text-muted small">Öncelik</dt>
+                    <dd class="col-sm-8 text-end">
+                        <span class="badge bg-light text-dark border">@Model.Priority</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

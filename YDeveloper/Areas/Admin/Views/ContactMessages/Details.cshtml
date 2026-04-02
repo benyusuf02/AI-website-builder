@@ -1,0 +1,92 @@
+@model YDeveloper.Models.ContactMessage
+
+@{
+    ViewData["Title"] = "Mesaj Detay";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a href="@Url.Action("Index")" class="admin-btn admin-btn-secondary" style="padding: 0.5rem 1rem;">
+        <i class="bi bi-arrow-left"></i> Geri
+    </a>
+</div>
+
+<div class="admin-grid admin-grid-3">
+    <!-- Message Content -->
+    <div style="grid-column: span 2;">
+        <div class="admin-card">
+            <div class="mb-4">
+                <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">@Model.Subject</h1>
+                <div style="display: flex; gap: 1rem; color: var(--admin-text-muted); font-size: 0.875rem;">
+                    <span><i class="bi bi-calendar"></i> @Model.CreatedAt.ToString("dd MMMM yyyy, HH:mm")</span>
+                    <span>
+                        @if (Model.IsRead)
+                        {
+                            <span class="admin-badge admin-badge-success">Okundu</span>
+                        }
+                        else
+                        {
+                            <span class="admin-badge admin-badge-primary">Okunmadı</span>
+                        }
+                    </span>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--admin-border); padding-top: 1.5rem;">
+                <p style="white-space: pre-wrap; line-height: 1.8;">@Model.Message</p>
+            </div>
+        </div>
+
+        <!-- Admin Notes -->
+        <div class="admin-card" style="margin-top: 1.5rem;">
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem;">Admin Notları</h3>
+            <form asp-action="AddNote" method="post">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <textarea name="notes" class="form-control" rows="4"
+                    style="background: var(--admin-bg); border: 1px solid var(--admin-border); color: var(--admin-text); border-radius: 0.75rem; padding: 1rem;">@Model.AdminNotes</textarea>
+                <button type="submit" class="admin-btn admin-btn-primary" style="margin-top: 1rem;">
+                    <i class="bi bi-save"></i> Notu Kaydet
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contact Info Sidebar -->
+    <div>
+        <div class="admin-card">
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1.5rem;">İletişim Bilgileri</h3>
+
+            <div style="margin-bottom: 1.5rem;">
+                <div style="color: var(--admin-text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">İsim</div>
+                <div style="font-weight: 600;">@Model.Name</div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <div style="color: var(--admin-text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">E-posta</div>
+                <div style="font-weight: 600;">
+                    <a href="mailto:@Model.Email" style="color: var(--admin-primary); text-decoration: none;">
+                        @Model.Email
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <div style="color: var(--admin-text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">Tarih</div>
+                <div>@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="admin-card" style="margin-top: 1.5rem;">
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1.5rem;">İşlemler</h3>
+
+            <form asp-action="Delete" method="post"
+                onsubmit="return confirm('Bu mesajı silmek istediğinizden emin misiniz?');">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="admin-btn admin-btn-danger" style="width: 100%;">
+                    <i class="bi bi-trash"></i> Mesajı Sil
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

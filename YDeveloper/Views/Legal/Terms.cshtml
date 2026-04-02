@@ -1,0 +1,91 @@
+@model YDeveloper.Models.ViewModels.LegalDocumentViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light py-3 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold mb-0">@Model.Title</h3>
+                            <small class="text-muted">Sürüm: @Model.ContractId</small>
+                        </div>
+                        <div class="text-end text-muted small">
+                            <div>@Model.GeneratedDate.ToString("dd MMMM yyyy HH:mm")</div>
+                            <div>IP: @Model.IpAddress</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    
+                    <!-- User Context -->
+                    <div class="alert alert-secondary mb-4">
+                        <h6 class="alert-heading fw-bold"><i class="bi bi-person-vcard me-2"></i> Sözleşme Tarafları</h6>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6 border-end">
+                                <strong class="d-block text-uppercase text-muted small">Hizmet Sağlayıcı</strong>
+                                <p class="mb-0 fw-bold">@Model.CompanyName</p>
+                                <small>@Model.CompanyAddress</small><br>
+                                <small>@Model.CompanyContact</small>
+                            </div>
+                            <div class="col-md-6 ps-md-4">
+                                <strong class="d-block text-uppercase text-muted small">Kullanıcı (Müşteri)</strong>
+                                <p class="mb-0 fw-bold">@Model.FullName</p>
+                                <small>@Model.BusinessName</small><br>
+                                <small>Email: @Model.Email</small><br>
+                                <small>Adres: @Model.Address</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contract Text (Placeholder) -->
+                    <div class="contract-text">
+                        <h5>1. Tanımlar</h5>
+                        <p>
+                            İşbu sözleşmede @Model.CompanyName "Platform", @Model.FullName ise "Kullanıcı" olarak anılacaktır.
+                            Platform, kullanıcılara e-ticaret sitesi oluşturma ve yönetme hizmeti sunmaktadır.
+                        </p>
+
+                        <h5>2. Konu</h5>
+                        <p>
+                            İşbu sözleşmenin konusu, Kullanıcının Platform üzerinden satın alacağı hizmetlerin kapsamı,
+                            ücretlendirilmesi ve tarafların hak ve yükümlülüklerinin belirlenmesidir. 
+                            Kullanıcı, işbu sözleşmeyi onaylayarak IP adresi (@Model.IpAddress) üzerinden işlem yaptığını kabul eder.
+                        </p>
+
+                        <h5>3. Tarafların Hak ve Yükümlülükleri</h5>
+                        <p>
+                            3.1. Kullanıcı, Platforma üye olurken verdiği bilgilerin (@Model.Email, @Model.FullName vb.) doğru olduğunu beyan eder.
+                        </p>
+                        <p>
+                            3.2. Platform, teknik sorunlar, bakım çalışmaları (@Model.CompanyName tarafından belirlenen zamanlarda) 
+                            nedeniyle hizmette kesintiye gidebilir.
+                        </p>
+
+                        <h5>4. Gizlilik</h5>
+                        <p>
+                            Kullanıcı verileri, Gizlilik Politikası kapsamında korunmaktadır.
+                        </p>
+
+                        <h5>5. Yürürlük</h5>
+                        <p>
+                            İşbu sözleşme @Model.GeneratedDate tarihinde elektronik ortamda onaylanarak yürürlüğe girmiştir.
+                        </p>
+                    </div>
+
+                    <div class="mt-5 text-center">
+                        <button onclick="window.print()" class="btn btn-outline-primary">
+                            <i class="bi bi-printer me-2"></i> Yazdır / PDF İndir
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
